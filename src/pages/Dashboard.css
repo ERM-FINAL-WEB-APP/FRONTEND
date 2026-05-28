@@ -1,0 +1,228 @@
+.mobile-dashboard-container {
+  padding-bottom: 80px; /* Space for bottom nav */
+  background: #F5F7FA;
+  min-height: 100vh;
+}
+
+/* Green Header */
+.mobile-header-bg {
+  background: var(--green-gradient);
+  padding: 40px 24px 100px 24px; /* extra bottom padding for overlap */
+  color: white;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.mobile-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.icon-btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.text-primary {
+  color: var(--text-primary);
+}
+
+.red-dot {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  background: var(--status-absent);
+  border-radius: 50%;
+}
+
+.mobile-greeting h1 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.mobile-greeting p {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Overlapping Card */
+.attendance-overlap-card {
+  margin: -70px 24px 0 24px; /* Pulls card up into the green area */
+  position: relative;
+  z-index: 10;
+  padding: 24px;
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.shift-pill-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.shift-pill {
+  background: rgba(76, 170, 23, 0.15);
+  color: var(--primary-green);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.time-action-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.live-clock {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.btn-checkin {
+  background: var(--primary-green);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(76, 170, 23, 0.3);
+}
+
+.btn-checkout {
+  background: #E50000;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(229, 0, 0, 0.3);
+}
+
+.attendance-metrics {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.metric-time {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.color-green { color: var(--primary-green); }
+.color-blue { color: #3B82F6; }
+.color-purple { color: #8B5CF6; }
+
+/* Announcements */
+.mobile-announcements {
+  padding: 32px 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.view-all-btn {
+  background: transparent;
+  border: none;
+  color: var(--primary-green);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-top: 4px;
+  margin-bottom: 16px;
+}
+
+.announcement-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.a-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px 20px;
+  border-left: 4px solid var(--primary-green);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.a-card h3 {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+}
+
+.a-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 12px 0;
+}
+
+.a-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dot { opacity: 0.5; }

@@ -1,0 +1,375 @@
+.leave-dashboard {
+  padding: 32px;
+  background-color: #FFFFFF;
+  min-height: 100vh;
+  font-family: var(--font-family);
+}
+
+.dashboard-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Left Column: Form Area */
+.dashboard-left {
+  flex: 1;
+  max-width: 600px;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 40px;
+  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 32px;
+  justify-content: center;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6B7280;
+  padding: 0 0 12px 0;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tab-btn:hover {
+  color: #374151;
+}
+
+.tab-btn.active {
+  color: #1A1A1A;
+}
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--primary-green, #4CAA17);
+}
+
+/* Form Styling */
+.leave-form-container {
+  padding: 0 20px;
+}
+
+.leave-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+.form-control {
+  padding: 14px 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1A1A1A;
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-family: var(--font-family);
+}
+
+.form-control:focus {
+  border-color: var(--primary-green, #4CAA17);
+  box-shadow: 0 0 0 3px rgba(76, 170, 23, 0.1);
+}
+
+.form-control::placeholder {
+  color: #9CA3AF;
+}
+
+/* Select wrapper for custom arrow */
+.custom-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-select {
+  appearance: none;
+  width: 100%;
+  padding-right: 40px;
+}
+
+.select-icon {
+  position: absolute;
+  right: 16px;
+  color: #6B7280;
+  pointer-events: none;
+}
+
+/* Toggle Switch */
+.half-day-group {
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+}
+
+.half-day-group label {
+  font-weight: 500;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #E5E7EB;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+input:checked + .slider {
+  background-color: #A7F3D0; /* Light green to match mockup */
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+  background-color: var(--primary-green, #4CAA17); /* Dark green thumb */
+}
+
+.slider.round {
+  border-radius: 24px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.btn-submit-green {
+  background-color: var(--primary-green, #4CAA17);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 32px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-submit-green:hover {
+  background-color: #3b8a10;
+  box-shadow: 0 4px 12px rgba(76, 170, 23, 0.2);
+}
+
+
+/* Right Column: History */
+.dashboard-right {
+  flex: 1;
+  min-width: 0;
+}
+
+.section-header-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+.mt-6 {
+  margin-top: 24px;
+}
+
+/* History Cards */
+.leave-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.leave-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.leave-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+}
+
+.border-green::before { background-color: #2ECC71; }
+.border-orange::before { background-color: #F59E0B; }
+.border-red::before { background-color: #EF4444; }
+
+.leave-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.leave-info h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin: 0 0 4px 0;
+}
+
+.leave-info p {
+  font-size: 13px;
+  color: #6B7280;
+  margin: 0;
+}
+
+.status-badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.badge-green { background: #4CAA17; }
+.badge-orange { background: #F59E0B; }
+.badge-red { background: #EF4444; }
+
+.leave-card-divider {
+  height: 1px;
+  background-color: #F3F4F6;
+  margin: 20px 0;
+}
+
+.leave-card-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.lc-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.text-right {
+  align-items: flex-end;
+}
+
+.lc-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9CA3AF;
+}
+
+.lc-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+/* HR Note */
+.leave-card-hr {
+  background-color: #9CA3AF;
+  color: white;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 20px;
+  border-left: 4px solid;
+}
+
+.hr-border-green { border-left-color: #2ECC71; }
+.hr-border-orange { border-left-color: #F59E0B; }
+.hr-border-red { border-left-color: #EF4444; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  .dashboard-left {
+    max-width: 100%;
+  }
+  .attendance-dashboard, .leave-dashboard {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 24px;
+  }
+}

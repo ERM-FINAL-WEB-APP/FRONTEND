@@ -1,0 +1,375 @@
+/* ─── Page ───────────────────────────────────────── */
+.ps-page {
+  padding: 32px;
+  background: #fff;
+  min-height: 100vh;
+  font-family: 'Montserrat', var(--font-family, sans-serif);
+}
+
+.ps-layout {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ─── Left Panel ─────────────────────────────────── */
+.ps-left {
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ps-greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ps-hey {
+  font-size: 24px;
+  font-weight: 800;
+  color: #222;
+  margin: 0;
+}
+
+.ps-sub {
+  font-size: 13px;
+  color: #808080;
+  margin: 0;
+}
+
+/* History Header */
+.ps-hist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ps-hist-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+/* History List */
+.ps-hist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ps-hist-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #F0F0F0;
+  border-left: 4px solid #4CAA17;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ps-hist-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+  border-color: #E0E0E0;
+  border-left-width: 4px;
+}
+
+.ps-hist-active {
+  background: #F9FFF5;
+  box-shadow: 0 4px 14px rgba(76,170,23,0.10);
+}
+
+.ps-hc-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ps-hc-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ps-hc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ps-hc-month {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.ps-hc-dates {
+  font-size: 11px;
+  color: #808080;
+  font-weight: 500;
+}
+
+.ps-hc-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ps-hc-amount {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.ps-dl-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #808080;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.ps-dl-btn:hover {
+  color: #4CAA17;
+}
+
+/* ─── Dropdown ───────────────────────────────────── */
+.ps-dd {
+  position: relative;
+}
+
+.ps-dd-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 50px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.ps-dd-btn.open,
+.ps-dd-btn:hover { border-color: #4CAA17; }
+
+.ps-dd-btn .spin { transform: rotate(180deg); }
+
+.ps-dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 110px;
+  background: #fff;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  padding: 6px;
+  z-index: 300;
+  animation: ddFade 0.16s ease-out;
+}
+
+@keyframes ddFade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ps-dd-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #222;
+  cursor: pointer;
+}
+
+.ps-dd-item:hover { background: #F3F4F6; }
+.ps-dd-item.sel {
+  background: rgba(76,170,23,0.10);
+  color: #4CAA17;
+  font-weight: 700;
+}
+
+/* ─── Right Panel ────────────────────────────────── */
+.ps-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ps-summary-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+
+/* Donut Chart */
+.ps-chart-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Legend */
+.ps-legend {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 24px;
+}
+
+.ps-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ps-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ps-legend-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.ps-legend-label {
+  font-size: 12px;
+  color: #808080;
+  font-weight: 500;
+}
+
+/* Section Title */
+.ps-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 12px 0;
+}
+
+.ps-section-title.mt-6 {
+  margin-top: 24px;
+}
+
+/* Detail Card */
+.ps-detail-card {
+  border: 1.5px solid #E5E7EB;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ps-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: #222;
+  font-weight: 500;
+  border-bottom: 1px solid #F3F4F6;
+  transition: background 0.15s;
+}
+
+.ps-detail-row:last-child {
+  border-bottom: none;
+}
+
+.ps-detail-row:hover {
+  background: #FAFAFA;
+}
+
+/* Action Buttons */
+.ps-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 28px;
+  justify-content: center;
+}
+
+.ps-btn-request,
+.ps-btn-download {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.ps-btn-request {
+  background: #F59E0B;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(245,158,11,0.28);
+}
+
+.ps-btn-request:hover {
+  background: #d97706;
+  box-shadow: 0 6px 22px rgba(245,158,11,0.38);
+}
+
+.ps-btn-download {
+  background: #4CAA17;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(76,170,23,0.28);
+}
+
+.ps-btn-download:hover {
+  background: #3a8c10;
+  box-shadow: 0 6px 22px rgba(76,170,23,0.38);
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 1024px) {
+  .ps-layout {
+    flex-direction: column;
+  }
+  .ps-left {
+    flex: none;
+    width: 100%;
+  }
+  .ps-page {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .ps-actions {
+    flex-direction: column;
+  }
+  .ps-btn-request,
+  .ps-btn-download {
+    width: 100%;
+    justify-content: center;
+  }
+}

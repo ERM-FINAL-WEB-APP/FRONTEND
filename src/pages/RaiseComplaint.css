@@ -1,0 +1,178 @@
+.complaint-page {
+  padding: 24px;
+  background-color: #fff;
+  min-height: 100vh;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.complaint-header-mobile {
+  margin-bottom: 24px;
+}
+
+.complaint-header-mobile .icon-btn-minimal {
+  background: none;
+  border: none;
+  padding: 8px 0;
+  cursor: pointer;
+  color: #222;
+}
+
+.complaint-content {
+  max-width: 600px;
+}
+
+.complaint-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.complaint-desc {
+  font-size: 16px;
+  color: #888;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+.complaint-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #222;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  font-size: 13px;
+  color: #888;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #222;
+  transition: all 0.2s ease;
+  background-color: #fff;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #A1A1AA;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4CAA17;
+  box-shadow: 0 0 0 3px rgba(76, 170, 23, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.priority-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.priority-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid #E5E7EB;
+  border-radius: 20px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.priority-pill:hover {
+  border-color: #D1D5DB;
+  background: #F9FAFB;
+}
+
+.priority-pill.active {
+  border-color: var(--p-color);
+  background: #fff;
+  color: #222;
+  box-shadow: 0 0 0 1px var(--p-color);
+}
+
+.complaint-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start; /* Or center based on desktop preference */
+}
+
+.btn-submit-complaint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background-color: #4CAA17;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(76, 170, 23, 0.2);
+}
+
+.btn-submit-complaint:hover {
+  background-color: #3b8a10;
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .complaint-page {
+    padding: 32px 40px;
+    border-radius: 24px;
+    margin-top: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  }
+
+  .complaint-header-mobile {
+    display: none;
+  }
+}

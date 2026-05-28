@@ -1,0 +1,419 @@
+/* ─── Page ───────────────────────────────────────── */
+.al-page {
+  padding: 32px;
+  background: #fff;
+  min-height: 100vh;
+  font-family: 'Montserrat', var(--font-family, sans-serif);
+}
+
+.al-layout {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ─── Left Panel ─────────────────────────────────── */
+.al-left {
+  flex: 0 0 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.al-type-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+.al-type-row {
+  display: flex;
+  gap: 14px;
+}
+
+.al-type-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 16px 12px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #D1D5DB;
+  background: #F9FAFB;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #9CA3AF;
+  font-family: inherit;
+}
+
+.al-type-btn:hover {
+  border-color: #4CAA17;
+  color: #4CAA17;
+}
+
+.al-type-btn.active {
+  background: #4CAA17;
+  border-color: #4CAA17;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(76,170,23,0.30);
+}
+
+.al-type-name {
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.al-type-sub {
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* ─── Form ───────────────────────────────────────── */
+.al-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.al-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.al-form-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+}
+
+.al-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.al-input-icon {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+}
+
+.al-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 50px; /* pill shape from mockup */
+  font-size: 13px;
+  color: #222;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.al-input.no-icon {
+  padding-left: 16px;
+}
+
+.al-input:focus {
+  border-color: #4CAA17;
+  box-shadow: 0 0 0 3px rgba(76,170,23,0.10);
+}
+
+.al-input::placeholder { color: #B0B0B0; }
+
+.al-textarea {
+  border-radius: 14px !important; /* textarea gets rounded rect not pill */
+  resize: none;
+  padding-top: 12px !important;
+  min-height: 90px;
+}
+
+.al-submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #4CAA17;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  font-family: inherit;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.al-submit-btn:hover {
+  background: #3a8c10;
+  box-shadow: 0 4px 16px rgba(76,170,23,0.28);
+}
+
+/* ─── Petrol Left Stats 2×2 ─────────────────────── */
+.al-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mb-16 { margin-bottom: 4px; }
+
+.al-this-month {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+}
+
+.al-stats-grid-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.al-stat-card {
+  border-radius: 16px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.al-blue   { background: #3B82F6; box-shadow: 0 8px 20px rgba(59,130,246,0.30); }
+.al-green  { background: #4CAA17; box-shadow: 0 8px 20px rgba(76,170,23,0.30); }
+.al-orange { background: #F59E0B; box-shadow: 0 8px 20px rgba(245,158,11,0.30); }
+.al-red    { background: #EF4444; box-shadow: 0 8px 20px rgba(239,68,68,0.30); }
+
+.al-s-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.88);
+}
+
+.al-s-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+}
+
+/* ─── Right Panel ────────────────────────────────── */
+.al-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.al-hist-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+/* Travel: 3 inline stat cards */
+.al-stats-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.al-stat-3 {
+  border-radius: 14px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ─── History Cards List ─────────────────────────── */
+.al-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.al-hist-card {
+  background: #fff;
+  border: 1.5px solid #EBEBEB;
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.al-hist-card:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  border-color: #D1D5DB;
+}
+
+.ahc-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.ahc-date {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+}
+
+.ahc-badge {
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.badge-approved { background: #4CAA17; }
+.badge-pending  { background: #F59E0B; }
+.badge-rejected { background: #EF4444; }
+
+/* Travel card metrics */
+.ahc-metrics {
+  display: flex;
+  gap: 0;
+  margin-bottom: 14px;
+}
+
+.ahc-metrics.align-center {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.ahc-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ahc-col-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4CAA17;
+}
+
+.ahc-col-val {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+/* Petrol card compact value */
+.ahc-col-val-sm {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+}
+
+.ahc-note {
+  font-size: 11.5px;
+  color: #9CA3AF;
+  padding-top: 12px;
+  border-top: 1px solid #F3F4F6;
+  line-height: 1.5;
+}
+
+.ahc-note b {
+  color: #6B7280;
+  font-weight: 700;
+}
+
+/* Petrol card horizontal alignment */
+.petrol-card .ahc-metrics {
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ─── Dropdown ───────────────────────────────────── */
+.al-dropdown {
+  position: relative;
+}
+
+.al-dd-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 50px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.al-dd-btn.open,
+.al-dd-btn:hover { border-color: #4CAA17; }
+
+.al-dd-btn .spin { transform: rotate(180deg); transition: transform 0.2s; }
+
+.al-dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 120px;
+  background: #fff;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
+  padding: 6px;
+  z-index: 300;
+  animation: ddSlide 0.16s ease-out;
+}
+
+@keyframes ddSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.al-dd-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #222;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.al-dd-item:hover { background: #F3F4F6; }
+.al-dd-item.sel {
+  background: rgba(76,170,23,0.10);
+  color: #4CAA17;
+  font-weight: 700;
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 1100px) {
+  .al-stats-3col { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 1024px) {
+  .al-layout { flex-direction: column; }
+  .al-left { flex: none; width: 100%; }
+  .al-page { padding: 20px; }
+}
+
+@media (max-width: 600px) {
+  .al-type-row { flex-direction: column; }
+  .al-stats-grid-2x2,
+  .al-stats-3col { grid-template-columns: 1fr; }
+}

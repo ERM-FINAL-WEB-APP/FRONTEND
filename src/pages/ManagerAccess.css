@@ -1,0 +1,78 @@
+.manager-access-page {
+  background-color: #F8FAFC;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.manager-top-nav {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-bottom: 2px solid #E2E8F0;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.back-to-dash-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748B;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-right: 24px;
+  transition: all 0.2s;
+}
+
+.back-to-dash-btn:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+}
+
+.manager-tabs {
+  display: flex;
+  gap: 16px;
+}
+
+.manager-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 20px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.manager-tab:hover {
+  color: #1E293B;
+}
+
+.manager-tab.active {
+  color: #4CAA17;
+  border-bottom-color: #4CAA17;
+}
+
+.manager-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* Because some components have their own 'page-enter' animations or padding, 
+   we might need to ensure they look good inside manager-content */
+.manager-content > div {
+  margin: 0 auto;
+  max-width: 1200px;
+}

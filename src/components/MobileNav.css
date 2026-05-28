@@ -1,0 +1,45 @@
+.mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary-green);
+    padding: 12px 10px 24px 10px; /* Extra padding at bottom for safe area */
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    z-index: 1000;
+  }
+
+  .m-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .m-nav-item.active {
+    color: white;
+  }
+
+  .m-nav-icon {
+    margin-bottom: 2px;
+  }
+
+  /* When on mobile, hide the sidebar toggle button and top navbar if on dashboard */
+  .main-content {
+    margin-left: 0 !important;
+  }
+}

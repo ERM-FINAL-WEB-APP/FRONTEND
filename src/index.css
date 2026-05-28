@@ -1,0 +1,228 @@
+:root {
+  /* Typography */
+  --font-family: 'Montserrat', sans-serif;
+  
+  /* Primary Colors */
+  --primary-green: #4CAA17;
+  --dark-green: #1E5F00;
+  --light-green: #DFF5D3;
+  --green-gradient: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+  
+  /* Text Colors */
+  --text-primary: #222222;
+  --text-secondary: #808080;
+  --text-white: #ffffff;
+  
+  /* Background Colors */
+  --bg-dashboard: #F5F7FA;
+  --bg-card: #FFFFFF;
+  --border-color: #E7EAF0;
+  
+  /* Status Colors */
+  --status-present: #4CAA17;
+  --status-absent: #FF3B30;
+  --status-permission: #FFC107;
+  --status-late: #FF7A00;
+  --status-half-day: #8B5CF6;
+  --status-info: #3B82F6;
+
+  /* Spacing */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.08);
+  --shadow-hover: 0 20px 40px -10px rgba(0,0,0,0.12);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-dashboard);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Base Card Style */
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: var(--spacing-lg);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Typography Utilities */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+/* Flex Utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.gap-sm { gap: var(--spacing-sm); }
+.gap-md { gap: var(--spacing-md); }
+.gap-lg { gap: var(--spacing-lg); }
+
+/* Layout Grid */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px; /* Sidebar width */
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+ * DARK MODE
+ *
+ * Activated by setting `data-theme="dark"` on the <html> element.
+ * The Navbar's Moon/Sun button toggles this and persists the choice
+ * in localStorage (key: erm_web_theme).
+ *
+ * Strategy: re-bind the SAME variable names defined above to dark
+ * palette values. Anything in the codebase that reads
+ *   color: var(--text-primary)
+ *   background: var(--bg-card)
+ *   border: 1px solid var(--border-color)
+ * automatically adapts. Components with hardcoded colours stay light
+ * — fix those one by one when they become an issue.
+ * ════════════════════════════════════════════════════════════════════ */
+html[data-theme="dark"] {
+  --text-primary:    #E5E7EB;
+  --text-secondary:  #9CA3AF;
+  --text-white:      #FFFFFF;
+  --bg-dashboard:    #0F172A;
+  --bg-card:         #1E293B;
+  --border-color:    #334155;
+  --dropdown-bg:     #1E293B;
+  --text-main:       #E5E7EB;
+  --navbar-bg:       #1E293B;
+  /* Greens stay vivid so the brand colour is still recognisable. */
+  --primary-green:   #4ADE80;
+  --light-green:     #064E3B;
+}
+
+html[data-theme="dark"] body {
+  background: var(--bg-dashboard);
+  color: var(--text-primary);
+}
+
+/* Cards, modals, dropdowns, sidebars — most ride var() so this is enough. */
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .glass,
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] .sidebar {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Inputs, textareas, selects — light theme defaults look unreadable. */
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background: #0F172A;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #64748B;
+}
+
+/* Smooth the transition so the switch doesn't feel jarring. */
+html, body, .navbar, .sidebar, .card, .glass {
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
