@@ -37,36 +37,23 @@ function pickAssetIcon(type) {
   return Package;
 }
 
-/** Gender-based default avatar — inline SVG so no extra HTTP request. */
-function genderAvatar(gender, name) {
-  const g = String(gender || '').toLowerCase();
-  const bg     = g === 'female' ? '#FCE7F3' : g === 'male' ? '#DBEAFE' : '#DCFCE7';
-  const accent = g === 'female' ? '#EC4899' : g === 'male' ? '#3B82F6' : '#4CAA17';
-  if (g === 'female' || g === 'male') {
-    return (
-      <svg viewBox="0 0 96 96" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"
-           style={{ background: bg, borderRadius: '50%' }}>
-        <circle cx="48" cy="36" r="16" fill={accent} />
-        <path d={
-          g === 'female'
-            ? 'M16 96 C16 70, 32 60, 48 60 C 64 60, 80 70, 80 96 Z'
-            : 'M16 96 C16 72, 30 64, 48 64 C 66 64, 80 72, 80 96 Z'
-        } fill={accent} />
-        {g === 'female' && (
-          // little hair flourish so the silhouette reads as female
-          <path d="M30 26 C30 18, 42 14, 48 14 C 54 14, 66 18, 66 26 L 66 36 L 30 36 Z" fill={accent} opacity="0.8" />
-        )}
-      </svg>
-    );
-  }
-  // Neutral fallback — initials avatar via ui-avatars
+/**
+ * Default profile avatar — a uniform green circle showing the employee's
+ * first letter. Same style across the app (Profile page + Navbar)
+ * because the brand uses green as the canonical "employee" colour.
+ */
+function initialAvatar(name) {
   const initial = (String(name || 'E').match(/\S/) || ['E'])[0].toUpperCase();
   return (
     <div style={{
-      width: '100%', height: '100%', background: bg,
-      color: accent, fontSize: 32, fontWeight: 800,
+      width: '100%', height: '100%',
+      background: '#4CAA17',
+      color: '#fff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       borderRadius: '50%',
+      fontSize: 32, fontWeight: 800,
+      letterSpacing: 0.5,
+      userSelect: 'none',
     }}>{initial}</div>
   );
 }
@@ -122,6 +109,12 @@ const Profile = () => {
   const dob         = u.dob   || '—';
   const bloodGroup  = u.bloodGroup || '—';
 
+  // Show Assets column only when there's at least one real asset on file.
+  // While the assets request is still in flight we hide the column so the
+  // page doesn't flash an empty card and then a populated one (or vice
+  // versa) once the response lands.
+  const hasAssets = !assetsLoading && assets.length > 0;
+
   return (
     <div className="profile-page-modern page-enter">
 
@@ -133,7 +126,7 @@ const Profile = () => {
             <div className="profile-avatar-modern" style={{ overflow: 'hidden' }}>
               {u.photoUrl
                 ? <img src={u.photoUrl} alt="Profile" className="profile-img-real" />
-                : genderAvatar(u.gender, fullName)}
+                : initialAvatar(fullName)}
             </div>
             <div className="verified-badge">
               <CheckCircle size={16} fill="#4CAA17" color="white" />
@@ -156,7 +149,15 @@ const Profile = () => {
         </div>
       )}
 
-      <div className="profile-main-grid">
+      <div
+        className="profile-main-grid"
+        style={{
+          // When the user has no assets we hide the right column entirely,
+          // so let the personal-info column span the full width instead of
+          // sitting in a half-empty 2-column grid.
+          gridTemplateColumns: hasAssets ? undefined : '1fr',
+        }}
+      >
         {/* Left Column — Personal Information */}
         <div className="profile-left-col">
           <div className="section-header-modern">
@@ -224,55 +225,45 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Right Column — Assigned Assets (real, from HRMS) */}
-        <div className="profile-right-col">
-          <div className="section-header-modern">
-            <h2>Assigned Assets</h2>
-          </div>
+        {/* Right Column — Assigned Assets (real, from HRMS).
+            Only shown if the employee actually has 1+ assets in HRMS;
+            otherwise the whole section + header is hidden so we never
+            display an empty "no assets" placeholder. */}
+        {hasAssets && (
+          <div className="profile-right-col">
+            <div className="section-header-modern">
+              <h2>Assigned Assets</h2>
+            </div>
 
-          <div className="assets-list">
-            {assetsLoading && (
-              <div style={{ padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
-                Loading assets…
-              </div>
-            )}
-            {!assetsLoading && assets.length === 0 && (
-              <div style={{
-                padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13,
-                background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
-              }}>
-                <Package size={28} color="#94A3B8" style={{ marginBottom: 6 }} />
-                <div>No company assets assigned to you yet.</div>
-                <div style={{ fontSize: 11, marginTop: 4 }}>HR can issue laptops, monitors, ID cards, etc.</div>
-              </div>
-            )}
-            {!assetsLoading && assets.map((a) => {
-              const Icon = pickAssetIcon(a.type);
-              const issued = a.issuedDate
-                ? new Date(a.issuedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-                : '';
-              return (
-                <div className="asset-card" key={a._id}>
-                  <div className="asset-top">
-                    <div className="asset-icon-box">
-                      <Icon size={24} />
+            <div className="assets-list">
+              {assets.map((a) => {
+                const Icon = pickAssetIcon(a.type);
+                const issued = a.issuedDate
+                  ? new Date(a.issuedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                  : '';
+                return (
+                  <div className="asset-card" key={a._id}>
+                    <div className="asset-top">
+                      <div className="asset-icon-box">
+                        <Icon size={24} />
+                      </div>
+                      <span className="asset-badge">{String(a.status || 'ASSIGNED').toUpperCase()}</span>
                     </div>
-                    <span className="asset-badge">{String(a.status || 'ASSIGNED').toUpperCase()}</span>
-                  </div>
-                  <div className="asset-details">
-                    <h3>{a.assetName || a.type || 'Asset'}</h3>
-                    <p>Serial: {a.serialNo || a.assetId || '—'}</p>
-                  </div>
-                  {issued && (
-                    <div className="asset-footer">
-                      <span className="issue-date">Issued: {issued}</span>
+                    <div className="asset-details">
+                      <h3>{a.assetName || a.type || 'Asset'}</h3>
+                      <p>Serial: {a.serialNo || a.assetId || '—'}</p>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                    {issued && (
+                      <div className="asset-footer">
+                        <span className="issue-date">Issued: {issued}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
     </div>
