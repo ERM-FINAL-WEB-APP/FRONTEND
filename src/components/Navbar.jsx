@@ -89,9 +89,15 @@ const Navbar = ({ toggleSidebar }) => {
     [user?.firstName, user?.lastName].filter(Boolean).join(' ') ||
     user?.email ||
     'Employee';
+  const gender = String(user?.gender || '').toLowerCase();
+  const palette = gender === 'female'
+    ? { bg: 'EC4899', fg: 'fff' }
+    : gender === 'male'
+    ? { bg: '3B82F6', fg: 'fff' }
+    : { bg: '4CAA17', fg: 'fff' };
   const avatarUrl =
     user?.photoUrl ||
-    `https://ui-avatars.com/api/?background=4CAA17&color=fff&name=${encodeURIComponent(displayName)}`;
+    `https://ui-avatars.com/api/?background=${palette.bg}&color=${palette.fg}&name=${encodeURIComponent(displayName)}`;
 
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 

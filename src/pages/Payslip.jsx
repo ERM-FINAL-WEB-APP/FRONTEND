@@ -14,6 +14,32 @@ import './Payslip.css';
 
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
+// ─── Date-range helpers ───────────────────────────────────────────
+// Payroll runs started in April 2025 — there are no payslips before
+// that. The year dropdown only lists 2025 onwards (up to the
+// current year). The month dropdown lists ONLY months that have
+// already completed payroll: nothing in the future, and in 2025
+// nothing before April.
+const PAYROLL_START_YEAR  = 2025;
+const PAYROLL_START_MONTH = 4;   // April
+
+function buildYearOptions() {
+  const current = new Date().getFullYear();
+  const out = [];
+  for (let y = PAYROLL_START_YEAR; y <= current; y++) out.push(String(y));
+  return out;
+}
+function buildMonthOptions(year) {
+  const now      = new Date();
+  const curYear  = now.getFullYear();
+  const curMonth = now.getMonth() + 1;
+  const startMonth = (year === PAYROLL_START_YEAR) ? PAYROLL_START_MONTH : 1;
+  const endMonth   = (year === curYear)            ? curMonth            : 12;
+  const out = [];
+  for (let m = startMonth; m <= endMonth; m++) out.push(MONTH_SHORT[m - 1]);
+  return out;
+}
+
 function inr(n) {
   return Number(n || 0).toLocaleString('en-IN');
 }
@@ -147,7 +173,17 @@ const DetailRow = ({ label, amount }) => (
 /* ─── Main Payslip Component ─────────────────────── */
 const Payslip = () => {
   const { user } = useAuth();
-  const [year,     setYear]     = useState(new Date().getFullYear());
+  const [year,     setYear]     = useState(() => {
+    const cy = new Date().getFullYear();
+    return cy < PAYROLL_START_YEAR ? PAYROLL_START_YEAR : cy;
+  });
+  const [month,    setMonth]    = useState(() => {
+    const now = new Date();
+    if (now.getFullYear() === PAYROLL_START_YEAR && now.getMonth() + 1 < PAYROLL_START_MONTH) {
+      return PAYROLL_START_MONTH;
+    }
+    return now.getMonth() + 1;
+  });
   const [payslips, setPayslips] = useState([]);
   const [selected, setSelected] = useState(0);
   const [loading,  setLoading]  = useState(true);
@@ -173,12 +209,18 @@ const Payslip = () => {
         deductionsDetail: p.deductionsDetail || p.deductionsBreakdown || {},
         downloadUrl: p.downloadUrl || p.pdfUrl || '',
       }));
+      // Filter to the selected month — payslip backend may return
+      // the entire year and we only want one month at a time.
+      const filtered = normalised.filter((row) => {
+        const m = parseInt(row.month, 10);
+        return !m || m === month;  // tolerant: if row has no month, show it
+      });
       // Newest first.
-      normalised.sort((a, b) => {
+      filtered.sort((a, b) => {
         const k = (x) => `${x.year || 0}-${String(x.month || 0).padStart(2, '0')}`;
         return k(b).localeCompare(k(a));
       });
-      setPayslips(normalised);
+      setPayslips(filtered);
       setSelected(0);
     } catch (err) {
       setError(err?.message || 'Could not load payslips.');
@@ -186,7 +228,7 @@ const Payslip = () => {
     } finally {
       setLoading(false);
     }
-  }, [year]);
+  }, [year, month]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -223,9 +265,24 @@ const Payslip = () => {
           <div className="ps-hist-header">
             <span className="ps-hist-title">Payslip History</span>
             <Dropdown
-              options={['2024', '2025', '2026', '2027']}
+              options={buildMonthOptions(year)}
+              defaultSelected={MONTH_SHORT[month - 1]}
+              onSelect={(m) => setMonth(MONTH_SHORT.indexOf(m) + 1)}
+            />
+            <Dropdown
+              options={buildYearOptions()}
               defaultSelected={String(year)}
-              onSelect={(y) => setYear(parseInt(y, 10))}
+              onSelect={(y) => {
+                const newYear = parseInt(y, 10);
+                setYear(newYear);
+                // Clamp month into the new year's valid range
+                const valid = buildMonthOptions(newYear);
+                const currentLabel = MONTH_SHORT[month - 1];
+                if (!valid.includes(currentLabel)) {
+                  const fallback = valid[valid.length - 1] || MONTH_SHORT[PAYROLL_START_MONTH - 1];
+                  setMonth(MONTH_SHORT.indexOf(fallback) + 1);
+                }
+              }}
             />
           </div>
 

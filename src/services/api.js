@@ -127,6 +127,7 @@ export const allowanceAPI = {
 export const profileAPI = {
   getProfile:    ()      => get('/profile'),
   updateProfile: (data)  => put('/profile/update', data),
+  myAssets:      ()      => get('/profile/assets'),
 };
 
 // ─── Payslip ─────────────────────────────────────────────────────────
@@ -183,4 +184,7 @@ export const managerAPI = {
   attendance:    (date)  => get('/manager/attendance', { date }),
   attendanceSummary: ({ month, year } = {}) => get('/manager/attendance-summary', { month, year }),
   liveLocations: ()      => get('/manager/live-locations'),
+  postAnnouncement: (data) => post('/manager/announcements', data),
+  myAnnouncements:  ()     => get('/manager/announcements'),
+  deleteAnnouncement: (id) => del(`/manager/announcements/${id}`),
 };

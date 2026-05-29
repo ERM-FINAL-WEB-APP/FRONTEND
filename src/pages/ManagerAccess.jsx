@@ -3,7 +3,7 @@ import { Users, AlertCircle } from 'lucide-react';
 import LiveTracking from './LiveTracking';
 import LeaveApprovals from './LeaveApprovals';
 import Reports from './Reports';
-import Announcements from './Announcements';
+import ManagerAnnouncements from './ManagerAnnouncements';
 import { managerAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './ManagerAccess.css';
@@ -132,7 +132,7 @@ const ManagerAccess = () => {
         {activeTab === 'approvals'     && <LeaveApprovals />}
         {activeTab === 'tracking'      && <LiveTracking />}
         {activeTab === 'reports'       && <Reports />}
-        {activeTab === 'announcements' && <Announcements />}
+        {activeTab === 'announcements' && <ManagerAnnouncements />}
       </div>
     </div>
   );
