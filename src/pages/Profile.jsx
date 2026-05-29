@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Contact, Phone, Mail, Calendar, Droplet, Laptop, Monitor, Smartphone, IdCard, MonitorSpeaker, Mouse, Keyboard, Briefcase, Building2, CheckCircle, Package } from 'lucide-react';
+import { Contact, Phone, Mail, Calendar, Droplet, Laptop, Monitor, Smartphone, CreditCard, Cpu, Mouse, Keyboard, Briefcase, Building2, CheckCircle, Package } from 'lucide-react';
 import { profileAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Profile.css';
@@ -30,10 +30,10 @@ function pickAssetIcon(type) {
   if (t.includes('laptop'))   return Laptop;
   if (t.includes('monitor'))  return Monitor;
   if (t.includes('mobile') || t.includes('phone')) return Smartphone;
-  if (t.includes('id'))       return IdCard;
+  if (t.includes('id'))       return CreditCard;
   if (t.includes('mouse'))    return Mouse;
   if (t.includes('keyboard')) return Keyboard;
-  if (t.includes('pc'))       return MonitorSpeaker;
+  if (t.includes('pc'))       return Cpu;
   return Package;
 }
 
