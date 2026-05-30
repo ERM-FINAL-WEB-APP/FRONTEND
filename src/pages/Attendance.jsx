@@ -73,6 +73,27 @@ const Attendance = () => {
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [requestReason,    setRequestReason]    = useState('');
   const [requestDate,      setRequestDate]      = useState('');
+
+  // The request window closes 2 days after the date the request is FOR.
+  // Past that, the employee cannot file a regularization request for it.
+  // Match the backend sweeper: pending requests older than 2 days are
+  // auto-expired, so blocking the submit at the UI keeps the contract
+  // consistent on both sides.
+  const REQUEST_WINDOW_DAYS = 2;
+  const isRequestWindowClosed = (() => {
+    if (!requestDate) return false;
+    const target = new Date(requestDate + 'T00:00:00');
+    if (isNaN(target.getTime())) return false;
+    const cutoff = Date.now() - REQUEST_WINDOW_DAYS * 24 * 60 * 60 * 1000;
+    return target.getTime() < cutoff;
+  })();
+  const requestWindowMessage = (() => {
+    if (!requestDate || !isRequestWindowClosed) return '';
+    const target = new Date(requestDate + 'T00:00:00');
+    const daysAgo = Math.floor((Date.now() - target.getTime()) / 86400000);
+    return 'Request window closed for this date (' + daysAgo + ' days ago). ' +
+           'Regularization requests can only be filed within 2 days of the attendance date.';
+  })();
   const [reqBusy,          setReqBusy]          = useState(false);
   const [reqError,         setReqError]         = useState('');
   const [reqSuccess,       setReqSuccess]       = useState('');
@@ -143,6 +164,10 @@ const Attendance = () => {
     setReqError('');
     if (!requestReason.trim()) {
       setReqError('Please describe the issue.');
+      return;
+    }
+    if (isRequestWindowClosed) {
+      setReqError(requestWindowMessage);
       return;
     }
     setReqBusy(true);
@@ -326,16 +351,35 @@ const Attendance = () => {
                   For date: <strong>{requestDate}</strong>
                 </div>
               )}
+              {isRequestWindowClosed && (
+                <div style={{
+                  padding: '10px 12px', borderRadius: 8, marginBottom: 10,
+                  background: '#FEF2F2', border: '1px solid #FECACA',
+                  color: '#991B1B', fontSize: 12,
+                  display: 'flex', alignItems: 'flex-start', gap: 6,
+                }}>
+                  <AlertCircle size={14} style={{ flexShrink: 0, marginTop: 2 }} />
+                  <span>{requestWindowMessage}</span>
+                </div>
+              )}
               <textarea
                 placeholder="Enter your reason — e.g. forgot to check out, joined a client meeting outside, …"
                 value={requestReason}
                 onChange={(e) => setRequestReason(e.target.value)}
                 rows={6}
+                disabled={isRequestWindowClosed}
+                style={isRequestWindowClosed ? { background: '#F8FAFC', color: '#94A3B8' } : undefined}
               />
             </div>
             <div className="attendance-modal-footer">
-              <button className="btn-submit-request" onClick={submitRequest} disabled={reqBusy} type="button">
-                {reqBusy ? 'Submitting…' : 'Submit Request'}
+              <button
+                className="btn-submit-request"
+                onClick={submitRequest}
+                disabled={reqBusy || isRequestWindowClosed}
+                type="button"
+                title={isRequestWindowClosed ? 'Request window closed — past the 2-day cutoff' : ''}
+              >
+                {reqBusy ? 'Submitting…' : isRequestWindowClosed ? 'Window Closed' : 'Submit Request'}
               </button>
             </div>
           </div>
