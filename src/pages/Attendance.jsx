@@ -25,7 +25,7 @@ function fmtTime12(d) {
     return dt.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   } catch { return '—'; }
 }
-function fmtDate(d) {
+function fmtDate(iso) {
   if (!iso) return '';
   try {
     const d = new Date(iso);

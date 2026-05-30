@@ -16,7 +16,7 @@ const TABS = [
   { key: 'allowances', label: 'Allowance' },
 ];
 
-function fmtDate(d) {
+function fmtDate(iso) {
   if (!iso) return '';
   try {
     const d = new Date(iso);
