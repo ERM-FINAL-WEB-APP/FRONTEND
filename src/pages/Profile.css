@@ -4,32 +4,34 @@
   padding: 24px;
 }
 
-/* Top Banner */
+/* Top Banner — ENTIRE card is the green band now. The avatar's white
+   square sits on top of it. HR specifically asked for the green to fill
+   the visible area with no white strip below the name. */
 .profile-banner-card {
-  background: white;
+  background: #4CAA17;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0,0,0,0.03);
   margin-bottom: 40px;
   position: relative;
+  padding-bottom: 28px;
 }
 
-/* Taller green strip so the name sits inside the green band instead of
-   on the white area below it (HR wanted the green to extend to cover
-   the name row). */
+/* The green-strip element is no longer used as a separate band — the
+   whole card is green now. Kept as a 1px transparent shim so any
+   existing layout that depends on this element being in the DOM still
+   works without contributing a coloured strip. */
 .banner-green-bg {
-  background: #4CAA17;
-  height: 200px;
+  background: transparent;
+  height: 0;
   width: 100%;
 }
 
 .banner-content {
-  padding: 0 32px 24px 32px;
+  padding: 80px 32px 16px 32px;
   display: flex;
-  align-items: flex-end;
-  /* Pull the row up so the avatar straddles the bottom of the green
-     strip and the name + designation sit INSIDE the green band. */
-  margin-top: -110px;
+  align-items: center;
+  margin-top: 0;
   position: relative;
   z-index: 1;
 }

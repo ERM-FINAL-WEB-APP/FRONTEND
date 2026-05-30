@@ -25,6 +25,15 @@ function pickLabel(value, sidecar) {
   return '';
 }
 
+// ID Card rows are stored with whatever brand HR typed (e.g. "hp" because
+// the same Add-Asset form is used for both laptop + ID card in one shot),
+// but on Profile the right thing to show is the literal "ID Card". Mirror
+// of the override applied in the HRMS Assets table.
+function displayAssetName(a) {
+  if (/id ?card/i.test(a.type || '')) return 'ID Card';
+  return a.assetName || a.type || 'Asset';
+}
+
 function pickAssetIcon(type) {
   const t = String(type || '').toLowerCase();
   if (t.includes('laptop'))   return Laptop;
@@ -250,7 +259,7 @@ const Profile = () => {
                       <span className="asset-badge">{String(a.status || 'ASSIGNED').toUpperCase()}</span>
                     </div>
                     <div className="asset-details">
-                      <h3>{a.assetName || a.type || 'Asset'}</h3>
+                      <h3>{displayAssetName(a)}</h3>
                       <p>Serial: {a.serialNo || a.assetId || '—'}</p>
                     </div>
                     {issued && (

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Pointer } from 'lucide-react';
-import { payslipAPI } from '../services/api';
+import { jsPDF } from 'jspdf';
+import { payslipAPI, profileAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Payslip.css';
 
@@ -149,7 +150,7 @@ const DonutChart = ({ size = 260, strokeWidth = 28, earnings, deductions }) => {
 /* ─── History Card ────────────────────────────────── */
 const historyColors = ['#F59E0B', '#F97316', '#8B5CF6', '#3B82F6', '#4CAA17', '#EF4444'];
 
-const HistoryCard = ({ month, dateRange, amount, colorIndex, onClick, active, downloadUrl }) => {
+const HistoryCard = ({ month, dateRange, amount, colorIndex, onClick, active, downloadUrl, onDownload }) => {
   const color = historyColors[colorIndex % historyColors.length];
   return (
     <div
@@ -170,10 +171,16 @@ const HistoryCard = ({ month, dateRange, amount, colorIndex, onClick, active, do
       </div>
       <div className="ps-hc-right">
         <span className="ps-hc-amount">₹{amount}</span>
-        {downloadUrl && (
-          <a className="ps-dl-btn" href={downloadUrl} download onClick={(e) => e.stopPropagation()}>
+        {(downloadUrl || onDownload) && (
+          <button
+            type="button"
+            className="ps-dl-btn"
+            onClick={(e) => { e.stopPropagation(); if (downloadUrl) { window.open(downloadUrl, '_blank'); } else { onDownload(); } }}
+            title="Download PDF"
+            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
             <Download size={15} />
-          </a>
+          </button>
         )}
       </div>
     </div>
@@ -186,6 +193,76 @@ const DetailRow = ({ label, amount }) => (
     <span>₹{inr(amount)}</span>
   </div>
 );
+
+// ── Client-side PDF generator ───────────────────────────────────────
+// The backend stores earnings + deductions but no PDF file, so the
+// download button used to be permanently dark. Instead of plumbing a
+// server-side renderer (puppeteer / pdfkit), we build the PDF in the
+// browser from the same payslip object the page is already showing.
+// Works for every payslip whose status is 'processed' / 'uploaded'.
+function generatePayslipPdf(payslip, employee) {
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W   = doc.internal.pageSize.getWidth();
+  let y = 40;
+  const rupee = (n) => 'INR ' + Number(n || 0).toLocaleString('en-IN');
+  const M = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+  doc.text('Tesco ERM — Payslip', 40, y); y += 28;
+  doc.setFontSize(12); doc.setFont('helvetica', 'normal');
+  doc.text(`Period: ${M[Number(payslip.month)||0] || ''} ${payslip.year || ''}`, 40, y); y += 18;
+  if (employee?.name)        { doc.text('Employee: ' + employee.name, 40, y); y += 16; }
+  if (employee?.employeeId)  { doc.text('Employee ID: ' + employee.employeeId, 40, y); y += 16; }
+  if (employee?.designation) { doc.text('Designation: ' + employee.designation, 40, y); y += 16; }
+  y += 12;
+  doc.setDrawColor(220); doc.line(40, y, W - 40, y); y += 18;
+
+  // Earnings
+  doc.setFont('helvetica', 'bold'); doc.text('Earnings', 40, y); y += 16;
+  doc.setFont('helvetica', 'normal');
+  const earnings = payslip.earnings || {};
+  const earningRows = Object.entries(earnings);
+  if (earningRows.length === 0) earningRows.push(['Basic', payslip.grossPay || 0]);
+  for (const [k, v] of earningRows) {
+    const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase());
+    doc.text(label, 40, y);
+    doc.text(rupee(v), W - 40, y, { align: 'right' });
+    y += 14;
+  }
+  y += 6;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Gross Pay', 40, y);
+  doc.text(rupee(payslip.grossPay || 0), W - 40, y, { align: 'right' });
+  y += 22;
+
+  // Deductions
+  doc.setFont('helvetica', 'bold'); doc.text('Deductions', 40, y); y += 16;
+  doc.setFont('helvetica', 'normal');
+  const dd = payslip.deductionsDetail || {};
+  const dRows = Object.entries(dd);
+  if (dRows.length === 0) dRows.push(['Total Deductions', payslip.deductions || 0]);
+  for (const [k, v] of dRows) {
+    const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase());
+    doc.text(label, 40, y);
+    doc.text(rupee(v), W - 40, y, { align: 'right' });
+    y += 14;
+  }
+  y += 6;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Total Deductions', 40, y);
+  doc.text(rupee(payslip.deductions || 0), W - 40, y, { align: 'right' });
+  y += 28;
+
+  // Net pay
+  doc.setFillColor(241, 249, 238);
+  doc.rect(40, y - 16, W - 80, 36, 'F');
+  doc.setFontSize(13);
+  doc.text('Net Pay', 50, y + 6);
+  doc.text(rupee(payslip.netPay || (payslip.grossPay - payslip.deductions) || 0), W - 50, y + 6, { align: 'right' });
+
+  const fname = `Payslip_${M[Number(payslip.month)||0] || ''}_${payslip.year || ''}.pdf`;
+  doc.save(fname);
+}
 
 /* ─── Main Payslip Component ─────────────────────── */
 const Payslip = () => {
@@ -245,16 +322,33 @@ const Payslip = () => {
 
   useEffect(() => { load(); }, [load]);
 
-  // Refresh joining date from the profile endpoint — covers the case
-  // where the cached user object pre-dates a HRMS edit that changed it.
+  // Refresh joining date from the profile endpoint on EVERY mount —
+  // the backend response carries the user object spread at the root so
+  // `res.data.joiningDate` is the canonical field. We also try a few
+  // legacy shapes (.user, .profile) so this works whether the backend
+  // gets refactored or not. If none of them yield a value we log a
+  // warning so it's obvious why the dropdown defaulted to April 2025.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         const res = await profileAPI.getProfile();
-        const j = res?.data?.user?.joiningDate || res?.data?.profile?.joiningDate || res?.data?.joiningDate;
-        if (!cancelled && j) setJoining(parseJoiningDate(j));
-      } catch { /* keep cached */ }
+        const j = res?.data?.joiningDate
+               || res?.data?.user?.joiningDate
+               || res?.data?.profile?.joiningDate
+               || res?.data?.employee?.joiningDate
+               || null;
+        if (!cancelled) {
+          if (j) {
+            setJoining(parseJoiningDate(j));
+          } else {
+            console.warn('[payslip] profile response has no joiningDate; ' +
+              'dropdown will fall back to the payroll floor (April 2025).');
+          }
+        }
+      } catch (err) {
+        console.warn('[payslip] could not refresh joining date:', err?.message || err);
+      }
     })();
     return () => { cancelled = true; };
   }, []);
@@ -369,6 +463,7 @@ const Payslip = () => {
                 active={selected === i}
                 onClick={() => setSelected(i)}
                 downloadUrl={p.downloadUrl}
+                onDownload={() => generatePayslipPdf(p, user || {})}
               />
             ))}
           </div>
@@ -488,8 +583,16 @@ const Payslip = () => {
               <a className="ps-btn-download" href={current.downloadUrl} download={`Payslip_${MONTH_SHORT[month-1]}_${year}.pdf`}>
                 <Download size={17} /> Download
               </a>
+            ) : current && monthState === 'ready' ? (
+              <button
+                className="ps-btn-download"
+                type="button"
+                onClick={() => generatePayslipPdf(current, user || {})}
+              >
+                <Download size={17} /> Download
+              </button>
             ) : (
-              <button className="ps-btn-download" type="button" disabled>
+              <button className="ps-btn-download" type="button" disabled title="Payslip not yet generated by HR">
                 <Download size={17} /> Download
               </button>
             )}
