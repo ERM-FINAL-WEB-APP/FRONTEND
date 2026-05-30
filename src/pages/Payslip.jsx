@@ -261,14 +261,46 @@ const Payslip = () => {
 
   const current = payslips[selected];
 
+  // What state is the selected month in?
+  //   • 'ready'      — HR has uploaded; downloadUrl present (or status=processed).
+  //   • 'requested'  — employee already filed a request; HR hasn't acted yet.
+  //   • 'none'       — nothing on file; employee can request a new payslip.
+  // The Request button is disabled in the first two states, and a hint
+  // tells the user why. Once HR uploads, the row will arrive on the next
+  // /payslip/history poll with downloadUrl populated and the Download
+  // button lights up.
+  const monthState = (() => {
+    if (!current) return 'none';
+    const status = String(current.status || '').toLowerCase();
+    if (current.downloadUrl || status === 'processed' || status === 'uploaded') return 'ready';
+    if (status === 'requested' || status === 'pending')                          return 'requested';
+    // Any row that exists for the month implies HR already saw the
+    // request (even if no explicit status), so treat as requested.
+    return 'requested';
+  })();
+
   const requestPayslip = async () => {
+    // Belt-and-braces — the button is disabled in non-'none' states, but
+    // someone could still trigger it via keyboard. Block the duplicate
+    // server-side too.
+    if (monthState !== 'none') {
+      setError(monthState === 'ready'
+        ? 'Payslip for this month is already generated. You can download it on the right.'
+        : 'You have already requested this payslip. HR will be notified.');
+      setTimeout(() => setError(''), 3500);
+      return;
+    }
     setReqBusy(true);
     setReqDone('');
     try {
-      const now = new Date();
-      await payslipAPI.request(now.getMonth() + 1, now.getFullYear());
+      // Request the SELECTED month/year, not the current month — the
+      // employee may be scrolling back through their history.
+      await payslipAPI.request(month, year);
       setReqDone('Request sent to HR.');
       setTimeout(() => setReqDone(''), 3000);
+      // Refresh the history so the row shows up immediately as
+      // "requested" and the button locks.
+      load();
     } catch (err) {
       setError(err?.message || 'Could not send request.');
     } finally {
@@ -416,13 +448,44 @@ const Payslip = () => {
             }}>{reqDone}</div>
           )}
 
+          {monthState === 'requested' && (
+            <div style={{
+              margin: '12px 0', padding: '10px 12px',
+              background: '#FFFBEB', border: '1px solid #FDE68A',
+              borderRadius: 8, color: '#92400E', fontSize: 13,
+            }}>
+              Request already sent. HR will upload this payslip — you'll be notified.
+            </div>
+          )}
+          {monthState === 'ready' && (
+            <div style={{
+              margin: '12px 0', padding: '10px 12px',
+              background: '#F0FDF4', border: '1px solid #BBF7D0',
+              borderRadius: 8, color: '#15803D', fontSize: 13,
+            }}>
+              Payslip ready — use Download on the right.
+            </div>
+          )}
           <div className="ps-actions">
-            <button className="ps-btn-request" onClick={requestPayslip} disabled={reqBusy} type="button">
+            <button
+              className="ps-btn-request"
+              onClick={requestPayslip}
+              disabled={reqBusy || monthState !== 'none'}
+              type="button"
+              title={
+                monthState === 'ready' ? 'Payslip already generated for this month'
+                : monthState === 'requested' ? 'Already requested — wait for HR to upload'
+                : ''
+              }
+            >
               <Pointer size={18} />
-              {reqBusy ? 'Requesting…' : 'Request'}
+              {reqBusy ? 'Requesting…'
+                : monthState === 'ready'      ? 'Already generated'
+                : monthState === 'requested'  ? 'Requested'
+                : 'Request'}
             </button>
             {current?.downloadUrl ? (
-              <a className="ps-btn-download" href={current.downloadUrl} download>
+              <a className="ps-btn-download" href={current.downloadUrl} download={`Payslip_${MONTH_SHORT[month-1]}_${year}.pdf`}>
                 <Download size={17} /> Download
               </a>
             ) : (

@@ -14,17 +14,34 @@
   position: relative;
 }
 
+/* Taller green strip so the name sits inside the green band instead of
+   on the white area below it (HR wanted the green to extend to cover
+   the name row). */
 .banner-green-bg {
   background: #4CAA17;
-  height: 120px;
+  height: 200px;
   width: 100%;
 }
 
 .banner-content {
-  padding: 0 32px 32px 32px;
+  padding: 0 32px 24px 32px;
   display: flex;
   align-items: flex-end;
-  margin-top: -60px;
+  /* Pull the row up so the avatar straddles the bottom of the green
+     strip and the name + designation sit INSIDE the green band. */
+  margin-top: -110px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Name + designation are now on green, so the dark text we used to
+   render on white needs to flip to white. */
+.profile-identity-modern h1 {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.profile-identity-modern p {
+  color: rgba(255,255,255,0.95) !important;
 }
 
 .profile-avatar-container {

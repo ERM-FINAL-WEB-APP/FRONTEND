@@ -202,7 +202,33 @@ const Allowance = () => {
             </button>
           </div>
 
-          {/* Submit form — same shape for travel + petrol */}
+          {/* For Petrol the mobile app shows NO form — petrol is auto-derived
+              from travel records. Mirror that here: no From / To / Date /
+              Distance / Amount inputs when the user is on the Petrol tab. */}
+          {type === 'petrol' && (
+            <div
+              style={{
+                margin: '8px 0 16px',
+                padding: '18px 18px',
+                borderRadius: 12,
+                background: '#F8FAFC',
+                border: '1px dashed #CBD5E1',
+                color: '#475569',
+                fontSize: 13,
+                lineHeight: 1.55,
+              }}
+            >
+              <div style={{ fontWeight: 800, fontSize: 14, color: '#0F172A', marginBottom: 4 }}>
+                Petrol is calculated from your Travel claims
+              </div>
+              You don't need to submit a separate petrol request. The distance
+              and amount from your approved Travel records are reimbursed at
+              the company's per-km rate — review the breakdown on the right.
+            </div>
+          )}
+
+          {/* Submit form — Travel only; Petrol uses the derived summary above. */}
+          {type === 'travel' && (
           <form className="al-form" onSubmit={submitClaim}>
             {error && (
               <div style={{ display: 'flex', gap: 8, padding: '10px 12px', borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA', color: '#991B1B', fontSize: 13, marginBottom: 12 }}>
@@ -259,6 +285,7 @@ const Allowance = () => {
               {busy ? 'Submitting…' : 'Submit'}
             </button>
           </form>
+          )}
         </div>
 
         {/* ══════════ RIGHT PANEL ══════════ */}
