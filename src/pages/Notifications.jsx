@@ -31,17 +31,19 @@ function relTime(iso) {
     if (diffSec < 3600)   return `${Math.floor(diffSec / 60)}m ago`;
     if (diffSec < 86400)  return `${Math.floor(diffSec / 3600)}h ago`;
     if (diffSec < 604800) return `${Math.floor(diffSec / 86400)}d ago`;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return (() => { const __d = d; if (!__d || isNaN(__d.getTime?.() ?? new Date(__d).getTime())) return '—'; const __dd = (__d instanceof Date) ? __d : new Date(__d); const __day = String(__dd.getDate()).padStart(2,'0'); const __mo  = String(__dd.getMonth()+1).padStart(2,'0'); const __yr  = __dd.getFullYear(); return __day + '-' + __mo + '-' + __yr; })();
   } catch { return ''; }
 }
 function fmtDate(iso) {
   if (!iso) return '';
   try {
-    return new Date(iso).toLocaleString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-  } catch { return ''; }
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch { return String(iso); }
 }
 
 // Map backend `type` → UI icon + category label.

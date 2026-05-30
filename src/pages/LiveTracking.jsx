@@ -113,7 +113,7 @@ function fmtRelTime(d) {
   if (sec < 60)      return `${sec}s ago`;
   if (sec < 3600)    return `${Math.floor(sec / 60)}m ago`;
   if (sec < 86400)   return `${Math.floor(sec / 3600)}h ago`;
-  return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  return (() => { const __d = new Date(d); if (!__d || isNaN(__d.getTime?.() ?? new Date(__d).getTime())) return '—'; const __dd = (__d instanceof Date) ? __d : new Date(__d); const __day = String(__dd.getDate()).padStart(2,'0'); const __mo  = String(__dd.getMonth()+1).padStart(2,'0'); const __yr  = __dd.getFullYear(); return __day + '-' + __mo + '-' + __yr; })();
 }
 function fmtClock(d) {
   if (!d) return '—';

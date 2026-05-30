@@ -239,7 +239,7 @@ const Profile = () => {
               {assets.map((a) => {
                 const Icon = pickAssetIcon(a.type);
                 const issued = a.issuedDate
-                  ? new Date(a.issuedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                  ? (() => { const __d = new Date(a.issuedDate); if (!__d || isNaN(__d.getTime?.() ?? new Date(__d).getTime())) return '—'; const __dd = (__d instanceof Date) ? __d : new Date(__d); const __day = String(__dd.getDate()).padStart(2,'0'); const __mo  = String(__dd.getMonth()+1).padStart(2,'0'); const __yr  = __dd.getFullYear(); return __day + '-' + __mo + '-' + __yr; })()
                   : '';
                 return (
                   <div className="asset-card" key={a._id}>

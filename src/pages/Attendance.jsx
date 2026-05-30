@@ -26,11 +26,15 @@ function fmtTime12(d) {
   } catch { return '—'; }
 }
 function fmtDate(d) {
-  if (!d) return '';
+  if (!iso) return '';
   try {
-    const dt = new Date(d);
-    return dt.toDateString();
-  } catch { return ''; }
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch { return String(iso); }
 }
 function statusColor(status) {
   switch (String(status || '').toLowerCase()) {

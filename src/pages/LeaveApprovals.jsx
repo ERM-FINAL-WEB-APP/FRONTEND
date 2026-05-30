@@ -17,11 +17,15 @@ const TABS = [
 ];
 
 function fmtDate(d) {
-  if (!d) return '';
+  if (!iso) return '';
   try {
-    const dt = new Date(d);
-    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  } catch { return ''; }
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch { return String(iso); }
 }
 function fmtRange(s, e) {
   if (!s) return '';

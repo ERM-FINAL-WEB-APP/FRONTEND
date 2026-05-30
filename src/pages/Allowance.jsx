@@ -41,9 +41,12 @@ function fmtDate(iso) {
   if (!iso) return '';
   try {
     const d = new Date(iso);
-    if (isNaN(d.getTime())) return iso;
-    return `${d.toDateString()}`;
-  } catch { return iso; }
+    if (isNaN(d.getTime())) return String(iso);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch { return String(iso); }
 }
 function titleCase(s) {
   s = String(s || '').toLowerCase();

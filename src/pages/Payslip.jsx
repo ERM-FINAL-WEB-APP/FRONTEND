@@ -15,29 +15,46 @@ import './Payslip.css';
 const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ─── Date-range helpers ───────────────────────────────────────────
-// Payroll runs started in April 2025 — there are no payslips before
-// that. The year dropdown only lists 2025 onwards (up to the
-// current year). The month dropdown lists ONLY months that have
-// already completed payroll: nothing in the future, and in 2025
-// nothing before April.
-const PAYROLL_START_YEAR  = 2025;
-const PAYROLL_START_MONTH = 4;   // April
+// Payslip dropdown is anchored to the EMPLOYEE's joining date — they
+// can't have payslips from before they joined the company. The year
+// dropdown runs from joiningYear → currentYear; the month dropdown
+// inside any given year is clamped to [joinMonth..now].
+//
+// Hard floor of April 2025 (when company payroll actually started)
+// applies if the user's joining date is somehow older than that.
+const PAYROLL_ABS_FLOOR_YEAR  = 2025;
+const PAYROLL_ABS_FLOOR_MONTH = 4;
 
-function buildYearOptions() {
+function buildYearOptions(joinYear) {
   const current = new Date().getFullYear();
+  const start = Math.max(joinYear || PAYROLL_ABS_FLOOR_YEAR, PAYROLL_ABS_FLOOR_YEAR);
   const out = [];
-  for (let y = PAYROLL_START_YEAR; y <= current; y++) out.push(String(y));
+  for (let y = start; y <= current; y++) out.push(String(y));
   return out;
 }
-function buildMonthOptions(year) {
+function buildMonthOptions(year, joinYear, joinMonth) {
   const now      = new Date();
   const curYear  = now.getFullYear();
   const curMonth = now.getMonth() + 1;
-  const startMonth = (year === PAYROLL_START_YEAR) ? PAYROLL_START_MONTH : 1;
-  const endMonth   = (year === curYear)            ? curMonth            : 12;
+  // Lower bound this year: joinMonth if it's the joining year, else 1.
+  // Also respect the absolute April-2025 floor for users whose joining
+  // date predates company payroll.
+  let startMonth = 1;
+  if (year === joinYear) startMonth = Math.max(joinMonth || 1, year === PAYROLL_ABS_FLOOR_YEAR ? PAYROLL_ABS_FLOOR_MONTH : 1);
+  else if (year === PAYROLL_ABS_FLOOR_YEAR) startMonth = PAYROLL_ABS_FLOOR_MONTH;
+  const endMonth = (year === curYear) ? curMonth : 12;
   const out = [];
   for (let m = startMonth; m <= endMonth; m++) out.push(MONTH_SHORT[m - 1]);
   return out;
+}
+
+// Parse an ISO joining date into { year, month }. Tolerant of empty
+// values (falls back to the absolute floor so the dropdown never blanks).
+function parseJoiningDate(iso) {
+  if (!iso) return { year: PAYROLL_ABS_FLOOR_YEAR, month: PAYROLL_ABS_FLOOR_MONTH };
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return { year: PAYROLL_ABS_FLOOR_YEAR, month: PAYROLL_ABS_FLOOR_MONTH };
+  return { year: d.getFullYear(), month: d.getMonth() + 1 };
 }
 
 function inr(n) {
@@ -173,17 +190,13 @@ const DetailRow = ({ label, amount }) => (
 /* ─── Main Payslip Component ─────────────────────── */
 const Payslip = () => {
   const { user } = useAuth();
-  const [year,     setYear]     = useState(() => {
-    const cy = new Date().getFullYear();
-    return cy < PAYROLL_START_YEAR ? PAYROLL_START_YEAR : cy;
-  });
-  const [month,    setMonth]    = useState(() => {
-    const now = new Date();
-    if (now.getFullYear() === PAYROLL_START_YEAR && now.getMonth() + 1 < PAYROLL_START_MONTH) {
-      return PAYROLL_START_MONTH;
-    }
-    return now.getMonth() + 1;
-  });
+  // Joining info — seeded from the cached auth user (filled by AuthContext
+  // at login) and refreshed via /api/profile on mount so the dropdown
+  // always reflects the latest HRMS data.
+  const seedJoining = parseJoiningDate(user?.joiningDate);
+  const [joining, setJoining] = useState(seedJoining);
+  const [year,     setYear]     = useState(() => new Date().getFullYear());
+  const [month,    setMonth]    = useState(() => new Date().getMonth() + 1);
   const [payslips, setPayslips] = useState([]);
   const [selected, setSelected] = useState(0);
   const [loading,  setLoading]  = useState(true);
@@ -232,6 +245,20 @@ const Payslip = () => {
 
   useEffect(() => { load(); }, [load]);
 
+  // Refresh joining date from the profile endpoint — covers the case
+  // where the cached user object pre-dates a HRMS edit that changed it.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await profileAPI.getProfile();
+        const j = res?.data?.user?.joiningDate || res?.data?.profile?.joiningDate || res?.data?.joiningDate;
+        if (!cancelled && j) setJoining(parseJoiningDate(j));
+      } catch { /* keep cached */ }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const current = payslips[selected];
 
   const requestPayslip = async () => {
@@ -265,21 +292,20 @@ const Payslip = () => {
           <div className="ps-hist-header">
             <span className="ps-hist-title">Payslip History</span>
             <Dropdown
-              options={buildMonthOptions(year)}
+              options={buildMonthOptions(year, joining.year, joining.month)}
               defaultSelected={MONTH_SHORT[month - 1]}
               onSelect={(m) => setMonth(MONTH_SHORT.indexOf(m) + 1)}
             />
             <Dropdown
-              options={buildYearOptions()}
+              options={buildYearOptions(joining.year)}
               defaultSelected={String(year)}
               onSelect={(y) => {
                 const newYear = parseInt(y, 10);
                 setYear(newYear);
-                // Clamp month into the new year's valid range
-                const valid = buildMonthOptions(newYear);
+                const valid = buildMonthOptions(newYear, joining.year, joining.month);
                 const currentLabel = MONTH_SHORT[month - 1];
                 if (!valid.includes(currentLabel)) {
-                  const fallback = valid[valid.length - 1] || MONTH_SHORT[PAYROLL_START_MONTH - 1];
+                  const fallback = valid[valid.length - 1] || MONTH_SHORT[joining.month - 1];
                   setMonth(MONTH_SHORT.indexOf(fallback) + 1);
                 }
               }}

@@ -22,10 +22,13 @@ const CATEGORIES = ['general', 'event', 'policy', 'holiday'];
 function fmtDate(iso) {
   if (!iso) return '';
   try {
-    return new Date(iso).toLocaleDateString('en-US', {
-      month: 'short', day: '2-digit', year: 'numeric',
-    });
-  } catch { return ''; }
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  } catch { return String(iso); }
 }
 
 const ManagerAnnouncements = () => {
