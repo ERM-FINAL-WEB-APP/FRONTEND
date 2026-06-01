@@ -304,9 +304,21 @@ const Payslip = () => {
       }));
       // Filter to the selected month — payslip backend may return
       // the entire year and we only want one month at a time.
+      //
+      // Also drop any row whose month hasn't ended yet (payslips are
+      // generated only AFTER the calendar month is over, so a row for
+      // June while today is June 1 is a leftover stub from an early
+      // request and we shouldn't surface it).
+      const now = new Date();
+      const curMonth = now.getMonth() + 1;
+      const curYear  = now.getFullYear();
+      const isMonthOver = (m, y) =>
+        !m || !y || y < curYear || (y === curYear && m < curMonth);
       const filtered = normalised.filter((row) => {
         const m = parseInt(row.month, 10);
-        return !m || m === month;  // tolerant: if row has no month, show it
+        const y = parseInt(row.year,  10);
+        if (m && y && !isMonthOver(m, y)) return false; // hide current/future months
+        return !m || m === month;
       });
       // Newest first.
       filtered.sort((a, b) => {
@@ -367,12 +379,16 @@ const Payslip = () => {
   // /payslip/history poll with downloadUrl populated and the Download
   // button lights up.
   const monthState = (() => {
+    // The currently-selected month isn't over yet → don't pretend to
+    // have a payslip story for it. Block both "ready" and "requested".
+    const now = new Date();
+    const _cm = now.getMonth() + 1, _cy = now.getFullYear();
+    const monthNotOverYet = (year > _cy) || (year === _cy && month >= _cm);
+    if (monthNotOverYet) return 'tooEarly';
     if (!current) return 'none';
     const status = String(current.status || '').toLowerCase();
     if (current.downloadUrl || status === 'processed' || status === 'uploaded') return 'ready';
     if (status === 'requested' || status === 'pending')                          return 'requested';
-    // Any row that exists for the month implies HR already saw the
-    // request (even if no explicit status), so treat as requested.
     return 'requested';
   })();
 
@@ -492,11 +508,15 @@ const Payslip = () => {
               <div style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginBottom: 6 }}>
                 {monthState === 'requested'
                   ? `Requested for ${MONTH_SHORT[month - 1]} ${year}`
+                  : monthState === 'tooEarly'
+                  ? `${MONTH_SHORT[month - 1]} ${year} is not over yet`
                   : `No payslip yet for ${MONTH_SHORT[month - 1] || ''} ${year}`}
               </div>
-              <div style={{ fontSize: 13, color: '#64748B', maxWidth: 320, margin: '0 auto', lineHeight: 1.55 }}>
+              <div style={{ fontSize: 13, color: '#64748B', maxWidth: 360, margin: '0 auto', lineHeight: 1.55 }}>
                 {monthState === 'requested'
                   ? 'HR has been notified. Your payslip will appear here once it has been uploaded — you will be able to download it from this page.'
+                  : monthState === 'tooEarly'
+                  ? 'Payslips are generated after the calendar month ends. Come back on the 1st of next month to request your payslip.'
                   : 'Hit the Request button on the left to ask HR to generate this payslip.'}
               </div>
             </div>
@@ -581,6 +601,15 @@ const Payslip = () => {
               Request already sent. HR will upload this payslip — you'll be notified.
             </div>
           )}
+          {monthState === 'tooEarly' && (
+            <div style={{
+              margin: '12px 0', padding: '10px 12px',
+              background: '#F1F5F9', border: '1px solid #CBD5E1',
+              borderRadius: 8, color: '#475569', fontSize: 13,
+            }}>
+              This month isn't over yet — payslips can only be requested after the calendar month ends.
+            </div>
+          )}
           {monthState === 'ready' && (
             <div style={{
               margin: '12px 0', padding: '10px 12px',
@@ -599,6 +628,7 @@ const Payslip = () => {
               title={
                 monthState === 'ready' ? 'Payslip already generated for this month'
                 : monthState === 'requested' ? 'Already requested — wait for HR to upload'
+                : monthState === 'tooEarly' ? 'Month not over yet'
                 : ''
               }
             >
@@ -606,6 +636,7 @@ const Payslip = () => {
               {reqBusy ? 'Requesting…'
                 : monthState === 'ready'      ? 'Already generated'
                 : monthState === 'requested'  ? 'Requested'
+                : monthState === 'tooEarly'   ? 'Not yet available'
                 : 'Request'}
             </button>
             {current?.downloadUrl ? (
