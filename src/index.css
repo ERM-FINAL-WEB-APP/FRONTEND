@@ -8,10 +8,17 @@
   --light-green: #DFF5D3;
   --green-gradient: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
   
-  /* Text Colors */
-  --text-primary: #222222;
-  --text-secondary: #808080;
-  --text-white: #ffffff;
+  /* Text Colors
+   *
+   * Previously --text-primary was #222222 and --text-secondary #808080
+   * which read too light on the dashboard's white cards, especially for
+   * dates / metadata / table headers that map to --text-secondary.
+   * Tightened to near-black + slate so labels and body copy keep enough
+   * contrast against the white card background (~7:1 WCAG AAA on the
+   * primary, ~4.5:1 AA on the secondary). */
+  --text-primary:   #0F172A;
+  --text-secondary: #475569;
+  --text-white:     #ffffff;
   
   /* Background Colors */
   --bg-dashboard: #F5F7FA;
@@ -167,60 +174,11 @@ h1, h2, h3, h4, h5, h6 {
 /* ════════════════════════════════════════════════════════════════════
  * DARK MODE
  *
- * Activated by setting `data-theme="dark"` on the <html> element.
- * The Navbar's Moon/Sun button toggles this and persists the choice
- * in localStorage (key: erm_web_theme).
- *
- * Strategy: re-bind the SAME variable names defined above to dark
- * palette values. Anything in the codebase that reads
- *   color: var(--text-primary)
- *   background: var(--bg-card)
- *   border: 1px solid var(--border-color)
- * automatically adapts. Components with hardcoded colours stay light
- * — fix those one by one when they become an issue.
- * ════════════════════════════════════════════════════════════════════ */
-html[data-theme="dark"] {
-  --text-primary:    #E5E7EB;
-  --text-secondary:  #9CA3AF;
-  --text-white:      #FFFFFF;
-  --bg-dashboard:    #0F172A;
-  --bg-card:         #1E293B;
-  --border-color:    #334155;
-  --dropdown-bg:     #1E293B;
-  --text-main:       #E5E7EB;
-  --navbar-bg:       #1E293B;
-  /* Greens stay vivid so the brand colour is still recognisable. */
-  --primary-green:   #4ADE80;
-  --light-green:     #064E3B;
-}
 
-html[data-theme="dark"] body {
-  background: var(--bg-dashboard);
-  color: var(--text-primary);
-}
 
 /* Cards, modals, dropdowns, sidebars — most ride var() so this is enough. */
-html[data-theme="dark"] .card,
-html[data-theme="dark"] .glass,
-html[data-theme="dark"] .navbar,
-html[data-theme="dark"] .sidebar {
-  background: var(--bg-card);
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
 
 /* Inputs, textareas, selects — light theme defaults look unreadable. */
-html[data-theme="dark"] input,
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select {
-  background: #0F172A;
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-html[data-theme="dark"] input::placeholder,
-html[data-theme="dark"] textarea::placeholder {
-  color: #64748B;
-}
 
 /* Smooth the transition so the switch doesn't feel jarring. */
 html, body, .navbar, .sidebar, .card, .glass {

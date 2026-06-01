@@ -114,9 +114,18 @@ const Allowance = () => {
   const [success,  setSuccess]  = useState('');
 
   // Filters + history
+  // ERM rolled out company-wide in June 2026 — pre-launch months have
+  // no records, so the pickers AND the initial state floor at June
+  // 2026 instead of "today".
+  const LAUNCH_MONTH = 6;
+  const LAUNCH_YEAR  = 2026;
   const now = new Date();
-  const [month, setMonth] = useState(now.getMonth() + 1);
-  const [year,  setYear]  = useState(now.getFullYear());
+  const _curM = now.getMonth() + 1;
+  const _curY = now.getFullYear();
+  const _atOrAfterLaunch =
+    _curY > LAUNCH_YEAR || (_curY === LAUNCH_YEAR && _curM >= LAUNCH_MONTH);
+  const [month, setMonth] = useState(_atOrAfterLaunch ? _curM : LAUNCH_MONTH);
+  const [year,  setYear]  = useState(_atOrAfterLaunch ? _curY : LAUNCH_YEAR);
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({ approved: 0, pending: 0, rejected: 0, totalDistance: 0 });
 
@@ -294,12 +303,12 @@ const Allowance = () => {
           <div className="al-filter-row mb-16">
             <span className="al-this-month">Month</span>
             <Dropdown
-              options={MONTHS_SHORT}
+              options={year === LAUNCH_YEAR ? MONTHS_SHORT.slice(LAUNCH_MONTH - 1) : MONTHS_SHORT}
               defaultSelected={MONTHS_SHORT[month - 1]}
               onSelect={(m) => setMonth(MONTHS_SHORT.indexOf(m) + 1)}
             />
             <Dropdown
-              options={['2024','2025','2026','2027']}
+              options={Array.from({ length: 4 }, (_, i) => String(LAUNCH_YEAR + i))}
               defaultSelected={String(year)}
               onSelect={(y) => setYear(parseInt(y, 10))}
             />

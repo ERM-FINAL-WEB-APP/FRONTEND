@@ -1,51 +1,36 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Bell, Moon, Sun, MapPin, User as UserIcon } from 'lucide-react';
+import { Search, Bell, MapPin, User as UserIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { notificationAPI } from '../services/api';
 import './Navbar.css';
 
 /**
- * Navbar — search + clock + presence chip + dark-mode toggle + bell
- * (with unread count badge) + profile-avatar dropdown.
+ * Navbar — search + clock + presence chip + bell (with unread count
+ * badge) + profile-avatar dropdown.
  *
- * Dark mode toggles a `data-theme="dark"` attribute on <html>, persisted
- * to localStorage so it survives refresh. CSS variables in index.css /
- * Navbar.css listen for that attribute and swap colours.
- *
- * Bell shows the live unread count from /api/notification/unread-count
- * and polls every 30s. Clicking it navigates to /notifications which
- * auto-marks them as read.
+ * Dark mode was removed (HR feedback: employees were toggling it by
+ * accident on the working-hours app). We pin the document to light at
+ * mount so any value persisted in localStorage by older builds is
+ * cleared and the user doesn't get stuck in a now-unsupported theme.
  */
-const THEME_KEY = 'erm_web_theme';
-
 const Navbar = ({ toggleSidebar }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [time,        setTime]        = useState(new Date());
-  const [menuOpen,    setMenuOpen]    = useState(false);
-  const [unread,      setUnread]      = useState(0);
-  const [theme,       setTheme]       = useState(() => {
-    try {
-      const saved = localStorage.getItem(THEME_KEY);
-      if (saved === 'dark' || saved === 'light') return saved;
-      // Honour the OS preference on first visit.
-      if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return 'dark';
-      }
-    } catch {}
-    return 'light';
-  });
+  const [time,     setTime]     = useState(new Date());
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [unread,   setUnread]   = useState(0);
   const menuRef = useRef(null);
 
-  // Apply theme to <html data-theme="..."> so CSS variables can swap.
+  // Force-light: clear any stale dark-mode preference saved by older
+  // builds and pin the document to the light palette.
   useEffect(() => {
     try {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem(THEME_KEY, theme);
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.removeItem('erm_web_theme');
     } catch {}
-  }, [theme]);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -99,8 +84,6 @@ const Navbar = ({ toggleSidebar }) => {
     user?.photoUrl ||
     `https://ui-avatars.com/api/?background=${palette.bg}&color=${palette.fg}&name=${encodeURIComponent(displayName)}`;
 
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
-
   const goToNotifications = () => {
     navigate('/notifications');
     // Optimistic — the Notifications page will auto-mark them read on view,
@@ -127,14 +110,6 @@ const Navbar = ({ toggleSidebar }) => {
           <MapPin size={14} />
           <span>At Office</span>
         </div>
-
-        <button
-          className="icon-btn theme-toggle"
-          onClick={toggleTheme}
-          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
 
         <button
           className="icon-btn notification-btn"

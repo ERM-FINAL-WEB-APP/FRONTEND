@@ -301,6 +301,7 @@ const Payslip = () => {
         earnings:    p.earnings    || {},
         deductionsDetail: p.deductionsDetail || p.deductionsBreakdown || {},
         downloadUrl: p.downloadUrl || p.pdfUrl || '',
+        status:      String(p.status || '').toLowerCase(),
       }));
       // Filter to the selected month — payslip backend may return
       // the entire year and we only want one month at a time.
@@ -467,24 +468,38 @@ const Payslip = () => {
 
           <div className="ps-hist-list">
             {loading && <div style={{ padding: 20, color: '#64748B' }}>Loading…</div>}
-            {!loading && payslips.length === 0 && (
-              <div style={{ padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
-                No payslips for {year} yet. Click "Request" below to ask HR to generate one.
-              </div>
-            )}
-            {!loading && payslips.map((p, i) => (
-              <HistoryCard
-                key={p._id || `${p.year}-${p.month}-${i}`}
-                month={`${MONTH_SHORT[(parseInt(p.month, 10) || 1) - 1]} ${p.year}`}
-                dateRange={fmtRange(p.month, p.year)}
-                amount={inr(p.netPay || p.grossPay)}
-                colorIndex={i}
-                active={selected === i}
-                onClick={() => setSelected(i)}
-                downloadUrl={p.downloadUrl}
-                onDownload={() => generatePayslipPdf(p, user || {})}
-              />
-            ))}
+            {(() => {
+              // Hide pending stubs from the visible cards. The mobile
+              // backend creates a pending row whenever the employee
+              // hits "Request"; it has no real amounts so showing it
+              // looked like a fake "sample" payslip in the history.
+              // We still keep the row in `payslips` so monthState can
+              // detect "requested" — only the visible list filters it
+              // out.
+              const _ready = payslips.filter(
+                (r) => r.downloadUrl || r.status === 'processed' || r.status === 'uploaded'
+              );
+              if (!loading && _ready.length === 0) {
+                return (
+                  <div style={{ padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
+                    No payslips for {year} yet. Click "Request" below to ask HR to generate one.
+                  </div>
+                );
+              }
+              return _ready.map((p, i) => (
+                <HistoryCard
+                  key={p._id || `${p.year}-${p.month}-${i}`}
+                  month={`${MONTH_SHORT[(parseInt(p.month, 10) || 1) - 1]} ${p.year}`}
+                  dateRange={fmtRange(p.month, p.year)}
+                  amount={inr(p.netPay || p.grossPay)}
+                  colorIndex={i}
+                  active={selected === i}
+                  onClick={() => setSelected(i)}
+                  downloadUrl={p.downloadUrl}
+                  onDownload={() => generatePayslipPdf(p, user || {})}
+                />
+              ));
+            })()}
           </div>
         </div>
 

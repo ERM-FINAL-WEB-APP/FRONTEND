@@ -78,9 +78,19 @@ const Leave = () => {
   const [success, setSuccess] = useState('');
 
   // ── History ──────────────────────────────────────────────────────
+  // Production launch: ERM went live for all employees in June 2026,
+  // so there is no leave history before then. Floor the month/year
+  // pickers AND the default state so a fresh user never lands on an
+  // empty pre-launch month.
+  const LAUNCH_MONTH = 6;
+  const LAUNCH_YEAR  = 2026;
   const now = new Date();
-  const [histMonth, setHistMonth] = useState(now.getMonth() + 1);
-  const [histYear,  setHistYear]  = useState(now.getFullYear());
+  const _curM = now.getMonth() + 1;
+  const _curY = now.getFullYear();
+  const _atOrAfterLaunch =
+    _curY > LAUNCH_YEAR || (_curY === LAUNCH_YEAR && _curM >= LAUNCH_MONTH);
+  const [histMonth, setHistMonth] = useState(_atOrAfterLaunch ? _curM : LAUNCH_MONTH);
+  const [histYear,  setHistYear]  = useState(_atOrAfterLaunch ? _curY : LAUNCH_YEAR);
   const [history,   setHistory]   = useState([]);
   const [histLoading, setHistLoading] = useState(false);
 
@@ -411,12 +421,12 @@ const Leave = () => {
             <h3 className="section-title">{activeTab === 'leave' ? 'Leave History' : 'Permission History'}</h3>
             <div className="filters">
               <CustomDropdown
-                options={MONTHS}
+                options={histYear === LAUNCH_YEAR ? MONTHS.slice(LAUNCH_MONTH - 1) : MONTHS}
                 defaultSelected={MONTHS[histMonth - 1]}
                 onSelect={(label) => setHistMonth(MONTHS.indexOf(label) + 1)}
               />
               <CustomDropdown
-                options={['2024', '2025', '2026', '2027']}
+                options={Array.from({ length: 4 }, (_, i) => String(LAUNCH_YEAR + i))}
                 defaultSelected={String(histYear)}
                 onSelect={(label) => setHistYear(parseInt(label, 10))}
               />

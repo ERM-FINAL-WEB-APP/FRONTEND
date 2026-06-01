@@ -135,11 +135,14 @@ const Announcements = () => {
               </div>
               <h3 className="ann-card-title">{a.title || '(untitled)'}</h3>
               <p className="ann-card-content">{a.body || a.description || ''}</p>
-              {/* Attachments — images render inline, other files surface
-                  as a download chip. HR uploads them via HRMS; we read
-                  them off the same announcement doc. */}
+              {/* Attachments — images preview inline plus an explicit
+                  "View document" button so employees know they can
+                  open the file in a new tab; non-image files surface
+                  as a row with View + Download buttons. HR uploads
+                  them via HRMS; we read the same `attachments` array
+                  off the shared announcement doc. */}
               {Array.isArray(a.attachments) && a.attachments.length > 0 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
                   {a.attachments.map((att, i) => {
                     const src = att.dataBase64
                       ? `data:${att.mimeType || 'application/octet-stream'};base64,${att.dataBase64}`
@@ -147,34 +150,88 @@ const Announcements = () => {
                     if (!src) return null;
                     const isImage = String(att.mimeType || '').startsWith('image/') ||
                                     /\.(png|jpe?g|gif|webp|svg)$/i.test(att.name || '');
+                    const sizeLbl = att.size ? `(${Math.round(att.size / 1024)} KB)` : '';
                     if (isImage) {
                       return (
-                        <a key={i} href={src} target="_blank" rel="noreferrer" style={{ display: 'inline-block' }}>
-                          <img
-                            src={src}
-                            alt={att.name || 'attachment'}
-                            style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 8, border: '1px solid #E2E8F0' }}
-                          />
-                        </a>
+                        <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <a href={src} target="_blank" rel="noreferrer" style={{ display: 'inline-block' }}>
+                            <img
+                              src={src}
+                              alt={att.name || 'attachment'}
+                              style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                            />
+                          </a>
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <a
+                              href={src}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '6px 12px', borderRadius: 8,
+                                background: '#EFF6FF', border: '1px solid #BFDBFE',
+                                fontSize: 12, fontWeight: 700, color: '#1D4ED8',
+                                textDecoration: 'none',
+                              }}
+                            >
+                              👁  View document
+                            </a>
+                            <a
+                              href={src}
+                              download={att.name || 'attachment.png'}
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '6px 12px', borderRadius: 8,
+                                background: '#F8FAFC', border: '1px solid #E2E8F0',
+                                fontSize: 12, fontWeight: 700, color: '#0F172A',
+                                textDecoration: 'none',
+                              }}
+                            >
+                              ⬇  Download {sizeLbl}
+                            </a>
+                          </div>
+                        </div>
                       );
                     }
                     return (
-                      <a
-                        key={i}
-                        href={src}
-                        download={att.name || 'attachment'}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 8,
-                          padding: '8px 12px', borderRadius: 8,
-                          background: '#F8FAFC', border: '1px solid #E2E8F0',
-                          fontSize: 13, color: '#2563EB', textDecoration: 'none',
-                          width: 'fit-content',
-                        }}
-                      >
-                        📎 {att.name || 'Download attachment'} {att.size ? `(${Math.round(att.size/1024)} KB)` : ''}
-                      </a>
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        gap: 12, padding: '10px 12px', borderRadius: 10,
+                        background: '#F8FAFC', border: '1px solid #E2E8F0',
+                      }}>
+                        <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          📎 {att.name || 'Attachment'} {sizeLbl && <span style={{ color: '#64748B', fontWeight: 500, marginLeft: 4 }}>{sizeLbl}</span>}
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                          <a
+                            href={src}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              padding: '6px 12px', borderRadius: 8,
+                              background: '#EFF6FF', border: '1px solid #BFDBFE',
+                              fontSize: 12, fontWeight: 700, color: '#1D4ED8',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            👁  View
+                          </a>
+                          <a
+                            href={src}
+                            download={att.name || 'attachment'}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              padding: '6px 12px', borderRadius: 8,
+                              background: '#fff', border: '1px solid #CBD5E1',
+                              fontSize: 12, fontWeight: 700, color: '#0F172A',
+                              textDecoration: 'none',
+                            }}
+                          >
+                            ⬇  Download
+                          </a>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
