@@ -1,28 +1,30 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
-import L from 'leaflet';
+// ─────────────────────────────────────────────────────────────────────────────
+// ERM Web → Manager → Live Tracking
+//
+// Migrated from react-leaflet → @react-google-maps/api on 2026-06.
+// The old TileLayer pointed at the unofficial Google tile URL
+// (https://{s}.google.com/vt/lyrs=…) which has no SLA and can be
+// blocked any time. We now use the official Maps JavaScript API
+// authenticated with VITE_GOOGLE_MAPS_API_KEY.
+//
+// Required setup
+// ──────────────
+//   1. `npm install` so @react-google-maps/api is on disk.
+//   2. Add VITE_GOOGLE_MAPS_API_KEY=<your-key> to Frontend/.env (local)
+//      AND to your Vercel project env vars (production).
+//   3. In Google Cloud Console: enable "Maps JavaScript API" and
+//      add this domain to the key's HTTP-referrer restriction.
+// ─────────────────────────────────────────────────────────────────────────────
+import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF, CircleF, OverlayViewF } from '@react-google-maps/api';
 import {
   Activity, Clock, MapPin, RefreshCw, User as UserIcon,
   Wifi, WifiOff, CircleDot,
 } from 'lucide-react';
 import { managerAPI } from '../services/api';
-import 'leaflet/dist/leaflet.css';
 import './LiveTracking.css';
 
-/**
- * Manager → Live Tracking tab.
- *
- * Polls /api/manager/live-locations every 30 sec. Shows:
- *   • a roster on the left (status pills, last-ping time) — includes
- *     teammates who have no GPS data, so the manager can still see
- *     who's checked in vs offline
- *   • a Google-tile Leaflet map on the right with name-initial pins
- *     coloured by status
- *
- * Clicking a teammate in the roster (or a pin) re-centers and zooms
- * the map via the FlyTo child. Clicking the row again toggles the
- * selection.
- */
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 const STATUS_COLOR = {
   active:     '#16A34A',
@@ -43,66 +45,49 @@ const STATUS_LABEL = {
 // just so the map opens looking at something useful.
 const OFFICE_DEFAULT = { lat: 13.0412, lng: 80.2127 };
 
-/* ─── Marker icon — a 36px circle with the employee's initial ─── */
-function makeMarkerIcon(name, color, isSelected) {
-  const initial = (String(name || 'E').match(/\S/) || ['E'])[0].toUpperCase();
-  const size = isSelected ? 44 : 36;
-  const html = `
-    <div style="
-      position:relative;
-      width:${size}px;height:${size}px;border-radius:50%;
-      background:${color};color:#fff;
-      display:flex;align-items:center;justify-content:center;
-      font-size:${isSelected ? 15 : 13}px;font-weight:800;
-      border:3px solid #fff;
-      box-shadow:0 4px 12px rgba(0,0,0,0.3);
-      ${isSelected ? 'transform:scale(1.05);' : ''}
-    ">${initial}</div>
-    ${isSelected ? `
-      <div style="
-        position:absolute;
-        top:50%;left:50%;
-        width:${size + 12}px;height:${size + 12}px;
-        border-radius:50%;
-        background:${color};opacity:0.18;
-        transform:translate(-50%,-50%);
-        animation:erm-pulse 1.6s ease-out infinite;
-      "></div>` : ''}`;
-  return L.divIcon({
-    html,
-    className: '',
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-  });
-}
+/* ─── HTML overlay marker — a coloured circle with the employee's initial.
+   Uses OverlayViewF instead of a plain MarkerF so we can keep the rich
+   visual design (initial letter + pulse ring) the manager UI had with
+   the old leaflet div-icon. */
+function NameInitialOverlay({ employee, isSelected, onClick }) {
+  if (typeof employee?.lat !== 'number' || typeof employee?.lng !== 'number') return null;
+  const initial = (String(employee.name || 'E').match(/\S/) || ['E'])[0].toUpperCase();
+  const color   = STATUS_COLOR[employee.status] || '#94A3B8';
+  const size    = isSelected ? 44 : 36;
 
-/* ─── FlyTo child — re-centers the map when `target` changes ─── */
-function FlyTo({ target }) {
-  const map = useMap();
-  useEffect(() => {
-    if (!target || target.lat == null || target.lng == null) return;
-    try {
-      map.flyTo([target.lat, target.lng], 16, { animate: true, duration: 0.7 });
-    } catch { /* racing teardown — ignore */ }
-  }, [target, map]);
-  return null;
-}
-
-/* ─── FitAllToBounds — on first load, frame all visible pins ─── */
-function FitAllToBounds({ points }) {
-  const map = useMap();
-  const didFit = useRef(false);
-  useEffect(() => {
-    if (didFit.current) return;
-    if (!points || points.length < 2) return;
-    try {
-      map.fitBounds(points.map((p) => [p.lat, p.lng]), {
-        padding: [40, 40], animate: false, maxZoom: 15,
-      });
-      didFit.current = true;
-    } catch { /* */ }
-  }, [points, map]);
-  return null;
+  return (
+    <OverlayViewF
+      position={{ lat: employee.lat, lng: employee.lng }}
+      mapPaneName="overlayMouseTarget"
+      getPixelPositionOffset={() => ({ x: -(size / 2), y: -(size / 2) })}
+    >
+      <div
+        onClick={onClick}
+        style={{ position: 'relative', width: size, height: size, cursor: 'pointer', userSelect: 'none' }}
+      >
+        <div style={{
+          width: size, height: size, borderRadius: '50%',
+          background: color, color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: isSelected ? 15 : 13, fontWeight: 800,
+          border: '3px solid #fff',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+          transform: isSelected ? 'scale(1.05)' : 'none',
+        }}>{initial}</div>
+        {isSelected && (
+          <div style={{
+            position: 'absolute',
+            top: '50%', left: '50%',
+            width: size + 12, height: size + 12,
+            borderRadius: '50%',
+            background: color, opacity: 0.18,
+            transform: 'translate(-50%, -50%)',
+            animation: 'erm-pulse 1.6s ease-out infinite',
+          }} />
+        )}
+      </div>
+    </OverlayViewF>
+  );
 }
 
 /* ─── Formatters ─── */
@@ -113,7 +98,14 @@ function fmtRelTime(d) {
   if (sec < 60)      return `${sec}s ago`;
   if (sec < 3600)    return `${Math.floor(sec / 60)}m ago`;
   if (sec < 86400)   return `${Math.floor(sec / 3600)}h ago`;
-  return (() => { const __d = new Date(d); if (!__d || isNaN(__d.getTime?.() ?? new Date(__d).getTime())) return '—'; const __dd = (__d instanceof Date) ? __d : new Date(__d); const __day = String(__dd.getDate()).padStart(2,'0'); const __mo  = String(__dd.getMonth()+1).padStart(2,'0'); const __yr  = __dd.getFullYear(); return __day + '-' + __mo + '-' + __yr; })();
+  return (() => {
+    const __d = new Date(d);
+    if (!__d || isNaN(__d.getTime())) return '—';
+    const __day = String(__d.getDate()).padStart(2, '0');
+    const __mo  = String(__d.getMonth() + 1).padStart(2, '0');
+    const __yr  = __d.getFullYear();
+    return `${__day}-${__mo}-${__yr}`;
+  })();
 }
 function fmtClock(d) {
   if (!d) return '—';
@@ -129,6 +121,7 @@ const LiveTracking = () => {
   const [error,   setError]   = useState('');
   const [selected, setSelected] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [activePopup, setActivePopup] = useState(null);
 
   // Re-tick a clock so "12s ago" updates without a re-fetch.
   const [tick, setTick] = useState(0);
@@ -137,13 +130,20 @@ const LiveTracking = () => {
     return () => clearInterval(t);
   }, []);
 
+  // Google Maps JS API loader — single instance per tab.
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: GOOGLE_MAPS_API_KEY,
+    id: 'tesco-erm-google-maps',
+  });
+  const mapRef = useRef(null);
+  const didFit = useRef(false);
+
   const load = useCallback(async (manualRefresh = false) => {
     if (manualRefresh) setRefreshing(true);
     try {
       setError('');
       const res = await managerAPI.liveLocations();
       const data = Array.isArray(res.data?.data) ? res.data.data : [];
-      // Sort: active first, idle next, offline last; then by name within group.
       const order = { active: 0, travelling: 0, office: 0, idle: 1, offline: 2 };
       data.sort((a, b) => {
         const oa = order[a.status] ?? 3;
@@ -170,12 +170,29 @@ const LiveTracking = () => {
   const withCoords = team.filter((e) => e.lat != null && e.lng != null);
   const noCoords   = team.filter((e) => e.lat == null || e.lng == null);
 
-  // Map view target — defaults to office, switches to selected on click,
-  // or first GPS-having teammate if there's no selection.
   const mapTarget =
     selected && selected.lat != null
       ? selected
       : (withCoords[0] || OFFICE_DEFAULT);
+
+  // Fly to selected employee whenever it changes.
+  useEffect(() => {
+    if (!isLoaded || !mapRef.current) return;
+    if (!selected || selected.lat == null || selected.lng == null) return;
+    mapRef.current.panTo({ lat: selected.lat, lng: selected.lng });
+    mapRef.current.setZoom(16);
+  }, [isLoaded, selected?._id, selected?.lat, selected?.lng]);
+
+  // First-load fit: frame all visible GPS points exactly once.
+  useEffect(() => {
+    if (!isLoaded || !mapRef.current || !window.google?.maps) return;
+    if (didFit.current) return;
+    if (withCoords.length < 2) return;
+    const bounds = new window.google.maps.LatLngBounds();
+    withCoords.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
+    mapRef.current.fitBounds(bounds, 80);
+    didFit.current = true;
+  }, [isLoaded, withCoords.length]);
 
   const activeCount  = team.filter((e) => e.status === 'active' || e.status === 'travelling' || e.status === 'office').length;
   const idleCount    = team.filter((e) => e.status === 'idle').length;
@@ -183,7 +200,6 @@ const LiveTracking = () => {
 
   return (
     <div className="live-tracking-page" style={{ padding: '16px 24px' }}>
-      {/* Inline keyframes for the selected-pin pulse */}
       <style>{`
         @keyframes erm-pulse {
           0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 0.6; }
@@ -311,7 +327,6 @@ const LiveTracking = () => {
               </button>
             ))}
 
-            {/* Tail: an explanation row if some teammates have no GPS */}
             {noCoords.length > 0 && noCoords.length < team.length && (
               <div style={{
                 fontSize: 10, color: '#94A3B8',
@@ -346,70 +361,96 @@ const LiveTracking = () => {
               </div>
             )}
 
-            <MapContainer
-              center={[mapTarget.lat, mapTarget.lng]}
-              zoom={selected ? 16 : 13}
-              style={{ width: '100%', height: '100%' }}
-              zoomControl={true}
-              attributionControl={false}
-              preferCanvas={true}
-            >
-              <TileLayer
-                url="https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
-                subdomains={['mt0','mt1','mt2','mt3']}
-                maxZoom={20}
-              />
+            {!GOOGLE_MAPS_API_KEY && (
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, padding: 24, textAlign: 'center', color: '#92400E', background: '#FFFBEB', fontSize: 13 }}>
+                <strong>VITE_GOOGLE_MAPS_API_KEY is not configured</strong>
+                <span style={{ fontSize: 12 }}>Add it to Frontend/.env (local) and to your Vercel project env vars, then redeploy.</span>
+              </div>
+            )}
+            {GOOGLE_MAPS_API_KEY && loadError && (
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8, padding: 24, textAlign: 'center', color: '#B91C1C', background: '#FEF2F2', fontSize: 13 }}>
+                <strong>Google Maps failed to load</strong>
+                <span style={{ fontSize: 12 }}>Check the "Maps JavaScript API" is enabled and HTTP-referrer restriction includes this domain.</span>
+              </div>
+            )}
+            {GOOGLE_MAPS_API_KEY && !loadError && !isLoaded && (
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', background: '#F8FAFC', fontSize: 13 }}>
+                Loading Google Maps…
+              </div>
+            )}
 
-              <FlyTo target={selected} />
-              <FitAllToBounds points={withCoords} />
-
-              {/* Office reference circle */}
-              <Circle
-                center={[OFFICE_DEFAULT.lat, OFFICE_DEFAULT.lng]}
-                radius={200}
-                pathOptions={{
-                  color: '#4CAA17',
-                  weight: 1,
-                  fillColor: '#4CAA17',
-                  fillOpacity: 0.05,
-                  dashArray: '4 6',
+            {GOOGLE_MAPS_API_KEY && isLoaded && !loadError && (
+              <GoogleMap
+                mapContainerStyle={{ width: '100%', height: '100%' }}
+                center={{ lat: mapTarget.lat, lng: mapTarget.lng }}
+                zoom={selected ? 16 : 13}
+                onLoad={(m) => { mapRef.current = m; }}
+                options={{
+                  streetViewControl: false,
+                  fullscreenControl: false,
+                  mapTypeControl: false,
+                  styles: [
+                    { featureType: 'poi',     elementType: 'labels', stylers: [{ visibility: 'off' }] },
+                    { featureType: 'transit', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+                  ],
                 }}
-              />
+              >
+                {/* Office reference circle — 200 m geofence around HQ */}
+                <CircleF
+                  center={{ lat: OFFICE_DEFAULT.lat, lng: OFFICE_DEFAULT.lng }}
+                  radius={200}
+                  options={{
+                    strokeColor:   '#4CAA17',
+                    strokeWeight:  1,
+                    strokeOpacity: 0.8,
+                    fillColor:     '#4CAA17',
+                    fillOpacity:   0.05,
+                  }}
+                />
 
-              {withCoords.map((e) => (
-                <Marker
-                  key={e._id}
-                  position={[e.lat, e.lng]}
-                  icon={makeMarkerIcon(e.name, STATUS_COLOR[e.status] || '#94A3B8', selected?._id === e._id)}
-                  eventHandlers={{ click: () => setSelected(e) }}
-                >
-                  <Popup>
-                    <div style={{ minWidth: 180 }}>
-                      <div style={{ fontWeight: 800, fontSize: 13, color: '#0F172A' }}>{e.name}</div>
+                {withCoords.map((e) => (
+                  <NameInitialOverlay
+                    key={e._id}
+                    employee={e}
+                    isSelected={selected?._id === e._id}
+                    onClick={() => {
+                      setSelected(e);
+                      setActivePopup(e);
+                    }}
+                  />
+                ))}
+
+                {activePopup && activePopup.lat != null && activePopup.lng != null && (
+                  <InfoWindowF
+                    position={{ lat: activePopup.lat, lng: activePopup.lng }}
+                    onCloseClick={() => setActivePopup(null)}
+                  >
+                    <div style={{ minWidth: 180, padding: '4px 6px' }}>
+                      <div style={{ fontWeight: 800, fontSize: 13, color: '#0F172A' }}>{activePopup.name}</div>
                       <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
-                        {e.designation || ''}{e.employeeId ? ` · ${e.employeeId}` : ''}
+                        {activePopup.designation || ''}{activePopup.employeeId ? ` · ${activePopup.employeeId}` : ''}
                       </div>
                       <div style={{
                         marginTop: 6, padding: '2px 8px', borderRadius: 999,
-                        background: (STATUS_COLOR[e.status] || '#94A3B8') + '22',
-                        color: STATUS_COLOR[e.status] || '#94A3B8',
+                        background: (STATUS_COLOR[activePopup.status] || '#94A3B8') + '22',
+                        color: STATUS_COLOR[activePopup.status] || '#94A3B8',
                         fontSize: 10, fontWeight: 700, display: 'inline-block',
                         textTransform: 'uppercase', letterSpacing: 0.4,
-                      }}>{STATUS_LABEL[e.status] || e.status}</div>
-                      {e.checkIn && (
+                      }}>{STATUS_LABEL[activePopup.status] || activePopup.status}</div>
+                      {activePopup.checkIn && (
                         <div style={{ fontSize: 11, color: '#475569', marginTop: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Clock size={11} /> Checked in {fmtClock(e.checkIn)}
-                          {e.checkOut && <> · out {fmtClock(e.checkOut)}</>}
+                          <Clock size={11} /> Checked in {fmtClock(activePopup.checkIn)}
+                          {activePopup.checkOut && <> · out {fmtClock(activePopup.checkOut)}</>}
                         </div>
                       )}
                       <div style={{ fontSize: 11, color: '#475569', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <MapPin size={11} /> Last ping {fmtRelTime(e.lastSeen)}
+                        <MapPin size={11} /> Last ping {fmtRelTime(activePopup.lastSeen)}
                       </div>
                     </div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
+                  </InfoWindowF>
+                )}
+              </GoogleMap>
+            )}
           </div>
         </div>
       )}
