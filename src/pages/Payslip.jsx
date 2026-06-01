@@ -36,14 +36,17 @@ function buildYearOptions(joinYear) {
 function buildMonthOptions(year, joinYear, joinMonth) {
   const now      = new Date();
   const curYear  = now.getFullYear();
-  const curMonth = now.getMonth() + 1;
+  const curMonth = now.getMonth() + 1;     // 1-12, current in-progress month
   // Lower bound this year: joinMonth if it's the joining year, else 1.
   // Also respect the absolute April-2025 floor for users whose joining
   // date predates company payroll.
   let startMonth = 1;
   if (year === joinYear) startMonth = Math.max(joinMonth || 1, year === PAYROLL_ABS_FLOOR_YEAR ? PAYROLL_ABS_FLOOR_MONTH : 1);
   else if (year === PAYROLL_ABS_FLOOR_YEAR) startMonth = PAYROLL_ABS_FLOOR_MONTH;
-  const endMonth = (year === curYear) ? curMonth : 12;
+  // Upper bound: payslips are only available for FULLY COMPLETED months,
+  // so the current month is never offered. In the current year we stop
+  // at curMonth - 1; in past years we stop at 12.
+  const endMonth = (year === curYear) ? Math.max(0, curMonth - 1) : 12;
   const out = [];
   for (let m = startMonth; m <= endMonth; m++) out.push(MONTH_SHORT[m - 1]);
   return out;

@@ -135,6 +135,50 @@ const Announcements = () => {
               </div>
               <h3 className="ann-card-title">{a.title || '(untitled)'}</h3>
               <p className="ann-card-content">{a.body || a.description || ''}</p>
+              {/* Attachments — images render inline, other files surface
+                  as a download chip. HR uploads them via HRMS; we read
+                  them off the same announcement doc. */}
+              {Array.isArray(a.attachments) && a.attachments.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
+                  {a.attachments.map((att, i) => {
+                    const src = att.dataBase64
+                      ? `data:${att.mimeType || 'application/octet-stream'};base64,${att.dataBase64}`
+                      : (att.url || '');
+                    if (!src) return null;
+                    const isImage = String(att.mimeType || '').startsWith('image/') ||
+                                    /\.(png|jpe?g|gif|webp|svg)$/i.test(att.name || '');
+                    if (isImage) {
+                      return (
+                        <a key={i} href={src} target="_blank" rel="noreferrer" style={{ display: 'inline-block' }}>
+                          <img
+                            src={src}
+                            alt={att.name || 'attachment'}
+                            style={{ maxWidth: '100%', maxHeight: 320, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                          />
+                        </a>
+                      );
+                    }
+                    return (
+                      <a
+                        key={i}
+                        href={src}
+                        download={att.name || 'attachment'}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 8,
+                          padding: '8px 12px', borderRadius: 8,
+                          background: '#F8FAFC', border: '1px solid #E2E8F0',
+                          fontSize: 13, color: '#2563EB', textDecoration: 'none',
+                          width: 'fit-content',
+                        }}
+                      >
+                        📎 {att.name || 'Download attachment'} {att.size ? `(${Math.round(att.size/1024)} KB)` : ''}
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
               <div className="ann-card-footer">
                 <div className="ann-footer-left">
                   <span className="ann-author">
