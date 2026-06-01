@@ -45,6 +45,9 @@ const LeaveApprovals = () => {
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState('');
   const [acting,  setActing]  = useState(null);   // id of row currently being patched
+  // Partial-approval modal — opens when the manager clicks Approve on an
+  // allowance row. Shape: { row, approvedAmount, amountComment } | null.
+  const [approveModal, setApproveModal] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -74,6 +77,44 @@ const LeaveApprovals = () => {
       ));
     } catch (err) {
       setError(err?.message || `Could not ${status.toLowerCase()} the request.`);
+    } finally {
+      setActing(null);
+    }
+  };
+
+  // Allowance Approve flow — opens the partial-approval modal instead of
+  // immediately PATCHing. Reject still goes through `act` directly.
+  const openApproveModal = (row) => {
+    setApproveModal({
+      row,
+      approvedAmount: String(row.amount ?? ''),
+      amountComment:  '',
+    });
+  };
+  const closeApproveModal = () => setApproveModal(null);
+  const submitApproveModal = async () => {
+    if (!approveModal) return;
+    const row       = approveModal.row;
+    const claimed   = Number(row.amount) || 0;
+    const approved  = Number(approveModal.approvedAmount) || 0;
+    if (approved < 0 || approved > claimed) {
+      setError(`Approved amount must be between 0 and \u20b9${claimed.toLocaleString('en-IN')}.`);
+      return;
+    }
+    const rejected = Math.max(0, claimed - approved);
+    setActing(row._id);
+    try {
+      await managerAPI.actAllowance(row._id, 'Approved', {
+        approvedAmount: approved,
+        rejectedAmount: rejected,
+        amountComment:  approveModal.amountComment || '',
+      });
+      setItems((prev) => prev.map((r) => r._id === row._id
+        ? { ...r, managerStatus: 'Approved', approvedAmount: approved, rejectedAmount: rejected, amountComment: approveModal.amountComment || '' }
+        : r));
+      closeApproveModal();
+    } catch (err) {
+      setError(err?.message || 'Could not approve the request.');
     } finally {
       setActing(null);
     }
@@ -171,7 +212,7 @@ const LeaveApprovals = () => {
               {!r.managerStatus || /pending/i.test(r.managerStatus) ? (
                 <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                   <button
-                    onClick={() => act(r._id, 'Approved')}
+                    onClick={() => tab === 'allowances' ? openApproveModal(r) : act(r._id, 'Approved')}
                     disabled={acting === r._id}
                     style={{
                       flex: 1, padding: '8px 12px', borderRadius: 8,
@@ -210,6 +251,105 @@ const LeaveApprovals = () => {
           );
         })}
       </div>
+
+      {/* ── Approve-with-amount modal (allowance tab only) ─────────── */}
+      {approveModal && (() => {
+        const row      = approveModal.row;
+        const claimed  = Number(row.amount) || 0;
+        const approved = Number(approveModal.approvedAmount) || 0;
+        const rejected = Math.max(0, claimed - approved);
+        return (
+          <div
+            onClick={closeApproveModal}
+            style={{
+              position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.45)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              zIndex: 1000, padding: 16,
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: '#fff', borderRadius: 14, padding: 22,
+                width: 'min(440px, 100%)',
+                boxShadow: '0 18px 48px rgba(0,0,0,0.25)',
+              }}
+            >
+              <div style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>
+                Approve allowance
+              </div>
+              <div style={{ fontSize: 12, color: '#64748B', marginBottom: 14 }}>
+                Claim amount: <b>₹{claimed.toLocaleString('en-IN')}</b>
+              </div>
+
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                Approved amount (≤ ₹{claimed.toLocaleString('en-IN')})
+              </div>
+              <input
+                type="number"
+                min={0}
+                max={claimed}
+                value={approveModal.approvedAmount}
+                onChange={(e) => setApproveModal({ ...approveModal, approvedAmount: e.target.value })}
+                style={{
+                  width: '100%', padding: '10px 12px', borderRadius: 8,
+                  border: '1.5px solid #E2E8F0', fontSize: 13, marginBottom: 12,
+                  boxSizing: 'border-box',
+                }}
+                placeholder={`max ₹${claimed.toLocaleString('en-IN')}`}
+              />
+
+              <div style={{
+                fontSize: 12, color: '#475569', marginBottom: 12,
+                padding: '8px 10px', borderRadius: 8, background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+              }}>
+                Rejected portion (auto):{' '}
+                <b style={{ color: rejected > 0 ? '#B91C1C' : '#15803D' }}>
+                  ₹{rejected.toLocaleString('en-IN')}
+                </b>
+              </div>
+
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#475569', marginBottom: 6 }}>
+                Note to employee (optional)
+              </div>
+              <textarea
+                rows={3}
+                value={approveModal.amountComment}
+                onChange={(e) => setApproveModal({ ...approveModal, amountComment: e.target.value })}
+                style={{
+                  width: '100%', padding: '10px 12px', borderRadius: 8,
+                  border: '1.5px solid #E2E8F0', fontSize: 13, marginBottom: 14,
+                  boxSizing: 'border-box', fontFamily: 'inherit', resize: 'vertical',
+                }}
+                placeholder="Why this amount was approved/rejected…"
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={closeApproveModal}
+                  style={{
+                    padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                    background: '#F1F5F9', color: '#0F172A', border: '1px solid #CBD5E1',
+                    cursor: 'pointer',
+                  }}
+                >Cancel</button>
+                <button
+                  type="button"
+                  onClick={submitApproveModal}
+                  disabled={acting === row._id}
+                  style={{
+                    padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                    background: '#16A34A', color: '#fff', border: 'none', cursor: 'pointer',
+                    opacity: acting === row._id ? 0.6 : 1,
+                  }}
+                >Confirm</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

@@ -180,7 +180,12 @@ export const managerAPI = {
   leaves:        (params)=> get('/manager/leaves', params),
   allowances:    (params)=> get('/manager/allowances', params),
   actLeave:      (id, managerStatus) => patch(`/manager/leaves/${id}`,     { managerStatus }),
-  actAllowance:  (id, managerStatus) => patch(`/manager/allowances/${id}`, { managerStatus }),
+  // Allowance act now accepts an optional payload so the manager can
+  // split a claim: { approvedAmount, rejectedAmount, amountComment }.
+  // Backwards-compatible: omit the payload and it behaves like the old
+  // straight approve/reject.
+  actAllowance:  (id, managerStatus, payload = {}) =>
+    patch(`/manager/allowances/${id}`, { managerStatus, ...payload }),
   attendance:    (date)  => get('/manager/attendance', { date }),
   attendanceSummary: ({ month, year } = {}) => get('/manager/attendance-summary', { month, year }),
   liveLocations: ()      => get('/manager/live-locations'),
