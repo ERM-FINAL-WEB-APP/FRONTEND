@@ -474,9 +474,35 @@ const Payslip = () => {
 
         {/* ══ RIGHT: Summary ══════════════════════════ */}
         <div className="ps-right">
-          <h3 className="ps-summary-title">Payslip Summary</h3>
+          {/* The summary panel only fills in once HR has uploaded the
+              actual payslip (monthState === 'ready'). For 'requested'
+              and 'none' we show a placeholder card so the employee
+              doesn't see meaningless ₹0 figures. */}
+          {monthState === 'ready' ? (
+            <h3 className="ps-summary-title">Payslip Summary</h3>
+          ) : null}
 
-          {current && (
+          {monthState !== 'ready' && (
+            <div style={{
+              marginTop: 40, padding: '40px 24px',
+              background: '#F8FAFC', border: '1px dashed #CBD5E1',
+              borderRadius: 12, textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 38, marginBottom: 8 }}>📄</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: '#0F172A', marginBottom: 6 }}>
+                {monthState === 'requested'
+                  ? `Requested for ${MONTH_SHORT[month - 1]} ${year}`
+                  : `No payslip yet for ${MONTH_SHORT[month - 1] || ''} ${year}`}
+              </div>
+              <div style={{ fontSize: 13, color: '#64748B', maxWidth: 320, margin: '0 auto', lineHeight: 1.55 }}>
+                {monthState === 'requested'
+                  ? 'HR has been notified. Your payslip will appear here once it has been uploaded — you will be able to download it from this page.'
+                  : 'Hit the Request button on the left to ask HR to generate this payslip.'}
+              </div>
+            </div>
+          )}
+
+          {monthState === 'ready' && current && (
             <>
               <div className="ps-chart-wrap" style={{ marginTop: '20px' }}>
                 <DonutChart
