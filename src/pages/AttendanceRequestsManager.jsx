@@ -24,11 +24,15 @@ function fmtDate(iso) {
   return m ? `${m[3]}-${m[2]}-${m[1]}` : String(iso);
 }
 
-function statusBadge(status) {
-  const s = String(status || 'pending').toLowerCase();
-  if (s === 'approved') return { txt: 'Approved', bg: '#F0FDF4', fg: '#15803D', bd: '#BBF7D0' };
-  if (s === 'rejected') return { txt: 'Rejected', bg: '#FEF2F2', fg: '#DC2626', bd: '#FECACA' };
-  return { txt: 'Pending', bg: '#FFFBEB', fg: '#D97706', bd: '#FDE68A' };
+function statusBadge(row) {
+  // Manager-side pill — reads managerStatus, not the underlying `status`.
+  // (After manager approves the row keeps status='pending' until HR
+  // finalizes, so we'd otherwise still show "Pending" on a row this
+  // manager already acted on.)
+  const ms = String(row?.managerStatus || '');
+  if (ms === 'Approved') return { txt: 'You approved', bg: '#F0FDF4', fg: '#15803D', bd: '#BBF7D0' };
+  if (ms === 'Rejected') return { txt: 'You rejected', bg: '#FEF2F2', fg: '#DC2626', bd: '#FECACA' };
+  return { txt: 'Awaiting action', bg: '#FFFBEB', fg: '#D97706', bd: '#FDE68A' };
 }
 
 export default function AttendanceRequestsManager() {
@@ -128,7 +132,7 @@ export default function AttendanceRequestsManager() {
             r.user?.employeeId || '—';
           const employeeId = r.user?.employeeId || '';
           const designation = r.user?.designation || '';
-          const b = statusBadge(r.status);
+          const b = statusBadge(r);
 
           return (
             <div key={r._id} style={{
@@ -167,7 +171,7 @@ export default function AttendanceRequestsManager() {
                 </div>
               )}
 
-              {!r.status || /pending/i.test(r.status) ? (
+              {(!r.managerStatus) ? (
                 <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                   <button
                     onClick={() => act(r, 'approved')}
