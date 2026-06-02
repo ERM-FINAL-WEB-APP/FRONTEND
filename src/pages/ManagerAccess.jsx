@@ -98,10 +98,10 @@ const ManagerAccess = () => {
   return (
     <div className="manager-access-page">
       <div className="manager-top-nav">
-        <div style={{ padding: '12px 20px 8px', fontSize: 13, color: '#334155' }}>
-          Welcome back, <b style={{ color: '#0F172A' }}>{firstName}</b>. You manage{' '}
-          <b style={{ color: '#0F172A' }}>{team.length}</b> {team.length === 1 ? 'person' : 'people'}: {team.map((t) => t.name).filter(Boolean).slice(0, 6).join(', ')}{team.length > 6 ? '…' : ''}
-        </div>
+        {/* "Welcome back, Vivek. You manage 6 people: ..." banner removed
+            Jun 2026 per HR brief — the manager already knows who they
+            manage and the verbose name list pushed the tabs down on
+            small laptop screens. */}
         <div className="manager-tabs">
           <button
             className={`manager-tab ${activeTab === 'approvals' ? 'active' : ''}`}
