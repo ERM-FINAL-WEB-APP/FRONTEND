@@ -438,9 +438,9 @@ const Leave = () => {
           </div>
 
           <div className="leave-history-list mt-6">
-            {histLoading && <div style={{ padding: 20, textAlign: 'center', color: '#64748B' }}>Loading…</div>}
+            {histLoading && <div style={{ padding: 20, textAlign: 'center', color: '#334155' }}>Loading…</div>}
             {!histLoading && history.length === 0 && (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 14 }}>
+              <div style={{ padding: 32, textAlign: 'center', color: '#334155', fontSize: 14 }}>
                 No {activeTab === 'leave' ? 'leave' : 'permission'} requests for {MONTHS[histMonth - 1]} {histYear}.
               </div>
             )}

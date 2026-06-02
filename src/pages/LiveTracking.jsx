@@ -31,7 +31,7 @@ const STATUS_COLOR = {
   travelling: '#16A34A',
   office:     '#16A34A',
   idle:       '#F59E0B',
-  offline:    '#94A3B8',
+  offline:    '#475569',
 };
 const STATUS_LABEL = {
   active:     'Active',
@@ -52,7 +52,7 @@ const OFFICE_DEFAULT = { lat: 13.0412, lng: 80.2127 };
 function NameInitialOverlay({ employee, isSelected, onClick }) {
   if (typeof employee?.lat !== 'number' || typeof employee?.lng !== 'number') return null;
   const initial = (String(employee.name || 'E').match(/\S/) || ['E'])[0].toUpperCase();
-  const color   = STATUS_COLOR[employee.status] || '#94A3B8';
+  const color   = STATUS_COLOR[employee.status] || '#475569';
   const size    = isSelected ? 44 : 36;
 
   return (
@@ -217,10 +217,10 @@ const LiveTracking = () => {
       }}>
         <Chip color="#16A34A" bg="#F1F9EE" icon={<Wifi    size={14} />} label={`${activeCount} Active`} />
         <Chip color="#F59E0B" bg="#FEFBEB" icon={<CircleDot size={14} />} label={`${idleCount} Location off`} />
-        <Chip color="#64748B" bg="#F8FAFC" icon={<WifiOff size={14} />} label={`${offlineCount} Offline`} />
+        <Chip color="#334155" bg="#F8FAFC" icon={<WifiOff size={14} />} label={`${offlineCount} Offline`} />
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 10 }}>
           {lastUpdated && (
-            <span style={{ fontSize: 11, color: '#64748B' }}>
+            <span style={{ fontSize: 11, color: '#334155' }}>
               Updated {fmtRelTime(lastUpdated)} · auto-refreshes every 30s
             </span>
           )}
@@ -249,15 +249,15 @@ const LiveTracking = () => {
       )}
 
       {loading && (
-        <div style={{ padding: 40, color: '#64748B' }}>Loading team locations…</div>
+        <div style={{ padding: 40, color: '#334155' }}>Loading team locations…</div>
       )}
 
       {!loading && team.length === 0 && (
         <div style={{
-          padding: 60, textAlign: 'center', color: '#64748B', fontSize: 14,
+          padding: 60, textAlign: 'center', color: '#334155', fontSize: 14,
           background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
         }}>
-          <UserIcon size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
+          <UserIcon size={32} color="#475569" style={{ marginBottom: 8 }} />
           <div>No employees are assigned to you in HRMS yet.</div>
           <div style={{ fontSize: 12, marginTop: 4 }}>
             HR sets this via the "Manager" dropdown on each employee record.
@@ -290,7 +290,7 @@ const LiveTracking = () => {
               >
                 <span style={{
                   width: 36, height: 36, borderRadius: '50%',
-                  background: STATUS_COLOR[e.status] || '#94A3B8',
+                  background: STATUS_COLOR[e.status] || '#475569',
                   color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 13, fontWeight: 800, flexShrink: 0,
                 }}>{(e.name || 'E').charAt(0).toUpperCase()}</span>
@@ -300,20 +300,20 @@ const LiveTracking = () => {
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>{e.name || 'Unknown'}</div>
                   <div style={{
-                    fontSize: 11, color: '#64748B',
+                    fontSize: 11, color: '#334155',
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                   }}>{e.designation || e.employeeId || ''}</div>
                   <div style={{
-                    fontSize: 10, color: STATUS_COLOR[e.status] || '#94A3B8',
+                    fontSize: 10, color: STATUS_COLOR[e.status] || '#475569',
                     fontWeight: 700, marginTop: 2,
                     display: 'flex', alignItems: 'center', gap: 4,
                   }}>
                     {STATUS_LABEL[e.status] || e.status}
                     {e.lat != null && e.lastSeen && (
-                      <span style={{ color: '#94A3B8', fontWeight: 500 }}>· {fmtRelTime(e.lastSeen)}</span>
+                      <span style={{ color: '#475569', fontWeight: 500 }}>· {fmtRelTime(e.lastSeen)}</span>
                     )}
                     {e.lat == null && (
-                      <span style={{ color: '#94A3B8', fontWeight: 500 }}>· no GPS</span>
+                      <span style={{ color: '#475569', fontWeight: 500 }}>· no GPS</span>
                     )}
                   </div>
                 </div>
@@ -329,7 +329,7 @@ const LiveTracking = () => {
 
             {noCoords.length > 0 && noCoords.length < team.length && (
               <div style={{
-                fontSize: 10, color: '#94A3B8',
+                fontSize: 10, color: '#475569',
                 padding: '8px 10px', textAlign: 'center',
                 borderTop: '1px dashed #E2E8F0', marginTop: 6,
               }}>
@@ -350,7 +350,7 @@ const LiveTracking = () => {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 background: 'rgba(255,255,255,0.85)',
-                color: '#64748B', fontSize: 13, textAlign: 'center', padding: 24,
+                color: '#334155', fontSize: 13, textAlign: 'center', padding: 24,
               }}>
                 <MapPin size={28} style={{ marginBottom: 6, opacity: 0.5 }} />
                 <div style={{ fontWeight: 700 }}>No live GPS data right now</div>
@@ -374,7 +374,7 @@ const LiveTracking = () => {
               </div>
             )}
             {GOOGLE_MAPS_API_KEY && !loadError && !isLoaded && (
-              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748B', background: '#F8FAFC', fontSize: 13 }}>
+              <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#334155', background: '#F8FAFC', fontSize: 13 }}>
                 Loading Google Maps…
               </div>
             )}
@@ -427,13 +427,13 @@ const LiveTracking = () => {
                   >
                     <div style={{ minWidth: 180, padding: '4px 6px' }}>
                       <div style={{ fontWeight: 800, fontSize: 13, color: '#0F172A' }}>{activePopup.name}</div>
-                      <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
+                      <div style={{ fontSize: 11, color: '#334155', marginTop: 2 }}>
                         {activePopup.designation || ''}{activePopup.employeeId ? ` · ${activePopup.employeeId}` : ''}
                       </div>
                       <div style={{
                         marginTop: 6, padding: '2px 8px', borderRadius: 999,
-                        background: (STATUS_COLOR[activePopup.status] || '#94A3B8') + '22',
-                        color: STATUS_COLOR[activePopup.status] || '#94A3B8',
+                        background: (STATUS_COLOR[activePopup.status] || '#475569') + '22',
+                        color: STATUS_COLOR[activePopup.status] || '#475569',
                         fontSize: 10, fontWeight: 700, display: 'inline-block',
                         textTransform: 'uppercase', letterSpacing: 0.4,
                       }}>{STATUS_LABEL[activePopup.status] || activePopup.status}</div>

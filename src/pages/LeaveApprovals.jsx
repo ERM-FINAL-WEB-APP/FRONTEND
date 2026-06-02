@@ -163,14 +163,14 @@ const LeaveApprovals = () => {
         </div>
       )}
 
-      {loading && <div style={{ padding: 40, color: '#64748B' }}>Loading approvals…</div>}
+      {loading && <div style={{ padding: 40, color: '#334155' }}>Loading approvals…</div>}
 
       {!loading && items.length === 0 && (
         <div style={{
-          padding: 60, textAlign: 'center', color: '#64748B', fontSize: 14,
+          padding: 60, textAlign: 'center', color: '#334155', fontSize: 14,
           background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
         }}>
-          <Inbox size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
+          <Inbox size={32} color="#475569" style={{ marginBottom: 8 }} />
           <div>No {tab === 'leaves' ? 'leave or permission' : 'allowance'} requests from your team yet.</div>
         </div>
       )}
@@ -202,7 +202,7 @@ const LeaveApprovals = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{employeeName}</div>
-                  <div style={{ fontSize: 11, color: '#64748B' }}>{employeeId}</div>
+                  <div style={{ fontSize: 11, color: '#334155' }}>{employeeId}</div>
                 </div>
                 <span style={{
                   alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 999,
@@ -251,12 +251,12 @@ const LeaveApprovals = () => {
                   </button>
                 </div>
               ) : (
-                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>
                   Manager decision logged — HR will finalise.
                 </div>
               )}
 
-              <div style={{ fontSize: 10, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+              <div style={{ fontSize: 10, color: '#475569', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
                 <Clock size={10} /> Submitted {fmtDate(r.createdAt)}
               </div>
             </div>
@@ -290,7 +290,7 @@ const LeaveApprovals = () => {
               <div style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', marginBottom: 4 }}>
                 Approve allowance
               </div>
-              <div style={{ fontSize: 12, color: '#64748B', marginBottom: 14 }}>
+              <div style={{ fontSize: 12, color: '#334155', marginBottom: 14 }}>
                 Claim amount: <b>₹{claimed.toLocaleString('en-IN')}</b>
               </div>
 

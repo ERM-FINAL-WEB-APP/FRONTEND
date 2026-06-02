@@ -16,8 +16,9 @@
    * Tightened to near-black + slate so labels and body copy keep enough
    * contrast against the white card background (~7:1 WCAG AAA on the
    * primary, ~4.5:1 AA on the secondary). */
-  --text-primary:   #0F172A;
-  --text-secondary: #475569;
+  --text-primary:   #0B1220;  /* near-black, AAA contrast on white */
+  --text-secondary: #334155;  /* slate-700, ~8:1 contrast — was #475569 (slate-600) */
+  --text-muted:     #475569;  /* old secondary kept under a new name for the few places that want a softer tint */
   --text-white:     #ffffff;
   
   /* Background Colors */

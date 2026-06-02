@@ -470,7 +470,7 @@ const Payslip = () => {
           )}
 
           <div className="ps-hist-list">
-            {loading && <div style={{ padding: 20, color: '#64748B' }}>Loading…</div>}
+            {loading && <div style={{ padding: 20, color: '#334155' }}>Loading…</div>}
             {(() => {
               // Hide pending stubs from the visible cards. The mobile
               // backend creates a pending row whenever the employee
@@ -484,7 +484,7 @@ const Payslip = () => {
               );
               if (!loading && _ready.length === 0) {
                 return (
-                  <div style={{ padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
+                  <div style={{ padding: 24, textAlign: 'center', color: '#334155', fontSize: 13 }}>
                     No payslips for {year} yet. Click "Request" below to ask HR to generate one.
                   </div>
                 );
@@ -530,7 +530,7 @@ const Payslip = () => {
                   ? `${MONTH_SHORT[month - 1]} ${year} is not over yet`
                   : `No payslip yet for ${MONTH_SHORT[month - 1] || ''} ${year}`}
               </div>
-              <div style={{ fontSize: 13, color: '#64748B', maxWidth: 360, margin: '0 auto', lineHeight: 1.55 }}>
+              <div style={{ fontSize: 13, color: '#334155', maxWidth: 360, margin: '0 auto', lineHeight: 1.55 }}>
                 {monthState === 'requested'
                   ? 'HR has been notified. Your payslip will appear here once it has been uploaded — you will be able to download it from this page.'
                   : monthState === 'tooEarly'

@@ -185,10 +185,10 @@ const Notifications = () => {
 
       <div className="notif-list-container">
         {loading && (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748B' }}>Loading…</div>
+          <div style={{ padding: 40, textAlign: 'center', color: '#334155' }}>Loading…</div>
         )}
         {!loading && filtered.length === 0 && (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748B', fontSize: 14 }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#334155', fontSize: 14 }}>
             No {activeTab === 'All' ? 'notifications or announcements' : activeTab.toLowerCase()} yet.
           </div>
         )}

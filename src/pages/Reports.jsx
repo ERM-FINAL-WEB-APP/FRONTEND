@@ -58,7 +58,7 @@ const Reports = () => {
           padding: '6px 10px', borderRadius: 8,
           background: '#fff', border: '1px solid #E2E8F0',
         }}>
-          <Calendar size={14} color="#64748B" />
+          <Calendar size={14} color="#334155" />
           <select
             value={month}
             onChange={(e) => setMonth(parseInt(e.target.value, 10))}
@@ -103,14 +103,14 @@ const Reports = () => {
         <Stat label="Total hours" value={totals.hours.toFixed(1)} color="#0EA5E9" />
       </div>
 
-      {loading && <div style={{ padding: 40, color: '#64748B' }}>Loading report…</div>}
+      {loading && <div style={{ padding: 40, color: '#334155' }}>Loading report…</div>}
 
       {!loading && items.length === 0 && (
         <div style={{
-          padding: 60, textAlign: 'center', color: '#64748B', fontSize: 14,
+          padding: 60, textAlign: 'center', color: '#334155', fontSize: 14,
           background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
         }}>
-          <Inbox size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
+          <Inbox size={32} color="#475569" style={{ marginBottom: 8 }} />
           <div>No employees are assigned to you, or no attendance data for {MONTHS[month - 1]} {year}.</div>
         </div>
       )}
@@ -139,7 +139,7 @@ const Reports = () => {
                   <tr key={r.userId} style={{ borderTop: '1px solid #F1F5F9' }}>
                     <Td>
                       <div style={{ fontWeight: 700, color: '#0F172A' }}>{r.name}</div>
-                      <div style={{ fontSize: 11, color: '#64748B' }}>{r.employeeId || ''}</div>
+                      <div style={{ fontSize: 11, color: '#334155' }}>{r.employeeId || ''}</div>
                     </Td>
                     <Td>{r.designation || '—'}</Td>
                     <Td align="center"><Pill bg="#F1F9EE" fg="#15803D" text={r.present || 0} /></Td>
@@ -165,7 +165,7 @@ function Stat({ label, value, color }) {
       padding: '12px 14px', borderRadius: 12,
       background: '#fff', border: '1px solid #E2E8F0',
     }}>
-      <div style={{ fontSize: 10, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: 0.4, fontWeight: 700 }}>
+      <div style={{ fontSize: 10, color: '#475569', textTransform: 'uppercase', letterSpacing: 0.4, fontWeight: 700 }}>
         {label}
       </div>
       <div style={{ fontSize: 22, fontWeight: 800, color, marginTop: 2 }}>{value}</div>
@@ -176,7 +176,7 @@ function Th({ children, align = 'left' }) {
   return (
     <th style={{
       padding: '10px 14px', textAlign: align,
-      fontSize: 11, fontWeight: 700, color: '#64748B',
+      fontSize: 11, fontWeight: 700, color: '#334155',
       textTransform: 'uppercase', letterSpacing: 0.4,
     }}>{children}</th>
   );

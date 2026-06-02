@@ -96,7 +96,7 @@ const Announcements = () => {
 
       <div className="ann-grid">
         {loading && (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748B', gridColumn: '1 / -1' }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#334155', gridColumn: '1 / -1' }}>
             Loading announcements…
           </div>
         )}
@@ -110,7 +110,7 @@ const Announcements = () => {
           </div>
         )}
         {!loading && !error && filtered.length === 0 && (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748B', gridColumn: '1 / -1' }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#334155', gridColumn: '1 / -1' }}>
             No announcements{search ? ' match your search' : ' yet'}.
           </div>
         )}
@@ -200,7 +200,7 @@ const Announcements = () => {
                         background: '#F8FAFC', border: '1px solid #E2E8F0',
                       }}>
                         <div style={{ fontSize: 13, color: '#0F172A', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          📎 {att.name || 'Attachment'} {sizeLbl && <span style={{ color: '#64748B', fontWeight: 500, marginLeft: 4 }}>{sizeLbl}</span>}
+                          📎 {att.name || 'Attachment'} {sizeLbl && <span style={{ color: '#334155', fontWeight: 500, marginLeft: 4 }}>{sizeLbl}</span>}
                         </div>
                         <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                           <a

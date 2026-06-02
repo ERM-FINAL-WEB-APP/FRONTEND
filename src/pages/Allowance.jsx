@@ -357,7 +357,7 @@ const Allowance = () => {
 
           <div className="al-cards-list" style={{ marginTop: 16 }}>
             {items.length === 0 && (
-              <div style={{ padding: 32, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
+              <div style={{ padding: 32, textAlign: 'center', color: '#334155', fontSize: 13 }}>
                 No {type} claims for {MONTHS_SHORT[month - 1]} {year}.
               </div>
             )}

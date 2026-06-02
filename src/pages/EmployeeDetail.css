@@ -66,7 +66,7 @@
 }
 
 .emp-designation {
-  color: #94A3B8;
+  color: #475569;
 }
 
 .emp-status-badge {
@@ -75,7 +75,7 @@
 }
 
 .emp-id-text {
-  color: #94A3B8;
+  color: #475569;
 }
 
 .btn-export {
@@ -164,7 +164,7 @@
 .contact-label {
   font-size: 11px;
   font-weight: 700;
-  color: #94A3B8;
+  color: #475569;
   letter-spacing: 0.5px;
 }
 
@@ -200,7 +200,7 @@
 .prod-lbl {
   font-size: 12px;
   font-weight: 700;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .text-purple { color: #8B5CF6; }
@@ -228,7 +228,7 @@
 .detail-lbl {
   font-size: 11px;
   font-weight: 700;
-  color: #94A3B8;
+  color: #475569;
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
@@ -263,7 +263,7 @@
 
 .leave-dates {
   font-size: 13px;
-  color: #64748B;
+  color: #334155;
 }
 
 .leave-status {
@@ -290,7 +290,7 @@
   gap: 6px;
   background: white;
   border: 1px solid #E2E8F0;
-  color: #64748B;
+  color: #334155;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 13px;
@@ -348,13 +348,13 @@
 
 .doc-meta {
   font-size: 12px;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .btn-icon {
   background: white;
   border: 1px solid #E2E8F0;
-  color: #64748B;
+  color: #334155;
   width: 32px;
   height: 32px;
   border-radius: 6px;

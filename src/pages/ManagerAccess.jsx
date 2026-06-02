@@ -51,7 +51,7 @@ const ManagerAccess = () => {
 
   if (loading) {
     return (
-      <div className="manager-access-page" style={{ padding: 40, color: '#64748B' }}>
+      <div className="manager-access-page" style={{ padding: 40, color: '#334155' }}>
         Loading your team…
       </div>
     );
@@ -80,11 +80,11 @@ const ManagerAccess = () => {
           background: '#F8FAFC', borderRadius: 12,
           border: '1px dashed #CBD5E1',
         }}>
-          <Users size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
+          <Users size={32} color="#475569" style={{ marginBottom: 8 }} />
           <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 6 }}>
             No team assigned yet
           </h3>
-          <p style={{ fontSize: 13, color: '#64748B', maxWidth: 480, margin: '0 auto' }}>
+          <p style={{ fontSize: 13, color: '#334155', maxWidth: 480, margin: '0 auto' }}>
             You don't have any subordinates linked to you in HRMS. HR sets this
             via the <b>Manager</b> dropdown when creating or editing an employee.
             Once an employee is assigned to <b>{firstName}</b>, they will appear
@@ -98,7 +98,7 @@ const ManagerAccess = () => {
   return (
     <div className="manager-access-page">
       <div className="manager-top-nav">
-        <div style={{ padding: '12px 20px 8px', fontSize: 13, color: '#64748B' }}>
+        <div style={{ padding: '12px 20px 8px', fontSize: 13, color: '#334155' }}>
           Welcome back, <b style={{ color: '#0F172A' }}>{firstName}</b>. You manage{' '}
           <b style={{ color: '#0F172A' }}>{team.length}</b> {team.length === 1 ? 'person' : 'people'}: {team.map((t) => t.name).filter(Boolean).slice(0, 6).join(', ')}{team.length > 6 ? '…' : ''}
         </div>

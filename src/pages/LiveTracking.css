@@ -51,7 +51,7 @@
 
 .subtitle {
   font-size: 14px;
-  color: #64748B;
+  color: #334155;
   margin: 0;
 }
 
@@ -80,7 +80,7 @@
 
 .stat-label {
   font-size: 11px;
-  color: #94A3B8;
+  color: #475569;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -94,7 +94,7 @@
 
 .text-green { color: #4CAA17; }
 .text-blue { color: #3B82F6; }
-.text-gray { color: #94A3B8; }
+.text-gray { color: #475569; }
 
 .tracking-layout {
   display: grid;
@@ -163,7 +163,7 @@
 }
 
 .search-box input::placeholder {
-  color: #94A3B8;
+  color: #475569;
 }
 
 .filter-pills-row {
@@ -184,7 +184,7 @@
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
-  color: #64748B;
+  color: #334155;
   cursor: pointer;
 }
 
@@ -212,7 +212,7 @@
 .section-title {
   font-size: 11px;
   font-weight: 700;
-  color: #94A3B8;
+  color: #475569;
   letter-spacing: 0.5px;
   margin-bottom: 12px;
 }
@@ -265,7 +265,7 @@
 
 .p-role {
   font-size: 12px;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .p-status {
@@ -285,7 +285,7 @@
 
 .time-text {
   font-size: 11px;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .refresh-section {
@@ -320,7 +320,7 @@
   text-align: center;
   font-size: 11px;
   font-weight: 600;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .tracking-map-container {
@@ -354,7 +354,7 @@
   padding: 10px 16px;
   font-size: 11px;
   font-weight: 700;
-  color: #64748B;
+  color: #334155;
   cursor: pointer;
 }
 

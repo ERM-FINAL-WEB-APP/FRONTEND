@@ -140,16 +140,16 @@ const ManagerAnnouncements = () => {
 
       <div className="ann-grid">
         {loading && (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748B', gridColumn: '1 / -1' }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#334155', gridColumn: '1 / -1' }}>
             Loading…
           </div>
         )}
         {!loading && items.length === 0 && (
           <div style={{
-            padding: 40, textAlign: 'center', color: '#64748B', gridColumn: '1 / -1',
+            padding: 40, textAlign: 'center', color: '#334155', gridColumn: '1 / -1',
             background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
           }}>
-            <Megaphone size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
+            <Megaphone size={32} color="#475569" style={{ marginBottom: 8 }} />
             <div>You haven't posted any team announcements yet.</div>
             <div style={{ fontSize: 12, marginTop: 4 }}>Click "Post Team Announcement" to send the first one.</div>
           </div>
@@ -172,7 +172,7 @@ const ManagerAnnouncements = () => {
                 title="Delete"
                 style={{
                   background: 'transparent', border: 'none', cursor: 'pointer',
-                  color: '#94A3B8', padding: 4,
+                  color: '#475569', padding: 4,
                 }}
               >
                 <Trash2 size={14} />
@@ -184,7 +184,7 @@ const ManagerAnnouncements = () => {
               <div className="ann-footer-left">
                 <span className="ann-date"><Calendar size={12} /> {fmtDate(a.createdAt)}</span>
               </div>
-              <span style={{ fontSize: 11, color: '#64748B' }}>
+              <span style={{ fontSize: 11, color: '#334155' }}>
                 Reached {Array.isArray(a.audienceUserIds) ? a.audienceUserIds.length : 0} people
               </span>
             </div>
@@ -238,12 +238,12 @@ const ManagerAnnouncements = () => {
                   onChange={(e) => setBody(e.target.value.slice(0, 800))}
                   required
                 />
-                <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>
                   {body.length} / 800 characters
                 </div>
               </div>
               <div style={{
-                fontSize: 11, color: '#64748B', background: '#F8FAFC',
+                fontSize: 11, color: '#334155', background: '#F8FAFC',
                 padding: '8px 10px', borderRadius: 6,
                 border: '1px solid #E2E8F0', marginTop: 8,
               }}>

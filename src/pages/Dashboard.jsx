@@ -215,7 +215,7 @@ const Dashboard = () => {
 
         <div className="announcement-cards">
           {announcements.length === 0 && (
-            <div className="a-card" style={{ textAlign: 'center', color: '#64748B' }}>
+            <div className="a-card" style={{ textAlign: 'center', color: '#334155' }}>
               <p>No announcements yet.</p>
             </div>
           )}

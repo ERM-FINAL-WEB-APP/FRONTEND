@@ -217,7 +217,7 @@
 .emp-id {
   font-size: 14px;
   font-weight: 500;
-  color: #64748b;
+  color: #334155;
 }
 
 .status-badge {
@@ -245,7 +245,7 @@
   justify-content: center;
   background: white;
   border: 1px solid #E2E8F0;
-  color: #64748B;
+  color: #334155;
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;

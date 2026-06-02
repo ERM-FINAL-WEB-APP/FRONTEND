@@ -19,7 +19,7 @@
   padding: 20px 24px;
   font-size: 14px;
   font-weight: 600;
-  color: #64748B;
+  color: #334155;
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: all 0.2s;
@@ -118,14 +118,14 @@
 
 .notif-date {
   font-size: 12px;
-  color: #94A3B8;
+  color: #475569;
   font-weight: 500;
 }
 
 .notif-message {
   margin: 0 0 16px 0;
   font-size: 14px;
-  color: #64748B;
+  color: #334155;
   line-height: 1.5;
 }
 
@@ -149,6 +149,6 @@
 
 .notif-rel-time {
   font-size: 12px;
-  color: #94A3B8;
+  color: #475569;
   font-weight: 500;
 }

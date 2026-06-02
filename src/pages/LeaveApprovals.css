@@ -24,7 +24,7 @@
 
 .approvals-subtitle {
   font-size: 13px;
-  color: #94A3B8;
+  color: #475569;
   margin: 0;
 }
 
@@ -84,7 +84,7 @@
 }
 
 .search-bar-approvals input::placeholder {
-  color: #94A3B8;
+  color: #475569;
 }
 
 .filter-pills {
@@ -95,7 +95,7 @@
 .filter-pill {
   background: white;
   border: 1px solid #E2E8F0;
-  color: #64748B;
+  color: #334155;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 13px;
@@ -137,7 +137,7 @@
   padding: 16px;
   font-size: 12px;
   font-weight: 700;
-  color: #64748B;
+  color: #334155;
   background: #F8FAFC;
   border-bottom: 1px solid #E2E8F0;
   text-transform: uppercase;
@@ -187,7 +187,7 @@
 
 .emp-role-small {
   font-size: 12px;
-  color: #94A3B8;
+  color: #475569;
 }
 
 .type-text {
@@ -212,7 +212,7 @@
 
 .date-sub {
   font-size: 11px;
-  color: #94A3B8;
+  color: #475569;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -307,7 +307,7 @@
 .no-data {
   padding: 32px;
   text-align: center;
-  color: #94A3B8;
+  color: #475569;
   font-size: 14px;
 }
 
@@ -347,7 +347,7 @@
 .modal-desc {
   margin: 0 0 16px 0;
   font-size: 14px;
-  color: #64748B;
+  color: #334155;
 }
 
 .reject-textarea {
@@ -397,7 +397,7 @@
   border: 1px solid #E2E8F0;
   padding: 8px 16px;
   border-radius: 6px;
-  color: #64748B;
+  color: #334155;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;

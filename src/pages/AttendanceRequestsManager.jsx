@@ -1,36 +1,40 @@
 /**
- * AttendanceRequestsManager — Manager view of every regularisation
- * request filed by their direct subordinates.
+ * AttendanceRequestsManager — Manager-side queue for attendance
+ * regularisation requests filed by direct reports from ERM Mobile.
  *
- * Mounted as a tab inside ManagerAccess. Backed by:
+ * Visual layout deliberately mirrors LeaveApprovals so both manager
+ * tabs feel the same: filter tabs row, then a responsive grid of
+ * cards with name + employee id + status pill, headline (date),
+ * subtitle (reason), and Approve / Reject buttons.
+ *
+ * API:
  *   GET   /api/manager/attendance-requests?status=
  *   PATCH /api/manager/attendance-requests/:id  { status, hrComment? }
- *
- * Mirrors the LeaveApprovals page's UX so managers don't have to
- * relearn a different layout for the same flow.
  */
-import React, { useEffect, useState, useMemo } from 'react';
-import { Check, X, Clock, Search, Inbox } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Check, X, Clock, AlertCircle, Inbox } from 'lucide-react';
 import { managerAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
 
-const TABS = [
-  { key: 'pending',  label: 'Pending'  },
-  { key: 'approved', label: 'Approved' },
-  { key: 'rejected', label: 'Rejected' },
-];
+const STATUSES = ['pending', 'approved', 'rejected'];
 
-function fmtDDMMYYYY(iso) {
+function fmtDate(iso) {
   if (!iso) return '—';
   const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? `${m[3]}-${m[2]}-${m[1]}` : String(iso);
 }
 
+function statusBadge(status) {
+  const s = String(status || 'pending').toLowerCase();
+  if (s === 'approved') return { txt: 'Approved', bg: '#F0FDF4', fg: '#15803D', bd: '#BBF7D0' };
+  if (s === 'rejected') return { txt: 'Rejected', bg: '#FEF2F2', fg: '#DC2626', bd: '#FECACA' };
+  return { txt: 'Pending', bg: '#FFFBEB', fg: '#D97706', bd: '#FDE68A' };
+}
+
 export default function AttendanceRequestsManager() {
   const confirm = useConfirm();
-  const [items, setItems]     = useState([]);
   const [tab, setTab]         = useState('pending');
-  const [search, setSearch]   = useState('');
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
   const [acting, setActing]   = useState(null);
   const [error, setError]     = useState('');
@@ -50,26 +54,14 @@ export default function AttendanceRequestsManager() {
 
   useEffect(() => { load(); /* eslint-disable-next-line */ }, [tab]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter((it) => {
-      const u = it.user || {};
-      const blob = [
-        u.name, u.firstName, u.lastName, u.employeeId, u.email, u.department, u.designation,
-        it.reason, it.date,
-      ].filter(Boolean).join(' ').toLowerCase();
-      return blob.includes(q);
-    });
-  }, [items, search]);
-
   const act = async (row, status) => {
-    const name = row.user?.name ||
-      [row.user?.firstName, row.user?.lastName].filter(Boolean).join(' ') ||
+    const name =
+      row.user?.name ||
+      [row.user?.firstName, row.user?.lastName].filter(Boolean).join(' ').trim() ||
       row.user?.employeeId || 'this employee';
     const ok = await confirm({
       title: `${status === 'approved' ? 'Approve' : 'Reject'} attendance request?`,
-      message: `${name} — ${fmtDDMMYYYY(row.date)}\n\n${row.reason || 'No reason given'}`,
+      message: `${name} — ${fmtDate(row.date)}\n\n${row.reason || 'No reason given'}`,
       confirmLabel: status === 'approved' ? 'Approve' : 'Reject',
       destructive: status === 'rejected',
     });
@@ -86,132 +78,137 @@ export default function AttendanceRequestsManager() {
   };
 
   return (
-    <div style={{ padding: '12px 16px 24px' }}>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-        {TABS.map((t) => (
+    <div style={{ padding: '16px 20px 24px' }}>
+      {/* Filter tabs — same chip style as LeaveApprovals */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+        {STATUSES.map((s) => (
           <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
+            key={s}
+            onClick={() => setTab(s)}
             style={{
-              padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700,
-              border: '1px solid ' + (tab === t.key ? '#16A34A' : '#E2E8F0'),
-              background: tab === t.key ? '#16A34A' : '#fff',
-              color: tab === t.key ? '#fff' : '#475569', cursor: 'pointer',
+              padding: '8px 16px', borderRadius: 999, fontSize: 13, fontWeight: 700,
+              border: '1px solid ' + (tab === s ? '#16A34A' : '#E2E8F0'),
+              background: tab === s ? '#16A34A' : '#fff',
+              color: tab === s ? '#fff' : '#334155',
+              cursor: 'pointer',
+              textTransform: 'capitalize',
             }}
-          >{t.label}</button>
+          >{s}</button>
         ))}
-        <div style={{ flex: 1 }} />
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '8px 12px', borderRadius: 10,
-          border: '1px solid #E2E8F0', background: '#fff', minWidth: 240,
-        }}>
-          <Search size={14} color="#94A3B8" />
-          <input
-            placeholder="Search name / id / reason…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ border: 'none', outline: 'none', flex: 1, fontSize: 13 }}
-          />
-        </div>
       </div>
 
       {error && (
         <div style={{
-          padding: '10px 12px', borderRadius: 8,
+          padding: '10px 12px', borderRadius: 8, marginBottom: 12,
           background: '#FEF2F2', border: '1px solid #FECACA',
-          color: '#991B1B', fontSize: 13, marginBottom: 12,
-        }}>{error}</div>
+          color: '#991B1B', fontSize: 13,
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <AlertCircle size={16} /> {error}
+        </div>
       )}
 
-      {loading && <div style={{ padding: 40, color: '#64748B' }}>Loading requests…</div>}
+      {loading && <div style={{ padding: 40, color: '#334155' }}>Loading requests…</div>}
 
-      {!loading && filtered.length === 0 && (
+      {!loading && items.length === 0 && (
         <div style={{
-          padding: 60, textAlign: 'center', color: '#64748B', fontSize: 14,
+          padding: 60, textAlign: 'center', color: '#334155', fontSize: 14,
           background: '#F8FAFC', borderRadius: 12, border: '1px dashed #CBD5E1',
         }}>
-          <Inbox size={32} color="#94A3B8" style={{ marginBottom: 8 }} />
-          <div>No {tab} requests from your team.</div>
+          <Inbox size={32} color="#475569" style={{ marginBottom: 8 }} />
+          <div>No {tab} attendance requests from your team.</div>
         </div>
       )}
 
-      {!loading && filtered.length > 0 && (
-        <div style={{ display: 'grid', gap: 10 }}>
-          {filtered.map((r) => {
-            const u = r.user || {};
-            const name = u.name ||
-              [u.firstName, u.lastName].filter(Boolean).join(' ') || '—';
-            return (
-              <div key={r._id} style={{
-                background: '#fff', borderRadius: 12,
-                border: '1px solid #E2E8F0',
-                padding: '14px 16px',
-                display: 'flex', flexDirection: 'column', gap: 10,
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{name}</div>
-                    <div style={{ fontSize: 11, color: '#64748B' }}>
-                      {u.employeeId || ''}{u.designation ? ` · ${u.designation}` : ''}
-                    </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 14 }}>
+        {!loading && items.map((r) => {
+          const employeeName =
+            r.user?.name ||
+            [r.user?.firstName, r.user?.lastName].filter(Boolean).join(' ') ||
+            r.user?.employeeId || '—';
+          const employeeId = r.user?.employeeId || '';
+          const designation = r.user?.designation || '';
+          const b = statusBadge(r.status);
+
+          return (
+            <div key={r._id} style={{
+              background: '#fff', borderRadius: 12, padding: 16,
+              border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              display: 'flex', flexDirection: 'column', gap: 8,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{employeeName}</div>
+                  <div style={{ fontSize: 11, color: '#334155' }}>
+                    {employeeId}{designation ? ` · ${designation}` : ''}
                   </div>
-                  <span style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 4,
-                    padding: '4px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-                    background: r.status === 'approved' ? '#F0FDF4'
-                              : r.status === 'rejected' ? '#FEF2F2' : '#FFFBEB',
-                    color:      r.status === 'approved' ? '#16A34A'
-                              : r.status === 'rejected' ? '#DC2626' : '#D97706',
-                  }}>
-                    {r.status === 'approved' ? <Check size={12} /> :
-                     r.status === 'rejected' ? <X size={12} /> : <Clock size={12} />}
-                    {r.status[0].toUpperCase() + r.status.slice(1)}
-                  </span>
                 </div>
-                <div style={{ fontSize: 12, color: '#475569', display: 'flex', gap: 16 }}>
-                  <div><b>Date:</b> {fmtDDMMYYYY(r.date)}</div>
-                  <div><b>Filed:</b> {fmtDDMMYYYY(r.createdAt)}</div>
-                </div>
-                {r.reason && (
-                  <div style={{
-                    fontSize: 12, color: '#475569',
-                    borderTop: '1px dashed #E2E8F0', paddingTop: 8,
-                  }}>
-                    <b>Reason:</b> {r.reason}
-                  </div>
-                )}
-                {r.status === 'pending' && (
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={() => act(r, 'approved')}
-                      disabled={acting === r._id}
-                      style={{
-                        flex: 1, padding: '8px 12px', borderRadius: 8,
-                        background: '#F0FDF4', color: '#15803D',
-                        border: '1px solid #BBF7D0', cursor: 'pointer',
-                        fontSize: 12, fontWeight: 700,
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                      }}
-                    ><Check size={14} /> Approve</button>
-                    <button
-                      onClick={() => act(r, 'rejected')}
-                      disabled={acting === r._id}
-                      style={{
-                        flex: 1, padding: '8px 12px', borderRadius: 8,
-                        background: '#FEF2F2', color: '#DC2626',
-                        border: '1px solid #FECACA', cursor: 'pointer',
-                        fontSize: 12, fontWeight: 700,
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                      }}
-                    ><X size={14} /> Reject</button>
-                  </div>
-                )}
+                <span style={{
+                  alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 999,
+                  fontSize: 10, fontWeight: 800,
+                  background: b.bg, color: b.fg, border: `1px solid ${b.bd}`,
+                  textTransform: 'uppercase', letterSpacing: 0.4,
+                }}>{b.txt}</span>
               </div>
-            );
-          })}
-        </div>
-      )}
+
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1F2937' }}>
+                Regularisation · {fmtDate(r.date)}
+              </div>
+              <div style={{ fontSize: 12, color: '#475569' }}>
+                Filed {fmtDate(r.createdAt)}
+              </div>
+
+              {r.reason && (
+                <div style={{
+                  fontSize: 12, color: '#475569',
+                  borderTop: '1px dashed #E2E8F0', paddingTop: 8,
+                }}>
+                  <b>Reason:</b> {r.reason}
+                </div>
+              )}
+
+              {!r.status || /pending/i.test(r.status) ? (
+                <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                  <button
+                    onClick={() => act(r, 'approved')}
+                    disabled={acting === r._id}
+                    style={{
+                      flex: 1, padding: '8px 12px', borderRadius: 8,
+                      background: '#F0FDF4', color: '#15803D',
+                      border: '1px solid #BBF7D0', cursor: 'pointer',
+                      fontSize: 12, fontWeight: 700,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    }}
+                  >
+                    <Check size={14} /> Approve
+                  </button>
+                  <button
+                    onClick={() => act(r, 'rejected')}
+                    disabled={acting === r._id}
+                    style={{
+                      flex: 1, padding: '8px 12px', borderRadius: 8,
+                      background: '#FEF2F2', color: '#DC2626',
+                      border: '1px solid #FECACA', cursor: 'pointer',
+                      fontSize: 12, fontWeight: 700,
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    }}
+                  >
+                    <X size={14} /> Reject
+                  </button>
+                </div>
+              ) : (
+                <div style={{ fontSize: 11, color: '#475569', marginTop: 4 }}>
+                  Decision logged{r.reviewedBy ? ` by ${r.reviewedBy}` : ''}.
+                </div>
+              )}
+
+              <div style={{ fontSize: 10, color: '#475569', display: 'flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
+                <Clock size={10} /> Filed {fmtDate(r.createdAt)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

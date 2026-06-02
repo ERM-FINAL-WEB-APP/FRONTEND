@@ -389,7 +389,7 @@
 .btn-close-modal {
   background: transparent;
   border: none;
-  color: #94A3B8;
+  color: #475569;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -418,7 +418,7 @@
 }
 
 .attendance-modal-body textarea::placeholder {
-  color: #94A3B8;
+  color: #475569;
 }
 
 .attendance-modal-body textarea:focus {

@@ -298,9 +298,9 @@ const Attendance = () => {
           </div>
 
           <div className="history-cards-container">
-            {loading && <div style={{ padding: 20, color: '#64748B' }}>Loading…</div>}
+            {loading && <div style={{ padding: 20, color: '#334155' }}>Loading…</div>}
             {!loading && history.length === 0 && (
-              <div style={{ padding: 24, textAlign: 'center', color: '#64748B', fontSize: 13 }}>
+              <div style={{ padding: 24, textAlign: 'center', color: '#334155', fontSize: 13 }}>
                 No attendance records for {MONTHS[month - 1]} {year}.
               </div>
             )}
@@ -347,7 +347,7 @@ const Attendance = () => {
                 </div>
               )}
               {requestDate && (
-                <div style={{ fontSize: 13, color: '#64748B', marginBottom: 8 }}>
+                <div style={{ fontSize: 13, color: '#334155', marginBottom: 8 }}>
                   For date: <strong>{requestDate}</strong>
                 </div>
               )}
@@ -368,7 +368,7 @@ const Attendance = () => {
                 onChange={(e) => setRequestReason(e.target.value)}
                 rows={6}
                 disabled={isRequestWindowClosed}
-                style={isRequestWindowClosed ? { background: '#F8FAFC', color: '#94A3B8' } : undefined}
+                style={isRequestWindowClosed ? { background: '#F8FAFC', color: '#475569' } : undefined}
               />
             </div>
             <div className="attendance-modal-footer">
