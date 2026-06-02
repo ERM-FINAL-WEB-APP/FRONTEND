@@ -68,6 +68,10 @@ const LeaveApprovals = () => {
   useEffect(() => { load(); }, [load]);
 
   const act = async (id, status) => {
+    // Confirm before firing the irreversible PATCH — the employee gets
+    // an immediate notification, so a misclick is hard to walk back.
+    const verb = status.toLowerCase();
+    if (!window.confirm(`Are you sure you want to ${verb} this request?`)) return;
     setActing(id);
     try {
       if (tab === 'leaves') await managerAPI.actLeave(id, status);

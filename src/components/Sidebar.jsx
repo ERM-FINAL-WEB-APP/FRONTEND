@@ -114,6 +114,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     : [...baseNavItems, profileNavItem];
 
   const handleLogout = () => {
+    if (!window.confirm('Are you sure you want to log out?')) return;
     try { sessionStorage.removeItem(MANAGER_FLAG_KEY); } catch {}
     logout();
     navigate('/login', { replace: true });

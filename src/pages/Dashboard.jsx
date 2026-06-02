@@ -69,19 +69,31 @@ const Dashboard = () => {
   }, []);
   useEffect(() => { refreshToday(); }, [refreshToday]);
 
-  // Pull latest 3 announcements.
+  // Pull latest 3 announcements. Polls every 60 s and on tab focus
+  // so HR-posted announcements appear here without a full page reload.
+  // Defensive about the response shape — the mobile backend returns a
+  // raw array, the HRMS proxy wraps it as { data: [...] }, and older
+  // builds used { items: [...] }; all three are accepted so the panel
+  // never goes blank just because of a serialiser change.
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const fetchAnns = async () => {
       try {
-        const res = await announcementAPI.list(3);
-        if (!cancelled) {
-          const list = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-          setAnnouncements(list);
-        }
-      } catch { /* leave empty */ }
-    })();
-    return () => { cancelled = true; };
+        const res  = await announcementAPI.list(3);
+        const body = res?.data;
+        const list =
+          Array.isArray(body)                ? body :
+          Array.isArray(body?.data)          ? body.data :
+          Array.isArray(body?.items)         ? body.items :
+          Array.isArray(body?.announcements) ? body.announcements : [];
+        if (!cancelled) setAnnouncements(list);
+      } catch { /* keep previous state */ }
+    };
+    fetchAnns();
+    const t = setInterval(fetchAnns, 60_000);
+    const onFocus = () => fetchAnns();
+    window.addEventListener('focus', onFocus);
+    return () => { cancelled = true; clearInterval(t); window.removeEventListener('focus', onFocus); };
   }, []);
 
   const checkedIn  = !!today.checkIn;

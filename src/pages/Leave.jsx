@@ -173,6 +173,7 @@ const Leave = () => {
     }
     setBusy(true);
     try {
+      if (!window.confirm('Submit this leave request to HR?')) { setBusy(false); return; }
       await leaveAPI.applyLeave({
         leaveType,
         startDate,
@@ -216,6 +217,7 @@ const Leave = () => {
     }
     setBusy(true);
     try {
+      if (!window.confirm('Submit this permission request to HR?')) { setBusy(false); return; }
       await leaveAPI.applyPermission({
         permissionType,
         date:      permDate,

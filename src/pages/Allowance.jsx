@@ -165,6 +165,7 @@ const Allowance = () => {
     }
     setBusy(true);
     try {
+      if (!window.confirm('Submit this allowance claim to HR?')) { setBusy(false); return; }
       await allowanceAPI.submit({
         type,
         fromLocation: fromLoc.trim(),

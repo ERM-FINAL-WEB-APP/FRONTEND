@@ -409,6 +409,7 @@ const Payslip = () => {
     try {
       // Request the SELECTED month/year, not the current month — the
       // employee may be scrolling back through their history.
+      if (!window.confirm(`Request your payslip for ${MONTH_SHORT[month-1]} ${year}?`)) { setReqBusy(false); return; }
       await payslipAPI.request(month, year);
       setReqDone('Request sent to HR.');
       setTimeout(() => setReqDone(''), 3000);
