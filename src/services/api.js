@@ -189,6 +189,11 @@ export const managerAPI = {
   attendance:    (date)  => get('/manager/attendance', { date }),
   attendanceSummary: ({ month, year } = {}) => get('/manager/attendance-summary', { month, year }),
   liveLocations: ()      => get('/manager/live-locations'),
+  // Attendance regularisation requests filed by team members on the
+  // mobile app — manager reviews and approves/rejects here.
+  attendanceRequests:    (params) => get('/manager/attendance-requests', params),
+  actAttendanceRequest:  (id, status, hrComment) =>
+    patch(`/manager/attendance-requests/${id}`, { status, hrComment }),
   postAnnouncement: (data) => post('/manager/announcements', data),
   myAnnouncements:  ()     => get('/manager/announcements'),
   deleteAnnouncement: (id) => del(`/manager/announcements/${id}`),

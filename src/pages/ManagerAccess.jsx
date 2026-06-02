@@ -4,6 +4,7 @@ import LiveTracking from './LiveTracking';
 import LeaveApprovals from './LeaveApprovals';
 import Reports from './Reports';
 import ManagerAnnouncements from './ManagerAnnouncements';
+import AttendanceRequestsManager from './AttendanceRequestsManager';
 import { managerAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './ManagerAccess.css';
@@ -121,6 +122,12 @@ const ManagerAccess = () => {
             Team Attendance Report
           </button>
           <button
+            className={`manager-tab ${activeTab === 'attendance-requests' ? 'active' : ''}`}
+            onClick={() => setActiveTab('attendance-requests')}
+          >
+            Attendance Requests
+          </button>
+          <button
             className={`manager-tab ${activeTab === 'announcements' ? 'active' : ''}`}
             onClick={() => setActiveTab('announcements')}
           >
@@ -132,6 +139,7 @@ const ManagerAccess = () => {
         {activeTab === 'approvals'     && <LeaveApprovals />}
         {activeTab === 'tracking'      && <LiveTracking />}
         {activeTab === 'reports'       && <Reports />}
+        {activeTab === 'attendance-requests' && <AttendanceRequestsManager />}
         {activeTab === 'announcements' && <ManagerAnnouncements />}
       </div>
     </div>
