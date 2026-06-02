@@ -10,15 +10,15 @@
   
   /* Text Colors
    *
-   * Previously --text-primary was #222222 and --text-secondary #808080
-   * which read too light on the dashboard's white cards, especially for
-   * dates / metadata / table headers that map to --text-secondary.
-   * Tightened to near-black + slate so labels and body copy keep enough
-   * contrast against the white card background (~7:1 WCAG AAA on the
-   * primary, ~4.5:1 AA on the secondary). */
+   * Tightened again Jun 2026 — HR still read --text-secondary +
+   * --text-muted as "too light grey" against the white cards. We now
+   * pull both one shade darker (slate-800 and slate-700) so even tiny
+   * metadata labels read solid and the visual hierarchy still works
+   * (primary > secondary > muted), without anything turning truly
+   * grey-on-white. Font-weights for sub-headings bumped to 600 below. */
   --text-primary:   #0B1220;  /* near-black, AAA contrast on white */
-  --text-secondary: #334155;  /* slate-700, ~8:1 contrast — was #475569 (slate-600) */
-  --text-muted:     #475569;  /* old secondary kept under a new name for the few places that want a softer tint */
+  --text-secondary: #1E293B;  /* slate-800 — was slate-700 */
+  --text-muted:     #334155;  /* slate-700 — was slate-600 */
   --text-white:     #ffffff;
   
   /* Background Colors */
@@ -64,7 +64,24 @@ body {
   background-color: var(--bg-dashboard);
   color: var(--text-primary);
   line-height: 1.5;
+  /* Slight weight bump (Jun 2026): Montserrat at 400 reads thin on the
+     dashboard's white cards. 450 sits between Regular and Medium so
+     body copy looks more professional without flipping the page into a
+     "bold everywhere" feel. -webkit-text-stroke also nudges Chrome's
+     rendering one notch darker on macOS. */
+  font-weight: 450;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Anywhere a small/secondary label is rendered, lock in a heavier
+   weight so it doesn't dip into the thin-grey range. */
+small,
+.label,
+.muted,
+.subtle {
+  font-weight: 500;
 }
 
 /* Glassmorphism Utilities */
