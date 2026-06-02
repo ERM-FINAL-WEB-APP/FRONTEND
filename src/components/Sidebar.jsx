@@ -15,6 +15,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useConfirm } from './ConfirmDialog';
 import { profileAPI, managerAPI } from '../services/api';
 import ermLogo from '../Assets/ERM_logo.svg';
 import './Sidebar.css';
@@ -113,8 +114,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     ? [...baseNavItems, managerNavItem, profileNavItem]
     : [...baseNavItems, profileNavItem];
 
-  const handleLogout = () => {
-    if (!window.confirm('Are you sure you want to log out?')) return;
+  const confirm = useConfirm();
+
+  const handleLogout = async () => {
+    const ok = await confirm({
+      title: 'Log out of ERM Web?',
+      message: "You'll be signed out of this session.",
+      confirmLabel: 'Log out',
+      destructive: true,
+    });
+    if (!ok) return;
     try { sessionStorage.removeItem(MANAGER_FLAG_KEY); } catch {}
     logout();
     navigate('/login', { replace: true });

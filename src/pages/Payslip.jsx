@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, ChevronDown, Pointer } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { payslipAPI, profileAPI } from '../services/api';
+import { useConfirm } from '../components/ConfirmDialog';
 import { useAuth } from '../context/AuthContext';
 import './Payslip.css';
 
@@ -283,6 +284,7 @@ const Payslip = () => {
   const [error,    setError]    = useState('');
   const [reqBusy,  setReqBusy]  = useState(false);
   const [reqDone,  setReqDone]  = useState('');
+  const confirm = useConfirm();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -409,7 +411,7 @@ const Payslip = () => {
     try {
       // Request the SELECTED month/year, not the current month — the
       // employee may be scrolling back through their history.
-      if (!window.confirm(`Request your payslip for ${MONTH_SHORT[month-1]} ${year}?`)) { setReqBusy(false); return; }
+      if (!(await confirm({ title: 'Request payslip?', message: `HR will be notified for ${MONTH_SHORT[month-1]} ${year}.`, confirmLabel: 'Request' }))) { setReqBusy(false); return; }
       await payslipAPI.request(month, year);
       setReqDone('Request sent to HR.');
       setTimeout(() => setReqDone(''), 3000);

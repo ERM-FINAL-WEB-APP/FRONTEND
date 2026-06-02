@@ -3,6 +3,7 @@ import { Plus, Send, Tag, Calendar, Trash2, AlertCircle, CheckCircle, X, Megapho
 import { managerAPI } from '../services/api';
 import './Announcements.css';
 
+import { useConfirm } from '../components/ConfirmDialog';
 /**
  * ManagerAnnouncements — used inside the Manager Access section.
  * Lets the signed-in manager:
@@ -33,6 +34,7 @@ function fmtDate(iso) {
 
 const ManagerAnnouncements = () => {
   const [items, setItems] = useState([]);
+  const confirm = useConfirm();
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [title, setTitle] = useState('');

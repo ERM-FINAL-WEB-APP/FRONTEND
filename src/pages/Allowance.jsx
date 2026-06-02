@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { allowanceAPI } from '../services/api';
+import { useConfirm } from '../components/ConfirmDialog';
 import './Allowance.css';
 
 /* ─── Custom Dropdown ─────────────────────────────── */
@@ -112,6 +113,7 @@ const Allowance = () => {
   const [busy,     setBusy]     = useState(false);
   const [error,    setError]    = useState('');
   const [success,  setSuccess]  = useState('');
+  const confirm = useConfirm();
 
   // Filters + history
   // ERM rolled out company-wide in June 2026 — pre-launch months have
@@ -165,7 +167,7 @@ const Allowance = () => {
     }
     setBusy(true);
     try {
-      if (!window.confirm('Submit this allowance claim to HR?')) { setBusy(false); return; }
+      if (!(await confirm({ title: 'Submit allowance claim?', message: 'HR will review the claim once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
       await allowanceAPI.submit({
         type,
         fromLocation: fromLoc.trim(),

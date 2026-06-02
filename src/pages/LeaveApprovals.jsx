@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Check, X, Clock, AlertCircle, Inbox, Filter } from 'lucide-react';
+import { useConfirm } from '../components/ConfirmDialog';
 import { managerAPI } from '../services/api';
 import './LeaveApprovals.css';
 
@@ -44,7 +45,8 @@ const LeaveApprovals = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState('');
-  const [acting,  setActing]  = useState(null);   // id of row currently being patched
+  const [acting,  setActing]  = useState(null);
+  const confirm = useConfirm();   // id of row currently being patched
   // Partial-approval modal — opens when the manager clicks Approve on an
   // allowance row. Shape: { row, approvedAmount, amountComment } | null.
   const [approveModal, setApproveModal] = useState(null);
@@ -71,7 +73,13 @@ const LeaveApprovals = () => {
     // Confirm before firing the irreversible PATCH — the employee gets
     // an immediate notification, so a misclick is hard to walk back.
     const verb = status.toLowerCase();
-    if (!window.confirm(`Are you sure you want to ${verb} this request?`)) return;
+    const ok = await confirm({
+      title: `${verb === 'approved' ? 'Approve' : 'Reject'} this request?`,
+      message: `The employee will be notified of your decision immediately.`,
+      confirmLabel: verb === 'approved' ? 'Approve' : 'Reject',
+      destructive: verb !== 'approved',
+    });
+    if (!ok) return;
     setActing(id);
     try {
       if (tab === 'leaves') await managerAPI.actLeave(id, status);

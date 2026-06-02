@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { leaveAPI } from '../services/api';
+import { useConfirm } from '../components/ConfirmDialog';
 import './Leave.css';
 
 /**
@@ -76,6 +77,7 @@ const Leave = () => {
   const [busy,    setBusy]    = useState(false);
   const [error,   setError]   = useState('');
   const [success, setSuccess] = useState('');
+  const confirm = useConfirm();
 
   // ── History ──────────────────────────────────────────────────────
   // Production launch: ERM went live for all employees in June 2026,
@@ -173,7 +175,7 @@ const Leave = () => {
     }
     setBusy(true);
     try {
-      if (!window.confirm('Submit this leave request to HR?')) { setBusy(false); return; }
+      if (!(await confirm({ title: 'Submit leave request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
       await leaveAPI.applyLeave({
         leaveType,
         startDate,
@@ -217,7 +219,7 @@ const Leave = () => {
     }
     setBusy(true);
     try {
-      if (!window.confirm('Submit this permission request to HR?')) { setBusy(false); return; }
+      if (!(await confirm({ title: 'Submit permission request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
       await leaveAPI.applyPermission({
         permissionType,
         date:      permDate,
