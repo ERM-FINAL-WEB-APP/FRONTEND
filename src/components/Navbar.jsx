@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, Bell, MapPin, User as UserIcon } from 'lucide-react';
+import { Bell, MapPin, User as UserIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { notificationAPI } from '../services/api';
@@ -94,10 +94,8 @@ const Navbar = ({ toggleSidebar }) => {
   return (
     <header className="navbar glass">
       <div className="navbar-left">
-        <div className="search-bar">
-          <Search className="search-icon" size={18} />
-          <input type="text" placeholder="Search employees, reports..." />
-        </div>
+        {/* Top search bar removed per HR — employees rarely used it
+            and it added visual noise next to the page-title block. */}
       </div>
 
       <div className="navbar-right">
