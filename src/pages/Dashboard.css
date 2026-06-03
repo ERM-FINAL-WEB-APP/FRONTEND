@@ -113,7 +113,10 @@
 }
 
 .btn-checkout {
-  background: #E50000;
+  /* Blue to match the log-out arrow icon used in the metric below
+     (Jun 2026 brief). Was red, but red read as a destructive
+     action — check-out isn't destructive, it's just the next step. */
+  background: #1565C0;
   color: white;
   border: none;
   padding: 10px 24px;
@@ -121,7 +124,7 @@
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(229, 0, 0, 0.3);
+  box-shadow: 0 4px 10px rgba(21, 101, 192, 0.3);
 }
 
 .attendance-metrics {
