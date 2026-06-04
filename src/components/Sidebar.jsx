@@ -83,7 +83,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       // never have to maintain a manager allowlist on the frontend.
       try {
         const res  = await managerAPI.team();
-        const has  = Array.isArray(res.data?.team) && res.data.team.length > 0;
+        const hasTeam   = Array.isArray(res.data?.team) && res.data.team.length > 0;
+        // Show the link whenever the signed-in user is a manager EITHER
+        // because they have a team OR because their role is explicitly
+        // 'manager' (set when HR flipped Convert-to-Manager in Employee
+        // List). The latter lets newly-promoted managers see the link
+        // immediately — they'll see the "No team yet" panel until HR
+        // assigns subordinates.
+        const profileRes = await profileAPI.getProfile().catch(() => null);
+        const myRole = String(profileRes?.data?.role || profileRes?.data?.user?.role || '').toLowerCase();
+        const isExplicitManager = myRole === 'manager';
+        const has = hasTeam || isExplicitManager;
         if (!cancelled) {
           setIsManager(has);
           try { sessionStorage.setItem(MANAGER_FLAG_KEY, has ? '1' : '0'); } catch {}
