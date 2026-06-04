@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { LogIn, LogOut, Hourglass, Megaphone } from 'lucide-react';
+import { Megaphone } from 'lucide-react';
 import { attendanceAPI, announcementAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
@@ -156,39 +156,6 @@ const Dashboard = () => {
         <div className="mobile-greeting">
           <h1>Hey {firstName} 👋</h1>
           <p>{greeting()}! Here's your day at a glance 👊</p>
-        </div>
-      </div>
-
-      {/* Overlapping Card */}
-      <div className="attendance-overlap-card card">
-        <div className="shift-pill-wrapper">
-          <span className="shift-pill">{(today.shiftName || 'GENERAL SHIFT').toUpperCase()}</span>
-        </div>
-
-        {/* Live clock only — Check In / Check Out buttons removed
-            per HR brief (Jun 2026). The ERM Web dashboard now shows
-            today's attendance summary read-only; punching in/out is
-            mobile-app exclusive. */}
-        <div className="time-action-row">
-          <div className="live-clock">{fmtClock(time)}</div>
-        </div>
-
-        <div className="attendance-metrics">
-          <div className="metric-item">
-            <LogIn size={24} className="metric-icon color-green" />
-            <span className="metric-time">{fmtHM(today.checkIn)}</span>
-            <span className="metric-label color-green">Check In</span>
-          </div>
-          <div className="metric-item">
-            <LogOut size={24} className="metric-icon color-blue" />
-            <span className="metric-time">{fmtHM(today.checkOut)}</span>
-            <span className="metric-label color-blue">Check Out</span>
-          </div>
-          <div className="metric-item">
-            <Hourglass size={24} className="metric-icon color-purple" />
-            <span className="metric-time">{workedHrs}</span>
-            <span className="metric-label color-purple">Working HR's</span>
-          </div>
         </div>
       </div>
 
