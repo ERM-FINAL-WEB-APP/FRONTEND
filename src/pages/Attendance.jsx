@@ -179,6 +179,9 @@ const Attendance = () => {
       });
       setReqSuccess('Request submitted. HR has been notified.');
       setRequestModalOpen(false);
+      // Reload calendar + summary so the day's card now reflects the
+      // newly-filed request. Uses the existing load() useCallback.
+      try { await load(); } catch { /* non-fatal — toast already showed */ }
     } catch (err) {
       setReqError(err?.message || 'Could not submit request.');
     } finally {

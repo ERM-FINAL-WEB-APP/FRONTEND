@@ -104,11 +104,6 @@ const Navbar = ({ toggleSidebar }) => {
           <div className="date">{formatDate(time)}</div>
         </div>
 
-        <div className="status-chip present">
-          <MapPin size={14} />
-          <span>At Office</span>
-        </div>
-
         <button
           className="icon-btn notification-btn"
           onClick={goToNotifications}

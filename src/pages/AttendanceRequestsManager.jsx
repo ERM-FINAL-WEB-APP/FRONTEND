@@ -126,12 +126,26 @@ export default function AttendanceRequestsManager() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 14 }}>
         {!loading && items.map((r) => {
+          // Reject 24-char hex strings — those are raw ObjectIds that
+          // leaked through when a ref field wasn't populated. Without
+          // this guard the card was showing `r.user.designation`'s hex
+          // when populate didn't drill into the Designation collection.
+          const isHex = (s) => typeof s === 'string' && /^[a-f0-9]{24}$/i.test(s.trim());
+          const safeLabel = (v, sidecar) => {
+            if (v && typeof v === 'object') {
+              const t = v.title || v.name || '';
+              if (t && !isHex(t)) return t;
+            }
+            if (typeof v === 'string' && v && !isHex(v)) return v;
+            if (sidecar && typeof sidecar === 'string' && !isHex(sidecar)) return sidecar;
+            return '';
+          };
           const employeeName =
             r.user?.name ||
             [r.user?.firstName, r.user?.lastName].filter(Boolean).join(' ') ||
             r.user?.employeeId || '—';
-          const employeeId = r.user?.employeeId || '';
-          const designation = r.user?.designation || '';
+          const employeeId  = isHex(r.user?.employeeId) ? '' : (r.user?.employeeId || '');
+          const designation = safeLabel(r.user?.designation, r.user?.designationTitle);
           const b = statusBadge(r);
 
           return (

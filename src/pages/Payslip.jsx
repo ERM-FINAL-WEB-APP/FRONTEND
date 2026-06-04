@@ -392,7 +392,10 @@ const Payslip = () => {
     const status = String(current.status || '').toLowerCase();
     if (current.downloadUrl || status === 'processed' || status === 'uploaded') return 'ready';
     if (status === 'requested' || status === 'pending')                          return 'requested';
-    return 'requested';
+    // Anything else (rejected, cancelled, empty status, garbage) → let
+    // the employee re-file. Earlier we returned 'requested' here, which
+    // locked the Request button forever after a rejection.
+    return 'none';
   })();
 
   const requestPayslip = async () => {
