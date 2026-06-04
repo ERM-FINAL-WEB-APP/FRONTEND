@@ -82,18 +82,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       // Server-side this filters by `assignedTo === <my name>`, so we
       // never have to maintain a manager allowlist on the frontend.
       try {
-        const res  = await managerAPI.team();
-        const hasTeam   = Array.isArray(res.data?.team) && res.data.team.length > 0;
-        // Show the link whenever the signed-in user is a manager EITHER
-        // because they have a team OR because their role is explicitly
-        // 'manager' (set when HR flipped Convert-to-Manager in Employee
-        // List). The latter lets newly-promoted managers see the link
-        // immediately — they'll see the "No team yet" panel until HR
-        // assigns subordinates.
-        const profileRes = await profileAPI.getProfile().catch(() => null);
-        const myRole = String(profileRes?.data?.role || profileRes?.data?.user?.role || '').toLowerCase();
-        const isExplicitManager = myRole === 'manager';
-        const has = hasTeam || isExplicitManager;
+        // Single source of truth — /api/manager/me checks role + email
+        // in Manager directory + has-team in one go. Replaces the
+        // earlier brittle two-fetch dance.
+        const meRes = await managerAPI.me();
+        const has = !!meRes.data?.isManager;
         if (!cancelled) {
           setIsManager(has);
           try { sessionStorage.setItem(MANAGER_FLAG_KEY, has ? '1' : '0'); } catch {}

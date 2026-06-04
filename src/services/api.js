@@ -176,6 +176,7 @@ export default {
 // "my team" via the `assignedTo` field on User records — any subordinate
 // where assignedTo matches the manager's name is included automatically.
 export const managerAPI = {
+  me:            ()      => get('/manager/me'),
   team:          ()      => get('/manager/team'),
   leaves:        (params)=> get('/manager/leaves', params),
   allowances:    (params)=> get('/manager/allowances', params),
