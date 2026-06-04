@@ -155,7 +155,7 @@ const Dashboard = () => {
       <div className="mobile-header-bg">
         <div className="mobile-greeting">
           <h1>Hey {firstName} 👋</h1>
-          <p>{greeting()}! Mark Your Attendance 👊</p>
+          <p>{greeting()}! Here's your day at a glance 👊</p>
         </div>
       </div>
 
@@ -165,24 +165,13 @@ const Dashboard = () => {
           <span className="shift-pill">{(today.shiftName || 'GENERAL SHIFT').toUpperCase()}</span>
         </div>
 
+        {/* Live clock only — Check In / Check Out buttons removed
+            per HR brief (Jun 2026). The ERM Web dashboard now shows
+            today's attendance summary read-only; punching in/out is
+            mobile-app exclusive. */}
         <div className="time-action-row">
           <div className="live-clock">{fmtClock(time)}</div>
-          <button
-            className={checkedIn ? "btn-checkout" : "btn-checkin"}
-            onClick={handleAttendance}
-            disabled={busy || (checkedIn && checkedOut)}
-          >
-            {busy ? '…' : buttonLabel}
-          </button>
         </div>
-
-        {error && (
-          <div style={{
-            margin: '8px 0', padding: '8px 12px',
-            background: '#FEF2F2', border: '1px solid #FECACA',
-            borderRadius: 8, color: '#991B1B', fontSize: 12,
-          }}>{error}</div>
-        )}
 
         <div className="attendance-metrics">
           <div className="metric-item">
