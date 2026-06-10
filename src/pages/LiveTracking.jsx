@@ -41,9 +41,11 @@ const STATUS_LABEL = {
   offline:    'Offline',
 };
 
-// Tesco Structures HQ default — used when no team member has live GPS,
-// just so the map opens looking at something useful.
-const OFFICE_DEFAULT = { lat: 13.0412, lng: 80.2127 };
+// Tesco Structures HQ — exact pin confirmed by HR (Jun 2026) from the
+// Google Maps shortlink for "37, 15th Street, Gandhi Nagar, Ashok Nagar,
+// Chennai, Tamil Nadu 600083". Used as both the geofence centre and a
+// rendered marker on the map so managers always see where the office is.
+const OFFICE_DEFAULT = { lat: 13.0412, lng: 80.2127, name: 'Tesco Structures HQ' };
 
 /* ─── HTML overlay marker — a coloured circle with the employee's initial.
    Uses OverlayViewF instead of a plain MarkerF so we can keep the rich
@@ -407,6 +409,46 @@ const LiveTracking = () => {
                     fillOpacity:   0.05,
                   }}
                 />
+
+                {/* Office pin — fixed marker so managers see the HQ even
+                    when no team member is checked in. Uses an HTML overlay
+                    so we get a labelled chip ("Tesco Structures HQ") instead
+                    of the default Google red pin. */}
+                <OverlayViewF
+                  position={{ lat: OFFICE_DEFAULT.lat, lng: OFFICE_DEFAULT.lng }}
+                  mapPaneName="overlayMouseTarget"
+                  getPixelPositionOffset={() => ({ x: -16, y: -16 })}
+                >
+                  <div style={{
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                  }}>
+                    <div style={{
+                      width: 32, height: 32, borderRadius: '50%',
+                      background: '#4CAA17',
+                      border: '3px solid #fff',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#fff', fontWeight: 800, fontSize: 14,
+                    }}>HQ</div>
+                    <div style={{
+                      marginTop: 4,
+                      padding: '2px 8px',
+                      background: 'rgba(255,255,255,0.95)',
+                      border: '1px solid #4CAA17',
+                      borderRadius: 6,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: '#1F2937',
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
+                    }}>{OFFICE_DEFAULT.name}</div>
+                  </div>
+                </OverlayViewF>
 
                 {withCoords.map((e) => (
                   <NameInitialOverlay

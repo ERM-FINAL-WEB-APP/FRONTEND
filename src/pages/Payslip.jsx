@@ -3,6 +3,7 @@ import { Download, ChevronDown, Pointer } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { payslipAPI, profileAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
+import Spinner from '../components/Spinner';
 import { useAuth } from '../context/AuthContext';
 import './Payslip.css';
 
@@ -653,12 +654,15 @@ const Payslip = () => {
                 : ''
               }
             >
-              <Pointer size={18} />
-              {reqBusy ? 'Requesting…'
-                : monthState === 'ready'      ? 'Already generated'
-                : monthState === 'requested'  ? 'Requested'
-                : monthState === 'tooEarly'   ? 'Not yet available'
-                : 'Request'}
+              {reqBusy ? <Spinner size={14} label="Requesting…" /> : (
+                <>
+                  <Pointer size={18} />
+                  {monthState === 'ready'      ? 'Already generated'
+                    : monthState === 'requested'  ? 'Requested'
+                    : monthState === 'tooEarly'   ? 'Not yet available'
+                    : 'Request'}
+                </>
+              )}
             </button>
             {current?.downloadUrl ? (
               <a className="ps-btn-download" href={current.downloadUrl} download={`Payslip_${MONTH_SHORT[month-1]}_${year}.pdf`}>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowLeft, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { complaintAPI } from '../services/api';
+import Spinner from '../components/Spinner';
 import './RaiseComplaint.css';
 
 /**
@@ -151,7 +152,7 @@ const RaiseComplaint = () => {
 
           <div className="complaint-actions">
             <button type="submit" className="btn-submit-complaint" disabled={busy}>
-              {busy ? 'Submitting…' : (<>Submit Complaint <Send size={18} /></>)}
+              {busy ? <Spinner size={14} label="Submitting…" /> : (<>Submit Complaint <Send size={18} /></>)}
             </button>
           </div>
         </form>

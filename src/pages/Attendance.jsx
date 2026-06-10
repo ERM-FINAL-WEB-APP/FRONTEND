@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { attendanceAPI } from '../services/api';
+import Spinner from '../components/Spinner';
 import './Attendance.css';
 
 /**
@@ -189,13 +190,43 @@ const Attendance = () => {
     }
   };
 
+  // "Today" used by the future-gating logic below: forward navigation
+  // is blocked once cursor reaches the current month, the forward
+  // chevron is dimmed, the month/year dropdowns hide future options,
+  // and in-month future days render as empty (no status colour).
+  const todayRef = new Date();
+  const curYear  = todayRef.getFullYear();
+  const curMonth = todayRef.getMonth() + 1; // 1-indexed
+  const curDay   = todayRef.getDate();
+  const canGoForward = !(
+    year > curYear || (year === curYear && month >= curMonth)
+  );
+
   const stepMonth = (delta) => {
     let m = month + delta;
     let y = year;
     if (m < 1)  { m = 12; y -= 1; }
     if (m > 12) { m = 1;  y += 1; }
+    // Block forward navigation past the current month — picking a
+    // future month would just show "No attendance records" with no
+    // explanation. Better to disable the action entirely.
+    if (delta > 0 && (y > curYear || (y === curYear && m > curMonth))) return;
     setMonth(m); setYear(y);
   };
+
+  // Dropdown options: only show months <= current month when the
+  // selected year IS the current year. Years dropdown is clamped at
+  // curYear so 2027 etc never appears.
+  const monthOptions = MONTHS.filter((_, i) => {
+    if (year < curYear) return true;
+    if (year === curYear) return i <= curMonth - 1;
+    return false;
+  });
+  const yearOptions = (() => {
+    const out = [];
+    for (let y = 2024; y <= curYear; y++) out.push(String(y));
+    return out;
+  })();
 
   return (
     <div className="attendance-dashboard">
@@ -209,7 +240,13 @@ const Attendance = () => {
               <h2>{MONTHS[month - 1]} {year}</h2>
               <div className="calendar-nav">
                 <button className="icon-btn-minimal" onClick={() => stepMonth(-1)} type="button"><ChevronLeft size={20} /></button>
-                <button className="icon-btn-minimal" onClick={() => stepMonth(+1)} type="button"><ChevronRight size={20} /></button>
+                <button
+                  className="icon-btn-minimal"
+                  onClick={() => stepMonth(+1)}
+                  type="button"
+                  disabled={!canGoForward}
+                  style={!canGoForward ? { opacity: 0.4, cursor: 'not-allowed' } : undefined}
+                ><ChevronRight size={20} /></button>
               </div>
             </div>
 
@@ -220,11 +257,22 @@ const Attendance = () => {
               {cells.map((c, i) => {
                 const rec = c.iso ? byDate[c.iso] : null;
                 const status = rec?.status;
+                // A future in-month day — keep the number visible but
+                // dimmed and skip the status dot so the calendar reads
+                // as "this hasn't happened yet", not "absent".
+                const isFuture = c.current && (
+                  year > curYear ||
+                  (year === curYear && month > curMonth) ||
+                  (year === curYear && month === curMonth && c.day > curDay)
+                );
                 return (
                   <div key={i} className={`calendar-cell ${c.current ? '' : 'empty'}`}>
-                    <span className="date-num">{c.day}</span>
+                    <span
+                      className="date-num"
+                      style={isFuture ? { color: '#C7CDD6' } : undefined}
+                    >{c.day}</span>
                     <div className="status-dots">
-                      {status && (
+                      {status && !isFuture && (
                         <div className="s-dot" style={{ backgroundColor: statusColor(status) }} />
                       )}
                     </div>
@@ -254,14 +302,21 @@ const Attendance = () => {
             <h3 className="section-title">Attendance</h3>
             <div className="filters">
               <CustomDropdown
-                options={MONTHS}
+                options={monthOptions}
                 defaultSelected={MONTHS[month - 1]}
                 onSelect={(label) => setMonth(MONTHS.indexOf(label) + 1)}
               />
               <CustomDropdown
-                options={['2024','2025','2026','2027']}
+                options={yearOptions}
                 defaultSelected={String(year)}
-                onSelect={(label) => setYear(parseInt(label, 10))}
+                onSelect={(label) => {
+                  const y = parseInt(label, 10);
+                  setYear(y);
+                  // If switching to current year while a future month is
+                  // selected, clamp the month back to the current month so
+                  // the user doesn't land on an empty future view.
+                  if (y === curYear && month > curMonth) setMonth(curMonth);
+                }}
               />
             </div>
           </div>
@@ -382,7 +437,7 @@ const Attendance = () => {
                 type="button"
                 title={isRequestWindowClosed ? 'Request window closed — past the 2-day cutoff' : ''}
               >
-                {reqBusy ? 'Submitting…' : isRequestWindowClosed ? 'Window Closed' : 'Submit Request'}
+                {reqBusy ? <Spinner size={14} label="Submitting…" /> : isRequestWindowClosed ? 'Window Closed' : 'Submit Request'}
               </button>
             </div>
           </div>

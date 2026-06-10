@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { allowanceAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
+import Spinner from '../components/Spinner';
 import './Allowance.css';
 
 /* ─── Custom Dropdown ─────────────────────────────── */
@@ -294,7 +295,7 @@ const Allowance = () => {
               </div>
             )}
             <button type="submit" className="al-submit-btn" disabled={busy}>
-              {busy ? 'Submitting…' : 'Submit'}
+              {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit'}
             </button>
           </form>
           )}

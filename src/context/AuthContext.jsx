@@ -22,19 +22,69 @@ const KEY_TOKEN = 'erm_web_token';
 // Wrap window.fetch ONCE so every request from anywhere in the app
 // carries the JWT in the Authorization header. Idempotent — re-running
 // (e.g. after login) doesn't stack wrappers, it just re-binds the token.
+//
+// Session policy: the backend signs the JWT with a 10-day expiry. When
+// the token expires (or is otherwise rejected) the next API call comes
+// back as 401 — we catch that here, wipe local auth, and force a hard
+// reload to /login so React state is fully reset. Skip the auth routes
+// themselves so a wrong-password 401 stays a normal form error.
 let _originalFetch = null;
+let _sessionExpiring = false;
+function _isAuthRoute(url) {
+  return /\\/auth\\/(login|send-otp|verify-otp|reset-password|change-password)/i.test(String(url || ''));
+}
+function _handleSessionExpired() {
+  if (_sessionExpiring) return;
+  _sessionExpiring = true;
+  try {
+    localStorage.removeItem(KEY_USER);
+    localStorage.removeItem(KEY_TOKEN);
+  } catch { /* */ }
+  // Hard-reload to /login so every component remounts with a clean slate.
+  // Defer slightly so the in-flight render finishes painting first.
+  setTimeout(() => {
+    try { window.location.replace('/login'); }
+    catch { /* */ }
+  }, 50);
+}
 function installFetchInterceptor(token) {
   if (typeof window === 'undefined') return;
   if (!_originalFetch) _originalFetch = window.fetch.bind(window);
-  window.fetch = (input, init = {}) => {
+  window.fetch = async (input, init = {}) => {
     const headers = new Headers(
       init.headers || (typeof input !== 'string' ? input.headers : undefined) || {}
     );
     if (token && !headers.has('Authorization')) {
       headers.set('Authorization', `Bearer ${token}`);
     }
-    return _originalFetch(input, { ...init, headers });
+    const res = await _originalFetch(input, { ...init, headers });
+    // 401 → session has expired. Bounce to login (unless this WAS a
+    // login/OTP/reset call, in which case let the form show the error).
+    const url = typeof input === 'string' ? input : (input && input.url) || '';
+    if (res && res.status === 401 && !_isAuthRoute(url)) {
+      _handleSessionExpired();
+    }
+    return res;
   };
+}
+
+// Pure-client check: decode the JWT payload (no signature verify — the
+// server reverifies on every call) and read `exp` to detect expiry
+// without making a network round-trip. Used on app hydrate so a stale
+// token doesn't even get a chance to fire a 401.
+function isJwtExpired(token) {
+  try {
+    const parts = String(token || '').split('.');
+    if (parts.length !== 3) return true;
+    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+    const json = atob(b64 + pad);
+    const payload = JSON.parse(json);
+    if (!payload || typeof payload.exp !== 'number') return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true; // malformed → treat as expired
+  }
 }
 
 function persistAuth(user, token) {
@@ -72,8 +122,15 @@ export const AuthProvider = ({ children }) => {
     const u = readStoredUser();
     const t = readStoredToken();
     if (u && t) {
-      setUser(u);
-      installFetchInterceptor(t);
+      if (isJwtExpired(t)) {
+        // 10-day session window has elapsed — wipe stale auth and let
+        // the routes guard send the user to /login.
+        clearAuth();
+        setUser(null);
+      } else {
+        setUser(u);
+        installFetchInterceptor(t);
+      }
     }
     setLoading(false);
   }, []);

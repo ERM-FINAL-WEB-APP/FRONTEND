@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { leaveAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
+import Spinner from '../components/Spinner';
 import './Leave.css';
 
 /**
@@ -343,7 +344,7 @@ const Leave = () => {
 
                 <div className="form-actions">
                   <button type="submit" className="btn-submit-green" disabled={busy}>
-                    {busy ? 'Submitting…' : 'Submit Leave Request'}
+                    {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit Leave Request'}
                   </button>
                 </div>
               </form>
@@ -411,7 +412,7 @@ const Leave = () => {
 
                 <div className="form-actions">
                   <button type="submit" className="btn-submit-green" disabled={busy}>
-                    {busy ? 'Submitting…' : 'Submit Permission Request'}
+                    {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit Permission Request'}
                   </button>
                 </div>
               </form>
