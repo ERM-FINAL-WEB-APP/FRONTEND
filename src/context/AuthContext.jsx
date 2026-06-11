@@ -31,7 +31,7 @@ const KEY_TOKEN = 'erm_web_token';
 let _originalFetch = null;
 let _sessionExpiring = false;
 function _isAuthRoute(url) {
-  return /\\/auth\\/(login|send-otp|verify-otp|reset-password|change-password)/i.test(String(url || ''));
+  return /\/auth\/(login|send-otp|verify-otp|reset-password|change-password)/i.test(String(url || ''));
 }
 function _handleSessionExpired() {
   if (_sessionExpiring) return;
