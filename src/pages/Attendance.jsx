@@ -128,26 +128,30 @@ const Attendance = () => {
     }
   }, [reqSuccess]);
 
-  // Build calendar grid: first weekday + day count
+  // Build calendar grid: ONLY the selected month's dates (Jun 2026 —
+  // mirror mobile behaviour at HR's request):
+  //   • Leading offset cells are EMPTY placeholders so the first day
+  //     falls in the correct weekday column.
+  //   • Grid STOPS at the last day of the current month — NO greyed-out
+  //     trailing dates from the next month appear below.
+  //   • Final row is padded with empty cells to keep the 7-column track.
   const firstDay = new Date(year, month - 1, 1);
   const firstWeekday = (firstDay.getDay() + 6) % 7; // Mon=0
   const daysInMonth = new Date(year, month, 0).getDate();
 
   const cells = [];
-  // previous month tail
-  const prevMonthDays = new Date(year, month - 1, 0).getDate();
-  for (let i = firstWeekday - 1; i >= 0; i--) {
-    cells.push({ day: prevMonthDays - i, current: false, iso: '' });
+  // Leading empty placeholders.
+  for (let i = 0; i < firstWeekday; i++) {
+    cells.push({ day: 0, current: false, iso: '' });
   }
-  // current month
+  // Current month days.
   for (let d = 1; d <= daysInMonth; d++) {
     const iso = `${year}-${String(month).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     cells.push({ day: d, current: true, iso });
   }
-  // next month head (fill to multiple of 7)
+  // Trailing empty placeholders to complete the last row.
   while (cells.length % 7 !== 0) {
-    const d = cells.length - (firstWeekday + daysInMonth);
-    cells.push({ day: d + 1, current: false, iso: '' });
+    cells.push({ day: 0, current: false, iso: '' });
   }
 
   const history = Object.values(byDate)
@@ -217,14 +221,21 @@ const Attendance = () => {
   // Dropdown options: only show months <= current month when the
   // selected year IS the current year. Years dropdown is clamped at
   // curYear so 2027 etc never appears.
+  // Historical floor — the app launched June 2026. Disallow any
+  // months/years before that (HR request — there are no records to
+  // show pre-launch, so picking them confused employees).
+  const YEAR_FLOOR  = 2026;
+  const MONTH_FLOOR = 5; // June (0-indexed)
   const monthOptions = MONTHS.filter((_, i) => {
+    if (year < YEAR_FLOOR) return false;
+    if (year === YEAR_FLOOR && i < MONTH_FLOOR) return false;
     if (year < curYear) return true;
     if (year === curYear) return i <= curMonth - 1;
     return false;
   });
   const yearOptions = (() => {
     const out = [];
-    for (let y = 2024; y <= curYear; y++) out.push(String(y));
+    for (let y = YEAR_FLOOR; y <= curYear; y++) out.push(String(y));
     return out;
   })();
 
@@ -255,18 +266,35 @@ const Attendance = () => {
                 <div key={d} className="weekday">{d}</div>
               ))}
               {cells.map((c, i) => {
+                // Empty placeholder cell (leading offset or trailing
+                // padding to complete the final row). Render blank so
+                // the grid stays a perfect 7-column track but doesn't
+                // show day numbers from adjacent months.
+                if (!c.current || c.day === 0) {
+                  return <div key={i} className="calendar-cell empty" />;
+                }
                 const rec = c.iso ? byDate[c.iso] : null;
-                const status = rec?.status;
+                let status = rec?.status;
                 // A future in-month day — keep the number visible but
                 // dimmed and skip the status dot so the calendar reads
                 // as "this hasn't happened yet", not "absent".
-                const isFuture = c.current && (
+                const isFuture =
                   year > curYear ||
                   (year === curYear && month > curMonth) ||
-                  (year === curYear && month === curMonth && c.day > curDay)
-                );
+                  (year === curYear && month === curMonth && c.day > curDay);
+                // Past weekday with no record AND not a Sunday →
+                // surface as Absent so HR's question "why is the
+                // calendar blank?" goes away. Mirrors mobile #242.
+                const cellDate = new Date(year, month - 1, c.day);
+                const isPastWeekday =
+                  !isFuture &&
+                  cellDate.getDay() !== 0 &&
+                  !(year === curYear && month === curMonth && c.day === curDay);
+                if (isPastWeekday && !status) {
+                  status = 'absent';
+                }
                 return (
-                  <div key={i} className={`calendar-cell ${c.current ? '' : 'empty'}`}>
+                  <div key={i} className="calendar-cell">
                     <span
                       className="date-num"
                       style={isFuture ? { color: '#C7CDD6' } : undefined}
@@ -316,6 +344,9 @@ const Attendance = () => {
                   // selected, clamp the month back to the current month so
                   // the user doesn't land on an empty future view.
                   if (y === curYear && month > curMonth) setMonth(curMonth);
+                  // If switching to the floor year (2026) while a month
+                  // before June is selected, clamp forward to June.
+                  if (y === YEAR_FLOOR && month - 1 < MONTH_FLOOR) setMonth(MONTH_FLOOR + 1);
                 }}
               />
             </div>
