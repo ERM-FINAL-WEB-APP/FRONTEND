@@ -351,7 +351,13 @@ const Leave = () => {
                       className="form-control"
                       min={min}
                       value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setStartDate(v);
+                        // Auto-bump End Date forward if it's now earlier
+                        // than the new Start (#280). Matches mobile behaviour.
+                        if (endDate && v && endDate < v) setEndDate(v);
+                      }}
                     />
                   </div>
                   <div className="form-group">
