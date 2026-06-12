@@ -307,12 +307,27 @@ const Allowance = () => {
           <div className="al-filter-row mb-16">
             <span className="al-this-month">Month</span>
             <Dropdown
-              options={year === LAUNCH_YEAR ? MONTHS_SHORT.slice(LAUNCH_MONTH - 1) : MONTHS_SHORT}
+              options={(() => {
+                // Floor month + cap at current month for the current year.
+                const now = new Date();
+                const curM = now.getMonth() + 1;
+                const curY = now.getFullYear();
+                return MONTHS_SHORT.filter((_, i) => {
+                  if (year === LAUNCH_YEAR && i < LAUNCH_MONTH - 1) return false;
+                  if (year === curY && i > curM - 1) return false;
+                  return true;
+                });
+              })()}
               defaultSelected={MONTHS_SHORT[month - 1]}
               onSelect={(m) => setMonth(MONTHS_SHORT.indexOf(m) + 1)}
             />
             <Dropdown
-              options={Array.from({ length: 4 }, (_, i) => String(LAUNCH_YEAR + i))}
+              options={(() => {
+                const curY = new Date().getFullYear();
+                const out = [];
+                for (let y = LAUNCH_YEAR; y <= curY; y++) out.push(String(y));
+                return out;
+              })()}
               defaultSelected={String(year)}
               onSelect={(y) => setYear(parseInt(y, 10))}
             />

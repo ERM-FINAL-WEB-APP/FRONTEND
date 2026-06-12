@@ -99,6 +99,33 @@ const Attendance = () => {
   const [reqError,         setReqError]         = useState('');
   const [reqSuccess,       setReqSuccess]       = useState('');
 
+  // Map<YYYY-MM-DD, 'pending'|'approved'|'rejected'> of attendance
+  // requests the user has already filed. Drives the per-row button
+  // label so it mirrors ERM Mobile exactly — a request filed on mobile
+  // shows "Requested" on web (and vice versa) without anyone refreshing.
+  // Refreshed on mount + every time a new request is saved.
+  const [requestedDates, setRequestedDates] = useState(new Map());
+  const refreshRequestedDates = useCallback(async () => {
+    try {
+      const r = await attendanceAPI.listRequests();
+      const items = Array.isArray(r?.data) ? r.data : [];
+      const next = new Map();
+      for (const x of items) {
+        const date   = x?.date;
+        const status = String(x?.status || '').toLowerCase();
+        if (!date) continue;
+        // Keep the most recent non-rejected status; a rejected row is
+        // still recorded so the button shows "Rejected — tap to re-file".
+        if (status === 'pending' || status === 'approved' || status === 'rejected') {
+          const existing = next.get(date);
+          if (!existing || existing === 'rejected') next.set(date, status);
+        }
+      }
+      setRequestedDates(next);
+    } catch { /* keep previous map on failure */ }
+  }, []);
+  useEffect(() => { refreshRequestedDates(); }, [refreshRequestedDates]);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -184,6 +211,14 @@ const Attendance = () => {
       });
       setReqSuccess('Request submitted. HR has been notified.');
       setRequestModalOpen(false);
+      // Optimistic update + server reload so the row's button flips to
+      // "Requested" immediately (mirrors mobile behaviour).
+      setRequestedDates((prev) => {
+        const next = new Map(prev);
+        next.set(requestDate, 'pending');
+        return next;
+      });
+      refreshRequestedDates();
       // Reload calendar + summary so the day's card now reflects the
       // newly-filed request. Uses the existing load() useCallback.
       try { await load(); } catch { /* non-fatal — toast already showed */ }
@@ -397,6 +432,7 @@ const Attendance = () => {
               const wh = Number(r.workedHours || 0);
               const hh = String(Math.floor(wh)).padStart(2, '0');
               const mm = String(Math.round((wh - Math.floor(wh)) * 60)).padStart(2, '0');
+              const reqStatus = requestedDates.get(r.date) || '';
               return (
                 <HistoryCard
                   key={r.date}
@@ -407,6 +443,7 @@ const Attendance = () => {
                   checkOut={fmtTime12(r.checkOut)}
                   workingHrs={`${hh}:${mm}`}
                   onRequest={() => openRequest(r.date)}
+                  reqStatus={reqStatus}
                 />
               );
             })}
@@ -518,28 +555,56 @@ const LegendItem = ({ color, label }) => (
   </div>
 );
 
-const HistoryCard = ({ date, status, statusClass, checkIn, checkOut, workingHrs, onRequest }) => (
-  <div className="history-detail-card card">
-    <div className="h-card-header mb-4">
-      <span className="h-date">{date}</span>
-      <span className={`h-badge ${statusClass}`}>{status}</span>
+const HistoryCard = ({ date, status, statusClass, checkIn, checkOut, workingHrs, onRequest, reqStatus }) => {
+  // Per-row button lifecycle (mirrors ERM Mobile):
+  //   pending  → "Requested" (disabled, grey)
+  //   approved → "Approved"  (disabled, green)
+  //   rejected → "Rejected — tap to re-file" (enabled, red)
+  //   none     → "Request" (enabled, primary)
+  const isPending  = reqStatus === 'pending';
+  const isApproved = reqStatus === 'approved';
+  const isRejected = reqStatus === 'rejected';
+  const btnDisabled = isPending || isApproved;
+  let label = 'Request';
+  if (isApproved)      label = 'Approved';
+  else if (isRejected) label = 'Rejected — tap to re-file';
+  else if (isPending)  label = 'Requested';
+  const tintStyle =
+    isPending  ? { background: '#E2E8F0', color: '#475569', cursor: 'not-allowed' } :
+    isApproved ? { background: '#DCFCE7', color: '#15803D', cursor: 'not-allowed' } :
+    isRejected ? { background: '#FCE4E4', color: '#B91C1C' } :
+    undefined;
+  return (
+    <div className="history-detail-card card">
+      <div className="h-card-header mb-4">
+        <span className="h-date">{date}</span>
+        <span className={`h-badge ${statusClass}`}>{status}</span>
+      </div>
+      <div className="h-card-metrics mb-4">
+        <div className="h-metric">
+          <div className="h-metric-val text-green">{checkIn}</div>
+          <div className="h-metric-lbl">Check In</div>
+        </div>
+        <div className="h-metric">
+          <div className="h-metric-val text-green">{checkOut}</div>
+          <div className="h-metric-lbl">Check Out</div>
+        </div>
+        <div className="h-metric">
+          <div className="h-metric-val text-green">{workingHrs}</div>
+          <div className="h-metric-lbl">Working HR's</div>
+        </div>
+      </div>
+      <button
+        className="btn-request"
+        onClick={onRequest}
+        type="button"
+        disabled={btnDisabled}
+        style={tintStyle}
+      >
+        {label}
+      </button>
     </div>
-    <div className="h-card-metrics mb-4">
-      <div className="h-metric">
-        <div className="h-metric-val text-green">{checkIn}</div>
-        <div className="h-metric-lbl">Check In</div>
-      </div>
-      <div className="h-metric">
-        <div className="h-metric-val text-green">{checkOut}</div>
-        <div className="h-metric-lbl">Check Out</div>
-      </div>
-      <div className="h-metric">
-        <div className="h-metric-val text-green">{workingHrs}</div>
-        <div className="h-metric-lbl">Working HR's</div>
-      </div>
-    </div>
-    <button className="btn-request" onClick={onRequest} type="button">Request</button>
-  </div>
-);
+  );
+};
 
 export default Attendance;

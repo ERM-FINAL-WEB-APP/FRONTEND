@@ -57,6 +57,53 @@ function fmtTime(t) {
   } catch { return t; }
 }
 
+/**
+ * Time range for the Permission start/end <input type="time"> fields.
+ *
+ * Rules (Jun 2026 — HR request):
+ *   • If permDate is TODAY → start time floor is the live current time
+ *     rounded UP to the next 30-min slot. End time stays capped at 19:00.
+ *   • If permDate is a future date → standard office window 10:00 – 19:00.
+ *
+ * Returns { startMin, startMax, endMin, endMax } — strings in HH:mm or ''
+ * (empty disables the constraint).
+ */
+function getPermTimeRange(permDate) {
+  const HARD_END = '19:00'; // 7 PM end of standard office day
+  const HARD_START_FUTURE = '10:00';
+
+  if (!permDate) {
+    return { startMin: HARD_START_FUTURE, startMax: HARD_END, endMin: HARD_START_FUTURE, endMax: HARD_END };
+  }
+
+  const today = new Date();
+  const todayIso =
+    today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+
+  if (permDate !== todayIso) {
+    // Future date — office hours only.
+    return { startMin: HARD_START_FUTURE, startMax: HARD_END, endMin: HARD_START_FUTURE, endMax: HARD_END };
+  }
+
+  // Today — round up to next half hour for the start floor.
+  let h = today.getHours();
+  let m = today.getMinutes();
+  if (m === 0)      m = 0;
+  else if (m <= 30) m = 30;
+  else { m = 0; h += 1; }
+  const liveFloor =
+    String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+
+  return {
+    startMin: liveFloor,
+    startMax: HARD_END,
+    endMin:   liveFloor,
+    endMax:   HARD_END,
+  };
+}
+
 const Leave = () => {
   const [activeTab, setActiveTab] = useState('leave');
 
@@ -384,7 +431,10 @@ const Leave = () => {
                     <input
                       type="time"
                       className="form-control"
+                      placeholder="HH:MM"
                       value={startTime}
+                      min={getPermTimeRange(permDate).startMin}
+                      max={getPermTimeRange(permDate).startMax}
                       onChange={(e) => setStartTime(e.target.value)}
                     />
                   </div>
@@ -393,7 +443,10 @@ const Leave = () => {
                     <input
                       type="time"
                       className="form-control"
+                      placeholder="HH:MM"
                       value={endTime}
+                      min={getPermTimeRange(permDate).endMin}
+                      max={getPermTimeRange(permDate).endMax}
                       onChange={(e) => setEndTime(e.target.value)}
                     />
                   </div>
@@ -426,12 +479,32 @@ const Leave = () => {
             <h3 className="section-title">{activeTab === 'leave' ? 'Leave History' : 'Permission History'}</h3>
             <div className="filters">
               <CustomDropdown
-                options={histYear === LAUNCH_YEAR ? MONTHS.slice(LAUNCH_MONTH - 1) : MONTHS}
+                options={(() => {
+                  // Build month list with two rules:
+                  //   • If histYear is the FLOOR year (2026), hide months before June.
+                  //   • If histYear is the CURRENT year, hide months after the current month.
+                  // Past full years see all 12 months.
+                  const now = new Date();
+                  const curM = now.getMonth() + 1;
+                  const curY = now.getFullYear();
+                  return MONTHS.filter((_, i) => {
+                    if (histYear === LAUNCH_YEAR && i < LAUNCH_MONTH - 1) return false;
+                    if (histYear === curY && i > curM - 1) return false;
+                    return true;
+                  });
+                })()}
                 defaultSelected={MONTHS[histMonth - 1]}
                 onSelect={(label) => setHistMonth(MONTHS.indexOf(label) + 1)}
               />
               <CustomDropdown
-                options={Array.from({ length: 4 }, (_, i) => String(LAUNCH_YEAR + i))}
+                options={(() => {
+                  // Start at 2026 (LAUNCH_YEAR), end at the current calendar year.
+                  // During 2026 → [2026]; from Jan 2027 → [2026, 2027]; etc.
+                  const curY = new Date().getFullYear();
+                  const out = [];
+                  for (let y = LAUNCH_YEAR; y <= curY; y++) out.push(String(y));
+                  return out;
+                })()}
                 defaultSelected={String(histYear)}
                 onSelect={(label) => setHistYear(parseInt(label, 10))}
               />
