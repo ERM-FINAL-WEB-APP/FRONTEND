@@ -3,6 +3,7 @@ import { ArrowLeft, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { complaintAPI } from '../services/api';
 import Spinner from '../components/Spinner';
+import SubmitLoader from '../components/SubmitLoader';
 import './RaiseComplaint.css';
 
 /**
@@ -80,6 +81,17 @@ const RaiseComplaint = () => {
     );
   }
 
+
+  // #305 — derived form-valid flag. Submit is disabled (grey) unless
+  // subject + description are both filled with a usable length and a
+  // priority is selected. When everything is valid the button flips to
+  // active green; emptying any field flips it straight back.
+  const isComplaintValid = !!(
+    subject.trim().length     >= 3 &&
+    priority &&
+    description.trim().length >= 5
+  );
+
   return (
     <div className="complaint-page">
       <div className="complaint-header-mobile">
@@ -151,12 +163,18 @@ const RaiseComplaint = () => {
           </div>
 
           <div className="complaint-actions">
-            <button type="submit" className="btn-submit-complaint" disabled={busy}>
+            <button type="submit" className="btn-submit-complaint" disabled={busy || !isComplaintValid} style={{ backgroundColor: (busy || !isComplaintValid) ? '#94A3B8' : '#16A34A', color: '#fff', cursor: (busy || !isComplaintValid) ? 'not-allowed' : 'pointer', opacity: (busy || !isComplaintValid) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}>
               {busy ? <Spinner size={14} label="Submitting…" /> : (<>Submit Complaint <Send size={18} /></>)}
             </button>
           </div>
         </form>
       </div>
+      {/* Premium centered loader during complaint submit (#298). */}
+      <SubmitLoader
+        visible={busy}
+        label="Submitting your complaint"
+        sub="Routing it to the right team…"
+      />
     </div>
   );
 };

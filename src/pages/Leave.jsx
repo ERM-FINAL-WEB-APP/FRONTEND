@@ -3,6 +3,7 @@ import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { leaveAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
 import Spinner from '../components/Spinner';
+import SubmitLoader from '../components/SubmitLoader';
 import './Leave.css';
 
 /**
@@ -290,6 +291,28 @@ const Leave = () => {
 
   const min = todayISO();
 
+  // #305 — derived form-valid flags. Submit is disabled (grey) unless
+  // EVERY mandatory field is filled with valid data; the instant the
+  // user types the last missing character the button flips to active
+  // green. Clearing any field flips it back to grey/disabled.
+  const isLeaveValid = !!(
+    leaveType &&
+    startDate &&
+    endDate &&
+    reason.trim().length >= 3 &&
+    startDate >= min &&
+    endDate >= startDate
+  );
+  const isPermissionValid = !!(
+    permissionType &&
+    permDate &&
+    startTime &&
+    endTime &&
+    permReason.trim().length >= 3 &&
+    permDate >= min &&
+    endTime > startTime
+  );
+
   return (
     <div className="leave-dashboard">
       <div className="dashboard-layout">
@@ -396,7 +419,7 @@ const Leave = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="submit" className="btn-submit-green" disabled={busy}>
+                  <button type="submit" className="btn-submit-green" disabled={busy || !isLeaveValid} style={{ backgroundColor: (busy || !isLeaveValid) ? '#94A3B8' : '#16A34A', cursor: (busy || !isLeaveValid) ? 'not-allowed' : 'pointer', opacity: (busy || !isLeaveValid) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}>
                     {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit Leave Request'}
                   </button>
                 </div>
@@ -470,7 +493,7 @@ const Leave = () => {
                 </div>
 
                 <div className="form-actions">
-                  <button type="submit" className="btn-submit-green" disabled={busy}>
+                  <button type="submit" className="btn-submit-green" disabled={busy || !isPermissionValid} style={{ backgroundColor: (busy || !isPermissionValid) ? '#94A3B8' : '#16A34A', cursor: (busy || !isPermissionValid) ? 'not-allowed' : 'pointer', opacity: (busy || !isPermissionValid) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}>
                     {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit Permission Request'}
                   </button>
                 </div>
@@ -553,6 +576,15 @@ const Leave = () => {
         </div>
 
       </div>
+      {/* Premium centered loader during leave / permission submit (#298).
+          Same `busy` flag already disables the Submit button, but adding
+          this overlay locks the entire page so users on a slow connection
+          can't double-tap and create duplicate rows. */}
+      <SubmitLoader
+        visible={busy}
+        label="Submitting your request"
+        sub="Sending it to your manager and HR…"
+      />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { ChevronDown, AlertCircle, CheckCircle } from 'lucide-react';
 import { allowanceAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
 import Spinner from '../components/Spinner';
+import SubmitLoader from '../components/SubmitLoader';
 import './Allowance.css';
 
 /* ─── Custom Dropdown ─────────────────────────────── */
@@ -148,6 +149,19 @@ const Allowance = () => {
 
   useEffect(() => { loadHistory(); }, [loadHistory]);
 
+  // #319 — Clear the shared items + summary state immediately when the
+  // user flips between Travel and Petrol tabs. Without this, the rows
+  // from the previous tab keep rendering through the new tab's UI
+  // template until the next API response lands — which on a cold-start
+  // Render dyno can be 30-60s. The symptom: a Travel allowance briefly
+  // appears in the Petrol section (or vice-versa) and then disappears
+  // once the correct fetch completes. The server data is fine; it's
+  // stale local state being rendered through the wrong template.
+  useEffect(() => {
+    setItems([]);
+    setSummary({ approved: 0, pending: 0, rejected: 0, totalDistance: 0 });
+  }, [type]);
+
   // Clear feedback after a few seconds.
   useEffect(() => {
     if (success) {
@@ -189,6 +203,22 @@ const Allowance = () => {
       setBusy(false);
     }
   };
+
+
+  // #305 — derived form-valid flag for the allowance claim. Submit is
+  // disabled (grey) unless From, To, Date, Amount (and Distance, for
+  // petrol) are all filled with sensible values. The moment the last
+  // missing field becomes valid the button flips to active green.
+  const _amtNum     = Number(amount);
+  const _distNum    = Number(distance);
+  const isAllowanceValid = !!(
+    type &&
+    fromLoc.trim().length >= 2 &&
+    toLoc.trim().length   >= 2 &&
+    date &&
+    Number.isFinite(_amtNum) && _amtNum > 0 &&
+    (type !== 'petrol' || (Number.isFinite(_distNum) && _distNum > 0))
+  );
 
   return (
     <div className="al-page">
@@ -294,7 +324,7 @@ const Allowance = () => {
                   value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
             )}
-            <button type="submit" className="al-submit-btn" disabled={busy}>
+            <button type="submit" className="al-submit-btn" disabled={busy || !isAllowanceValid} style={{ backgroundColor: (busy || !isAllowanceValid) ? '#94A3B8' : '#16A34A', cursor: (busy || !isAllowanceValid) ? 'not-allowed' : 'pointer', opacity: (busy || !isAllowanceValid) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}>
               {busy ? <Spinner size={14} label="Submitting…" /> : 'Submit'}
             </button>
           </form>
@@ -400,6 +430,14 @@ const Allowance = () => {
         </div>
 
       </div>
+      {/* Premium centered loader during petrol/travel claim submit
+          (#298). Drives off `busy` so the form is fully locked
+          while the claim is in flight. */}
+      <SubmitLoader
+        visible={busy}
+        label="Submitting your allowance"
+        sub="Sending the claim to your manager and HR…"
+      />
     </div>
   );
 };

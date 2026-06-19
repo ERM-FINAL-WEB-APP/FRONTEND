@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, X, AlertCircle, CheckCircle } from 'lucide-react';
 import { attendanceAPI } from '../services/api';
 import Spinner from '../components/Spinner';
+import SubmitLoader from '../components/SubmitLoader';
 import './Attendance.css';
 
 /**
@@ -147,6 +148,20 @@ const Attendance = () => {
   }, [month, year]);
 
   useEffect(() => { load(); }, [load]);
+
+  // #318 — Refetch when the browser tab regains focus. Without this, the
+  // calendar+history shown on ERM Web stayed pinned to whatever state it
+  // had at initial mount; a check-in performed from ERM Mobile while
+  // ERM Web was open in another tab never appeared on Web until the
+  // user reloaded the page. The window 'focus' event fires whenever the
+  // user clicks back onto this tab, so we re-pull calendar + summary
+  // every time. Cheap (two API calls, gated by month/year) and matches
+  // the useFocusEffect we added on mobile.
+  useEffect(() => {
+    const onFocus = () => { load(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [load]);
 
   useEffect(() => {
     if (reqSuccess) {
@@ -501,9 +516,11 @@ const Attendance = () => {
               <button
                 className="btn-submit-request"
                 onClick={submitRequest}
-                disabled={reqBusy || isRequestWindowClosed}
+                /* #305 — disable until the reason text reaches a usable length AND the window is open. */
+                disabled={reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3}
                 type="button"
                 title={isRequestWindowClosed ? 'Request window closed — past the 2-day cutoff' : ''}
+                style={{ backgroundColor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? '#94A3B8' : '#16A34A', color: '#fff', cursor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 'not-allowed' : 'pointer', opacity: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}
               >
                 {reqBusy ? <Spinner size={14} label="Submitting…" /> : isRequestWindowClosed ? 'Window Closed' : 'Submit Request'}
               </button>
@@ -511,6 +528,13 @@ const Attendance = () => {
           </div>
         </div>
       )}
+      {/* Premium centered loader during attendance-request submit
+          (#298). Driven by reqBusy which already disables the button. */}
+      <SubmitLoader
+        visible={reqBusy}
+        label="Submitting attendance request"
+        sub="Sending the request to your manager for review…"
+      />
     </div>
   );
 };

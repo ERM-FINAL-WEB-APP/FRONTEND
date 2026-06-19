@@ -4,6 +4,7 @@ import { jsPDF } from 'jspdf';
 import { payslipAPI, profileAPI } from '../services/api';
 import { useConfirm } from '../components/ConfirmDialog';
 import Spinner from '../components/Spinner';
+import SubmitLoader from '../components/SubmitLoader';
 import { useAuth } from '../context/AuthContext';
 import './Payslip.css';
 
@@ -642,10 +643,14 @@ const Payslip = () => {
             </div>
           )}
           <div className="ps-actions">
+            {/* #305 — request button disabled (grey) unless monthState
+                === 'none' AND we're not already requesting. Once both
+                conditions are true the button flips to active green. */}
             <button
-              className="ps-btn-request"
+              className="ps-btn-request ps-btn-request-styled"
               onClick={requestPayslip}
               disabled={reqBusy || monthState !== 'none'}
+              style={{ backgroundColor: (reqBusy || monthState !== 'none') ? '#94A3B8' : '#16A34A', color: '#fff', cursor: (reqBusy || monthState !== 'none') ? 'not-allowed' : 'pointer', opacity: (reqBusy || monthState !== 'none') ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}
               type="button"
               title={
                 monthState === 'ready' ? 'Payslip already generated for this month'
@@ -685,6 +690,12 @@ const Payslip = () => {
         </div>
 
       </div>
+      {/* Premium centered loader during payslip request (#298). */}
+      <SubmitLoader
+        visible={reqBusy}
+        label="Submitting payslip request"
+        sub="Asking HR to generate your slip…"
+      />
     </div>
   );
 };
