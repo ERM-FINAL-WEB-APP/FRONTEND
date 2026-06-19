@@ -4,359 +4,878 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="index, follow">
-<title>Privacy Policy — Tesco ERM</title>
+<meta name="description" content="Privacy Policy for the Tesco ERM mobile and web application — Tesco Structures LLP.">
+<title>Privacy Policy · Tesco ERM · Tesco Structures LLP</title>
+<link rel="icon" type="image/svg+xml" href="/erm-logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --brand: #2E8C2C;
-    --brand-dark: #1B5E20;
-    --ink: #1A2B1C;
-    --muted: #5A6B5E;
-    --border: #E2E8E4;
-    --bg: #FAFAF8;
+    --brand:        #1B5E20;
+    --brand-2:      #2E8C2C;
+    --brand-soft:   #E8F3E9;
+    --gold:         #C9A227;
+    --ink:          #0F1B12;
+    --body:         #2A3A2D;
+    --muted:        #6B7A6E;
+    --line:         #DDE5DE;
+    --line-soft:    #EEF2EF;
+    --bg:           #F6F8F6;
+    --card:         #FFFFFF;
+    --shadow:       0 1px 2px rgba(20,40,20,.04), 0 12px 32px rgba(20,40,20,.06);
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
   body {
+    margin: 0;
     background: var(--bg);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                 Helvetica, Arial, sans-serif, "Apple Color Emoji",
-                 "Segoe UI Emoji";
-    color: var(--ink);
-    line-height: 1.65;
+    color: var(--body);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  header {
-    background: linear-gradient(135deg, var(--brand-dark), var(--brand));
-    color: #fff;
-    padding: 40px 24px 56px;
+  a { color: var(--brand); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Top utility bar ─────────────────────────────────────────── */
+  .topbar {
+    background: var(--ink);
+    color: rgba(255,255,255,.78);
+    font-size: 12.5px;
+    letter-spacing: .3px;
   }
-  header .wrap {
-    max-width: 880px;
+  .topbar .wrap {
+    max-width: 1140px;
     margin: 0 auto;
+    padding: 9px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
   }
-  header h1 {
-    margin: 0 0 8px;
-    font-size: 32px;
+  .topbar a { color: rgba(255,255,255,.92); }
+
+  /* ── Masthead ───────────────────────────────────────────────── */
+  .masthead {
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+  }
+  .masthead .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-row img {
+    height: 44px;
+    width: auto;
+    display: block;
+  }
+  .brand-meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .brand-meta .co {
     font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-  header .sub {
-    opacity: 0.92;
+    color: var(--ink);
     font-size: 15px;
+    letter-spacing: .2px;
   }
-  header .badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.18);
+  .brand-meta .sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .crumbs {
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .crumbs strong { color: var(--ink); font-weight: 600; }
+
+  /* ── Hero ───────────────────────────────────────────────────── */
+  .hero {
+    background:
+      radial-gradient(1000px 320px at 90% -10%, rgba(46,140,44,.18), transparent 60%),
+      radial-gradient(700px 260px at 10% 110%, rgba(46,140,44,.10), transparent 60%),
+      linear-gradient(180deg, #FFFFFF 0%, #F1F6F2 100%);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 56px 28px 40px;
+  }
+  .doc-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    border: 1px solid #C6E0C8;
     padding: 6px 12px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    font-weight: 700;
+    letter-spacing: .6px;
     text-transform: uppercase;
-    margin-bottom: 14px;
   }
-  main {
-    max-width: 880px;
-    margin: -28px auto 48px;
-    padding: 0 24px;
+  .doc-tag .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--brand-2);
   }
-  .card {
+  .hero h1 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.12;
+    color: var(--ink);
+    margin: 16px 0 10px;
+    letter-spacing: -0.5px;
+  }
+  .hero .lede {
+    color: var(--body);
+    font-size: 17px;
+    max-width: 720px;
+    margin: 0 0 28px;
+  }
+
+  /* document-metadata strip */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--line);
+  }
+  .meta-grid .cell {
     background: #fff;
-    border: 1px solid var(--border);
+    padding: 14px 18px;
+  }
+  .meta-grid .k {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .meta-grid .v {
+    color: var(--ink);
+    font-weight: 600;
+    margin-top: 4px;
+    font-size: 14.5px;
+  }
+
+  /* ── Layout: sidebar + content ──────────────────────────────── */
+  main.wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 48px 28px 64px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  aside.toc {
+    position: sticky;
+    top: 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 18px 14px;
+    box-shadow: var(--shadow);
+  }
+  aside.toc h4 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  aside.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: tocsec;
+  }
+  aside.toc li {
+    counter-increment: tocsec;
+    margin: 0;
+  }
+  aside.toc a {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    color: var(--body);
+    font-size: 13.5px;
+    font-weight: 500;
+    border-left: 2px solid transparent;
+  }
+  aside.toc a:hover {
+    background: var(--brand-soft);
+    color: var(--brand);
+    text-decoration: none;
+  }
+  aside.toc a::before {
+    content: counter(tocsec, decimal-leading-zero);
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: .4px;
+  }
+
+  /* Article */
+  article {
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 32px 28px;
-    box-shadow: 0 8px 24px rgba(20,40,20,0.06);
+    padding: 44px 48px;
+    box-shadow: var(--shadow);
   }
-  h2 {
-    color: var(--brand-dark);
-    font-size: 20px;
-    margin: 28px 0 10px;
+
+  article > section + section { margin-top: 36px; }
+
+  article h2 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--ink);
+    margin: 0 0 12px;
+    padding-bottom: 10px;
     border-bottom: 2px solid var(--brand);
-    padding-bottom: 8px;
-    display: inline-block;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    letter-spacing: -0.1px;
   }
-  h3 {
-    font-size: 16px;
-    margin: 18px 0 6px;
+  article h2 .num {
+    font-family: "Inter", sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--brand);
+    background: var(--brand-soft);
+    padding: 3px 9px;
+    border-radius: 6px;
+  }
+  article h3 {
+    font-size: 15px;
+    color: var(--ink);
+    margin: 20px 0 6px;
+    font-weight: 700;
+    letter-spacing: .1px;
+  }
+  article p {
+    margin: 8px 0 12px;
+    color: var(--body);
+  }
+  article ul {
+    padding-left: 22px;
+    margin: 8px 0 12px;
+  }
+  article li { margin: 4px 0; color: var(--body); }
+  article li::marker { color: var(--brand-2); }
+
+  .callout {
+    background: linear-gradient(180deg, #F2FAF2 0%, #EBF5EC 100%);
+    border: 1px solid #CAE2CC;
+    border-left: 4px solid var(--brand);
+    padding: 16px 20px;
+    border-radius: 0 10px 10px 0;
+    margin: 14px 0 18px;
     color: var(--ink);
   }
-  p, li { color: var(--ink); }
-  ul { padding-left: 22px; }
-  li { margin-bottom: 6px; }
-  .muted { color: var(--muted); font-size: 14px; }
-  a { color: var(--brand); text-decoration: none; font-weight: 600; }
-  a:hover { text-decoration: underline; }
-  .callout {
-    background: #F1FAF1;
-    border-left: 4px solid var(--brand);
-    padding: 14px 18px;
-    border-radius: 0 8px 8px 0;
-    margin: 16px 0;
-  }
-  table {
+  .callout strong { color: var(--brand); }
+
+  table.legal {
     width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0 20px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 12px 0 18px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
     font-size: 14px;
   }
-  th, td {
+  table.legal th {
+    background: var(--brand-soft);
+    color: var(--brand);
     text-align: left;
-    border-bottom: 1px solid var(--border);
-    padding: 10px 8px;
-    vertical-align: top;
-  }
-  th {
-    background: #F4F8F4;
+    padding: 11px 14px;
     font-weight: 700;
-    color: var(--brand-dark);
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    border-bottom: 1px solid var(--line);
   }
-  footer {
-    text-align: center;
+  table.legal td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    color: var(--body);
+  }
+  table.legal tr:last-child td { border-bottom: none; }
+  table.legal td:first-child {
+    width: 22%;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  table.legal td:nth-child(2) { width: 38%; }
+
+  .definitions {
+    background: #FAFCFA;
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 6px 0 16px;
+    font-size: 14.5px;
+  }
+  .definitions dt {
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 8px;
+  }
+  .definitions dt:first-child { margin-top: 0; }
+  .definitions dd { margin: 2px 0 0; color: var(--body); }
+
+  /* Contact block */
+  .contact {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 12px;
+    padding: 26px 28px;
+    margin-top: 8px;
+  }
+  .contact h3 {
+    color: #fff;
+    font-size: 14px;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .contact .co {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 22px;
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .contact p, .contact a { color: rgba(255,255,255,.86); margin: 2px 0; }
+  .contact a { color: #C5E8C8; font-weight: 600; }
+
+  /* Document footer */
+  .doc-footer {
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--line);
     color: var(--muted);
     font-size: 13px;
-    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Page footer */
+  footer.site {
+    background: #fff;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer.site .wrap {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 22px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  footer.site .left { display: flex; align-items: center; gap: 10px; }
+  footer.site img { height: 26px; }
+
+  /* ── Responsive ─────────────────────────────────────────────── */
+  @media (max-width: 960px) {
+    main.wrap { grid-template-columns: 1fr; }
+    aside.toc { position: static; }
+    .hero h1 { font-size: 32px; }
+    .meta-grid { grid-template-columns: repeat(2, 1fr); }
+    article { padding: 28px 22px; }
+    .crumbs { display: none; }
+  }
+  @media (max-width: 560px) {
+    .meta-grid { grid-template-columns: 1fr; }
+    .topbar .wrap { padding: 8px 16px; font-size: 12px; }
+    .masthead .wrap, .hero .wrap, main.wrap, footer.site .wrap { padding-left: 16px; padding-right: 16px; }
+  }
+
+  /* ── Print ──────────────────────────────────────────────────── */
+  @media print {
+    body { background: #fff; }
+    .topbar, aside.toc, footer.site, .crumbs { display: none; }
+    .masthead, .hero { border-bottom: 1px solid #ccc; }
+    main.wrap { grid-template-columns: 1fr; padding: 16px 0; }
+    article { border: none; box-shadow: none; padding: 0; }
+    article h2 { page-break-after: avoid; }
+    .callout, table.legal { page-break-inside: avoid; }
+    a { color: var(--ink); }
   }
 </style>
 </head>
 <body>
 
-<header>
+<!-- Utility bar -->
+<div class="topbar">
   <div class="wrap">
-    <span class="badge">Tesco Structures</span>
-    <h1>Privacy Policy — Tesco ERM</h1>
-    <div class="sub">
-      Last updated: 19 June 2026 &nbsp;·&nbsp; Effective: 19 June 2026
+    <span>Tesco Structures LLP · Chennai, Tamil Nadu, India</span>
+    <span><a href="mailto:hr@tescostructures.in">hr@tescostructures.in</a></span>
+  </div>
+</div>
+
+<!-- Masthead -->
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand-row">
+      <img src="/erm-logo.svg" alt="Tesco ERM logo">
+      <div class="brand-meta">
+        <span class="co">Tesco Structures LLP</span>
+        <span class="sub">Employee Resource Management</span>
+      </div>
+    </div>
+    <div class="crumbs">
+      Legal &nbsp;›&nbsp; <strong>Privacy Policy</strong>
     </div>
   </div>
 </header>
 
-<main>
-  <div class="card">
-
-    <p>
-      This Privacy Policy explains how <strong>Tesco Structures LLP</strong>
-      (“we”, “our”, “Company”) collects, uses, and protects information
-      through the <strong>Tesco ERM</strong> mobile application and the
-      Tesco ERM Web portal (together, the “Service”). Tesco ERM is an
-      <em>internal employee resource management</em> tool used by employees
-      of Tesco Structures for attendance, leave, allowance, payroll, and
-      live field-work tracking. It is not a consumer product and is
-      distributed to employees through their company-issued credentials.
+<!-- Hero -->
+<section class="hero">
+  <div class="wrap">
+    <span class="doc-tag"><span class="dot"></span> Official document</span>
+    <h1>Privacy Policy</h1>
+    <p class="lede">
+      How Tesco Structures LLP collects, uses, retains, and protects
+      personal information processed through the <strong>Tesco ERM</strong>
+      mobile application and the Tesco ERM Web portal.
     </p>
 
-    <h2>1. Who this Policy Applies To</h2>
-    <p>
-      This Policy applies to all current and past employees of Tesco
-      Structures who use the Tesco ERM mobile or web application,
-      and to their personal data processed through the Service.
-      By signing in with the credentials issued by your HR team,
-      you acknowledge this Policy.
-    </p>
-
-    <h2>2. Information We Collect</h2>
-    <p>The Service collects the following categories of information:</p>
-
-    <table>
-      <thead>
-        <tr><th>Category</th><th>What it includes</th><th>Why we collect it</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>Account &amp; profile</strong></td>
-          <td>Name, employee ID, work email, phone number, department,
-              designation, joining date, blood group, profile photo.</td>
-          <td>Identify you within Tesco ERM and link your activity to
-              your HR record.</td>
-        </tr>
-        <tr>
-          <td><strong>Authentication</strong></td>
-          <td>Login credentials, one-time passwords sent via email,
-              session tokens.</td>
-          <td>Verify it is you and keep you signed in securely.</td>
-        </tr>
-        <tr>
-          <td><strong>Precise location (foreground &amp; background)</strong></td>
-          <td>GPS coordinates, accuracy, timestamp, and a movement
-              polyline recorded between check-in and check-out.</td>
-          <td>Record office attendance, verify field visits, compute
-              petrol allowance from distance travelled, and let HR see
-              live status during the workday.</td>
-        </tr>
-        <tr>
-          <td><strong>Attendance &amp; HR data</strong></td>
-          <td>Check-in and check-out times, leave applications,
-              permission requests, allowance claims, payslip
-              requests.</td>
-          <td>Operate the core attendance and approval workflows.</td>
-        </tr>
-        <tr>
-          <td><strong>Device &amp; diagnostic</strong></td>
-          <td>Device model, OS version, app version, crash logs, and
-              non-fatal error reports.</td>
-          <td>Diagnose crashes and improve app stability.</td>
-        </tr>
-        <tr>
-          <td><strong>Notifications</strong></td>
-          <td>Push notification token issued by the operating system.</td>
-          <td>Send approval, rejection, and announcement
-              notifications.</td>
-        </tr>
-        <tr>
-          <td><strong>Files you upload</strong></td>
-          <td>Attachments you add to allowance claims or announcements
-              (e.g. receipts, PDFs).</td>
-          <td>Support your claims and share company notices.</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>3. Background Location — Specific Disclosure</h2>
-    <div class="callout">
-      <strong>The app collects location data in the background</strong>
-      so HR can see live presence during your shift even when the app
-      is not in the foreground. This continues only while you are
-      <em>checked in</em> and stops automatically the moment you tap
-      <em>Check Out</em>, when the device location services are turned
-      off, or when location permission is revoked. Background tracking
-      never runs outside an active shift.
+    <div class="meta-grid" role="group" aria-label="Document metadata">
+      <div class="cell">
+        <div class="k">Document</div>
+        <div class="v">Privacy Policy</div>
+      </div>
+      <div class="cell">
+        <div class="k">Version</div>
+        <div class="v">v1.0</div>
+      </div>
+      <div class="cell">
+        <div class="k">Effective from</div>
+        <div class="v">19 June 2026</div>
+      </div>
+      <div class="cell">
+        <div class="k">Owner</div>
+        <div class="v">HR &amp; Data Privacy Office</div>
+      </div>
     </div>
-    <p>
-      A persistent notification is shown by the operating system while
-      background location tracking is active, so you always know when
-      it is running. You may revoke the “Allow all the time” permission
-      at any moment from your device settings; doing so will stop
-      live-tracking but you can still check in and check out manually.
-    </p>
-
-    <h2>4. How We Use the Information</h2>
-    <ul>
-      <li>To process attendance, leave, permission, allowance, and
-          payslip workflows.</li>
-      <li>To calculate work hours, late-marks, half-day deductions
-          and reimbursable distance for petrol allowance.</li>
-      <li>To enable your manager and HR to review, approve, or reject
-          your requests, and to notify you of the outcome.</li>
-      <li>To produce internal HR reports and payroll inputs.</li>
-      <li>To send transactional notifications (OTP, approval status,
-          company announcements).</li>
-      <li>To improve app stability through aggregated, anonymised
-          crash and error data.</li>
-      <li>To comply with applicable laws, internal policies, and to
-          respond to lawful requests.</li>
-    </ul>
-
-    <h2>5. Legal Basis for Processing</h2>
-    <p>
-      We process the data on the basis of (a) the employment
-      relationship between you and Tesco Structures, (b) our
-      legitimate business interest in workforce administration,
-      (c) compliance with applicable Indian labour and tax laws,
-      and (d) your consent for optional features such as background
-      location tracking.
-    </p>
-
-    <h2>6. Sharing &amp; Third-Party Processors</h2>
-    <p>
-      We do <strong>not</strong> sell, rent, or share your personal
-      data with advertisers or third-party marketers. Personal data
-      is accessed only by authorised HR personnel and your reporting
-      manager within Tesco Structures.
-    </p>
-    <p>
-      We use the following sub-processors to operate the Service.
-      Each is contractually bound to handle data only on our
-      instructions:
-    </p>
-    <ul>
-      <li><strong>MongoDB Atlas</strong> — database hosting
-          (servers in India / nearby region).</li>
-      <li><strong>Render</strong> — application backend hosting.</li>
-      <li><strong>Vercel / Hostinger</strong> — web frontend hosting.</li>
-      <li><strong>Google Maps Platform</strong> — map rendering and
-          geocoding for live tracking and travel allowance.</li>
-      <li><strong>SendGrid / Brevo</strong> — transactional email
-          delivery (OTP, notifications).</li>
-      <li><strong>Expo Application Services</strong> — mobile build,
-          push notification delivery, over-the-air updates.</li>
-    </ul>
-    <p>
-      We may disclose information to comply with legal obligations,
-      enforce our terms, or protect the rights, property, or safety
-      of Tesco Structures, our employees, or others.
-    </p>
-
-    <h2>7. Data Retention</h2>
-    <p>
-      We retain attendance, leave, allowance, and payroll records for
-      the period required under Indian labour, tax, and audit laws
-      (typically seven years). Location pings are retained for up to
-      twelve months and then aggregated or deleted. Crash logs are
-      retained for ninety days. When your employment with Tesco
-      Structures ends, your account is deactivated; historical
-      records are retained for the legally-required period and then
-      deleted.
-    </p>
-
-    <h2>8. Security</h2>
-    <p>
-      Data is transmitted over HTTPS / TLS. Passwords are stored as
-      one-way hashes. Access to production databases is restricted to
-      named administrators. We perform regular dependency and
-      vulnerability reviews. While no system can be guaranteed
-      perfectly secure, we maintain reasonable administrative,
-      technical, and physical safeguards appropriate to the
-      sensitivity of the data.
-    </p>
-
-    <h2>9. Your Rights</h2>
-    <p>You may, subject to applicable law and your employment terms:</p>
-    <ul>
-      <li>Access the personal data we hold about you.</li>
-      <li>Correct inaccurate data through your HR team.</li>
-      <li>Request deletion of data that is no longer required for
-          legal or HR purposes.</li>
-      <li>Withdraw consent for optional features such as background
-          location tracking.</li>
-      <li>Lodge a complaint with the relevant data protection
-          authority.</li>
-    </ul>
-    <p>To exercise any of these rights, write to the contact below.</p>
-
-    <h2>10. Children's Privacy</h2>
-    <p>
-      Tesco ERM is intended solely for Tesco Structures employees,
-      all of whom are over 18. The Service is not directed at
-      children and we do not knowingly collect personal data from
-      anyone under 18.
-    </p>
-
-    <h2>11. Changes to This Policy</h2>
-    <p>
-      We may update this Privacy Policy from time to time. Material
-      changes will be communicated through an in-app announcement
-      and by updating the “Last updated” date at the top of this
-      page. Continued use of the Service after a change indicates
-      your acknowledgement of the revised Policy.
-    </p>
-
-    <h2>12. Contact</h2>
-    <p>
-      Questions, requests, and complaints regarding this Privacy
-      Policy or your personal data should be sent to:
-    </p>
-    <p>
-      <strong>Tesco Structures LLP</strong><br>
-      HR &amp; Data Privacy Office<br>
-      Chennai, Tamil Nadu, India<br>
-      Email: <a href="mailto:hr@tescostructures.in">hr@tescostructures.in</a>
-    </p>
-
   </div>
+</section>
 
-  <footer>
-    © 2026 Tesco Structures LLP. All rights reserved.
-  </footer>
+<!-- Body -->
+<main class="wrap">
+
+  <!-- TOC -->
+  <aside class="toc" aria-label="Table of contents">
+    <h4>On this page</h4>
+    <ol>
+      <li><a href="#s1">Introduction &amp; scope</a></li>
+      <li><a href="#s2">Definitions</a></li>
+      <li><a href="#s3">Information we collect</a></li>
+      <li><a href="#s4">Background location</a></li>
+      <li><a href="#s5">How we use information</a></li>
+      <li><a href="#s6">Legal basis</a></li>
+      <li><a href="#s7">Sharing &amp; processors</a></li>
+      <li><a href="#s8">Data retention</a></li>
+      <li><a href="#s9">Security</a></li>
+      <li><a href="#s10">Your rights</a></li>
+      <li><a href="#s11">Children's privacy</a></li>
+      <li><a href="#s12">Changes</a></li>
+      <li><a href="#s13">Contact us</a></li>
+    </ol>
+  </aside>
+
+  <article>
+
+    <section id="s1">
+      <h2><span class="num">01</span> Introduction &amp; scope</h2>
+      <p>
+        This Privacy Policy (“<strong>Policy</strong>”) explains how
+        <strong>Tesco Structures LLP</strong> (“<strong>Tesco
+        Structures</strong>”, “<strong>we</strong>”, “<strong>our</strong>”,
+        or “<strong>the Company</strong>”) collects, uses, retains, and
+        safeguards personal information that is processed through the
+        Tesco ERM mobile application for Android and the Tesco ERM Web
+        portal (together, the “<strong>Service</strong>”).
+      </p>
+      <p>
+        Tesco ERM is an internal employee resource management tool. It
+        is used by employees of Tesco Structures to mark attendance,
+        apply for leave and permission, submit travel and petrol
+        allowance claims, request payslips, and to enable HR to monitor
+        live field-work status during a shift. The Service is distributed
+        exclusively to current employees through company-issued
+        credentials and is not intended for use by the general public.
+      </p>
+      <p>
+        By signing in to the Service with the credentials provided to
+        you by the HR team, you acknowledge that you have read and
+        understood this Policy.
+      </p>
+    </section>
+
+    <section id="s2">
+      <h2><span class="num">02</span> Definitions</h2>
+      <dl class="definitions">
+        <dt>Personal data</dt>
+        <dd>Any information relating to an identified or identifiable
+            natural person, including name, employee ID, email, phone,
+            location, photos, and login identifiers.</dd>
+        <dt>Processing</dt>
+        <dd>Any operation performed on personal data, including
+            collection, storage, transmission, alteration, and deletion.</dd>
+        <dt>Sub-processor</dt>
+        <dd>A third-party service provider that processes personal
+            data on our behalf under contractual data-protection terms.</dd>
+        <dt>Foreground / Background location</dt>
+        <dd>Location collected while the app is on screen
+            (“foreground”) or while it is minimised or the screen is
+            off (“background”).</dd>
+      </dl>
+    </section>
+
+    <section id="s3">
+      <h2><span class="num">03</span> Information we collect</h2>
+      <p>
+        The Service collects the following categories of information.
+        Each category is collected only to the extent necessary for the
+        purpose stated next to it.
+      </p>
+      <table class="legal">
+        <thead>
+          <tr><th>Category</th><th>What it includes</th><th>Why we collect it</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Account &amp; profile</td>
+            <td>Full name, employee ID, work email, phone number,
+                department, designation, joining date, blood group,
+                profile photo.</td>
+            <td>To identify you within Tesco ERM and link your activity
+                to your HR record.</td>
+          </tr>
+          <tr>
+            <td>Authentication</td>
+            <td>Password (one-way hashed), one-time passwords sent by
+                email, session tokens.</td>
+            <td>To verify your identity and keep you signed in securely.</td>
+          </tr>
+          <tr>
+            <td>Precise location (foreground &amp; background)</td>
+            <td>GPS coordinates, accuracy radius, movement polyline,
+                and timestamps recorded between check-in and check-out.</td>
+            <td>To verify office attendance, record field visits,
+                compute petrol allowance from distance travelled, and
+                allow HR to view live presence during your shift.</td>
+          </tr>
+          <tr>
+            <td>Attendance &amp; HR records</td>
+            <td>Check-in and check-out times, leave applications,
+                permission requests, allowance claims, payslip requests,
+                approval status.</td>
+            <td>To operate the core attendance and approval workflows
+                of the Service.</td>
+          </tr>
+          <tr>
+            <td>Device &amp; diagnostic</td>
+            <td>Device model, operating system, app version, crash
+                logs, non-fatal errors.</td>
+            <td>To diagnose crashes and improve the stability of the
+                Service.</td>
+          </tr>
+          <tr>
+            <td>Push-notification token</td>
+            <td>The unique token issued by the device operating system
+                for push delivery.</td>
+            <td>To deliver approval, rejection, and announcement
+                notifications.</td>
+          </tr>
+          <tr>
+            <td>User-uploaded files</td>
+            <td>Attachments you add to allowance claims, announcement
+                documents shared by HR.</td>
+            <td>To support your reimbursement claims and to surface
+                company notices to all employees.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The Service does <strong>not</strong> collect biometric data,
+        does <strong>not</strong> access your contacts, SMS, call logs,
+        photo gallery (except for files you explicitly attach), or
+        browsing history.
+      </p>
+    </section>
+
+    <section id="s4">
+      <h2><span class="num">04</span> Background location — specific disclosure</h2>
+      <div class="callout">
+        <strong>The Service collects location in the background</strong>
+        so that HR can see live presence during your shift even when
+        the app is not on screen. Background collection is strictly
+        bounded: it starts only when you tap <em>Check&nbsp;In</em>
+        and stops the moment you tap <em>Check&nbsp;Out</em>, when
+        device location services are turned off, or when you revoke
+        location permission for the app. Background tracking does
+        not run outside an active shift, and it does not run on
+        weekends, holidays, or leave days.
+      </div>
+      <p>
+        A persistent system notification is shown by the operating
+        system whenever background location is active, so that you
+        always know it is running. You may revoke the
+        “Allow all the time” permission at any time from your device
+        settings. Doing so disables live tracking but does not prevent
+        you from checking in or out manually.
+      </p>
+    </section>
+
+    <section id="s5">
+      <h2><span class="num">05</span> How we use the information</h2>
+      <ul>
+        <li>To process attendance, leave, permission, allowance, and
+            payslip workflows.</li>
+        <li>To calculate work hours, late marks, half-day deductions,
+            and reimbursable distance for petrol allowance.</li>
+        <li>To enable your manager and HR to review, approve, or reject
+            your requests, and to notify you of the outcome.</li>
+        <li>To produce internal HR reports and payroll inputs.</li>
+        <li>To send transactional notifications such as OTP, approval
+            status, and company announcements.</li>
+        <li>To monitor and improve the stability and security of the
+            Service through aggregated, de-identified crash and error
+            data.</li>
+        <li>To comply with applicable laws, internal policies, and to
+            respond to lawful requests of competent authorities.</li>
+      </ul>
+    </section>
+
+    <section id="s6">
+      <h2><span class="num">06</span> Legal basis for processing</h2>
+      <p>
+        We process personal data on the following bases: (a) the
+        employment relationship between you and Tesco Structures;
+        (b) our legitimate business interest in workforce
+        administration and operational oversight; (c) compliance with
+        applicable Indian labour, tax, and statutory record-keeping
+        laws; and (d) your explicit consent for optional features such
+        as background location tracking, granted through your device
+        permission prompts.
+      </p>
+    </section>
+
+    <section id="s7">
+      <h2><span class="num">07</span> Sharing &amp; third-party processors</h2>
+      <p>
+        We do <strong>not</strong> sell, rent, trade, or share your
+        personal data with advertisers or third-party marketers.
+        Within Tesco Structures, personal data is accessed only by
+        authorised HR personnel and your reporting manager on a
+        need-to-know basis.
+      </p>
+      <p>
+        We engage the following sub-processors to operate the
+        Service. Each is contractually bound to process data only
+        on our instructions and to maintain appropriate security
+        safeguards.
+      </p>
+      <table class="legal">
+        <thead>
+          <tr><th>Sub-processor</th><th>Purpose</th><th>Data processed</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>MongoDB Atlas</td>
+            <td>Primary database hosting</td>
+            <td>All personal and HR records.</td>
+          </tr>
+          <tr>
+            <td>Render</td>
+            <td>Application backend hosting</td>
+            <td>Encrypted in-transit payloads.</td>
+          </tr>
+          <tr>
+            <td>Vercel / Hostinger</td>
+            <td>Web frontend hosting</td>
+            <td>Static assets and serverless functions.</td>
+          </tr>
+          <tr>
+            <td>Google Maps Platform</td>
+            <td>Map rendering and geocoding</td>
+            <td>Anonymised coordinates and place lookups.</td>
+          </tr>
+          <tr>
+            <td>SendGrid &amp; Brevo</td>
+            <td>Transactional email delivery</td>
+            <td>Email address, OTP, notification content.</td>
+          </tr>
+          <tr>
+            <td>Expo Application Services</td>
+            <td>Mobile build, push notification delivery, OTA updates</td>
+            <td>Push token, app version, device class.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        We may also disclose information when required to comply with
+        a legal obligation, enforce our terms, or protect the rights,
+        property, or safety of Tesco Structures, our employees, or
+        others.
+      </p>
+    </section>
+
+    <section id="s8">
+      <h2><span class="num">08</span> Data retention</h2>
+      <p>
+        We retain attendance, leave, allowance, and payroll records
+        for the period required under Indian labour, tax, and audit
+        laws, which is typically seven (7) years from the end of the
+        relevant financial year. Location pings are retained for up
+        to twelve (12) months and are then either aggregated for
+        statistical reporting or permanently deleted. Crash logs and
+        diagnostic data are retained for ninety (90) days.
+      </p>
+      <p>
+        When your employment with Tesco Structures ends, your account
+        is deactivated immediately. Historical records are retained
+        for the legally required period and are then deleted in
+        accordance with our internal retention schedule.
+      </p>
+    </section>
+
+    <section id="s9">
+      <h2><span class="num">09</span> Security</h2>
+      <p>
+        All data in transit between your device and our servers is
+        protected by industry-standard TLS encryption. Passwords are
+        stored only as one-way salted hashes; we never store passwords
+        in plain text. Access to the production database is restricted
+        to a small number of named administrators and is logged. We
+        perform regular dependency reviews and apply security patches
+        promptly. While no system can be guaranteed completely secure,
+        we maintain administrative, technical, and physical safeguards
+        that are appropriate to the sensitivity of the data.
+      </p>
+    </section>
+
+    <section id="s10">
+      <h2><span class="num">10</span> Your rights</h2>
+      <p>Subject to applicable law and your employment terms, you may:</p>
+      <ul>
+        <li>Access the personal data we hold about you.</li>
+        <li>Request correction of inaccurate or out-of-date data
+            through your HR contact.</li>
+        <li>Request deletion of data that is no longer required for
+            legal or HR purposes.</li>
+        <li>Withdraw consent for optional features such as background
+            location tracking, at any time, through your device
+            settings.</li>
+        <li>Lodge a complaint with the relevant Indian data
+            protection authority.</li>
+      </ul>
+      <p>
+        To exercise any of these rights, please write to the contact
+        provided in section&nbsp;13.
+      </p>
+    </section>
+
+    <section id="s11">
+      <h2><span class="num">11</span> Children's privacy</h2>
+      <p>
+        Tesco ERM is intended solely for employees of Tesco
+        Structures, all of whom are aged 18 years or older. The
+        Service is not directed at children and we do not knowingly
+        collect personal data from anyone under the age of 18. If we
+        learn that we have inadvertently collected data from a minor,
+        we will delete it without undue delay.
+      </p>
+    </section>
+
+    <section id="s12">
+      <h2><span class="num">12</span> Changes to this Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time to reflect
+        changes in the Service or in applicable law. Material changes
+        will be communicated through an in-app announcement and by
+        updating the “Effective from” date at the top of this page.
+        Your continued use of the Service after a change indicates
+        your acknowledgement of the revised Policy.
+      </p>
+    </section>
+
+    <section id="s13">
+      <h2><span class="num">13</span> Contact us</h2>
+      <div class="contact">
+        <h3>Data Privacy Office</h3>
+        <div class="co">Tesco Structures LLP</div>
+        <p>HR &amp; Data Privacy Office</p>
+        <p>Chennai, Tamil Nadu, India</p>
+        <p style="margin-top:10px">
+          Email:
+          <a href="mailto:hr@tescostructures.in">hr@tescostructures.in</a>
+        </p>
+      </div>
+    </section>
+
+    <div class="doc-footer">
+      <span>Document Reference: TS-ERM-LEGAL-001</span>
+      <span>Approved by HR &amp; Data Privacy Office · 19 June 2026</span>
+    </div>
+
+  </article>
 </main>
+
+<!-- Page footer -->
+<footer class="site">
+  <div class="wrap">
+    <div class="left">
+      <img src="/erm-logo.svg" alt="Tesco ERM logo">
+      <span>© 2026 Tesco Structures LLP. All rights reserved.</span>
+    </div>
+    <div>
+      <a href="mailto:hr@tescostructures.in">hr@tescostructures.in</a>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
