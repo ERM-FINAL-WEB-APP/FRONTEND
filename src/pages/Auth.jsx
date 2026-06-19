@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Eye, EyeOff, Mail, Lock, ArrowLeft,
-  CheckCircle, ShieldCheck, RefreshCw, AlertCircle
+  CheckCircle, ShieldCheck, RefreshCw, AlertCircle, FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -137,6 +137,21 @@ const LoginScreen = ({ onForgotPassword, setSharedEmail }) => {
         <button type="submit" className="auth-btn" disabled={busy}>
           {busy ? 'Signing in…' : 'Log In'}
         </button>
+
+        {/* #320 — Privacy Policy link required by Play Store and a
+            standard trust signal on any login screen. Sits below the
+            primary action so it doesn't compete with it, but is
+            visible without scrolling. Opens in a new tab so the user
+            doesn't lose their typed credentials. */}
+        <a
+          href="/privacy-policy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="auth-privacy-link"
+        >
+          <FileText size={14} />
+          <span>Privacy Policy</span>
+        </a>
       </form>
     </div>
   );
@@ -543,6 +558,23 @@ const Auth = () => {
       <div className="auth-center">
         {screens[step]}
       </div>
+
+      {/* #320 — Persistent privacy-policy footer. Visible on every
+          auth step (login, forgot, OTP, reset, success) so the user
+          can review how we handle their data at any point before
+          authenticating. */}
+      <footer className="auth-footer">
+        <span>© {new Date().getFullYear()} Tesco Structures LLP</span>
+        <span className="auth-footer-sep">·</span>
+        <a
+          href="/privacy-policy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="auth-footer-link"
+        >
+          Privacy Policy
+        </a>
+      </footer>
     </div>
   );
 };
