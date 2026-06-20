@@ -84,7 +84,10 @@ const Notifications = () => {
           title:     n.title || '(no title)',
           message:   n.body || n.message || '',
           createdAt: n.createdAt,
-          unread:    !n.read,
+          // #329 — Backend persists the flag as `isRead`;
+          // older rows may use `read`. Treat both as truthy
+          // so a mark-as-read survives a page refresh.
+          unread:    !(n.isRead || n.read),
           kind:      'notification',
           icon:      ui.icon,
           category:  ui.category,

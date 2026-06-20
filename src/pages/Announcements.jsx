@@ -239,7 +239,7 @@ const Announcements = () => {
               <div className="ann-card-footer">
                 <div className="ann-footer-left">
                   <span className="ann-author">
-                    <User size={12} /> {a.createdByName || a.postedBy || 'HR'}
+                    <User size={12} /> HR
                   </span>
                   <span className="ann-date">
                     <Calendar size={12} /> {dateStr}

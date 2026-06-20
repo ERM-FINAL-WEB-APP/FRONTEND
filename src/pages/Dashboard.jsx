@@ -212,7 +212,13 @@ const Dashboard = () => {
               <h3>{a.title || '(untitled)'}</h3>
               <p>{(a.body || a.description || '').slice(0, 120)}{(a.body || a.description || '').length > 120 ? '…' : ''}</p>
               <div className="a-card-footer">
-                <span>Posted by {a.createdByName || a.postedBy || 'HR'}</span>
+                <span>
+                  {/* #329 — Always show 'HR'. The actual
+                      postedBy in the DB is the admin
+                      account name (e.g. 'tescostructures')
+                      and shouldn't leak into the UI. */}
+                  Posted by HR
+                </span>
                 <span className="dot">•</span>
                 <span>{relTime(a.publishDate || a.createdAt)}</span>
               </div>
