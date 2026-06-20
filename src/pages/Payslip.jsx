@@ -342,6 +342,16 @@ const Payslip = () => {
 
   useEffect(() => { load(); }, [load]);
 
+  // #325 — Refetch when the browser tab regains focus. Mirrors the
+  // window-focus pattern from Attendance.jsx so the page auto-syncs
+  // after an HR action / mobile submission performed in another tab.
+  // Cheap (one API call, gated by the existing deps).
+  useEffect(() => {
+    const onFocus = () => { load(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [load]);
+
   // Refresh joining date from the profile endpoint on EVERY mount —
   // the backend response carries the user object spread at the root so
   // `res.data.joiningDate` is the canonical field. We also try a few

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Eye, EyeOff, Mail, Lock, ArrowLeft,
-  CheckCircle, ShieldCheck, RefreshCw, AlertCircle, FileText
+  CheckCircle, ShieldCheck, RefreshCw, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
@@ -137,21 +137,6 @@ const LoginScreen = ({ onForgotPassword, setSharedEmail }) => {
         <button type="submit" className="auth-btn" disabled={busy}>
           {busy ? 'Signing in…' : 'Log In'}
         </button>
-
-        {/* #320 — Privacy Policy link required by Play Store and a
-            standard trust signal on any login screen. Sits below the
-            primary action so it doesn't compete with it, but is
-            visible without scrolling. Opens in a new tab so the user
-            doesn't lose their typed credentials. */}
-        <a
-          href="/privacy-policy.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="auth-privacy-link"
-        >
-          <FileText size={14} />
-          <span>Privacy Policy</span>
-        </a>
       </form>
     </div>
   );

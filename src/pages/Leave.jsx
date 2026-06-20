@@ -163,6 +163,16 @@ const Leave = () => {
 
   useEffect(() => { loadHistory(); }, [loadHistory]);
 
+  // #325 — Refetch when the browser tab regains focus. Mirrors the
+  // window-focus pattern from Attendance.jsx so the page auto-syncs
+  // after an HR action / mobile submission performed in another tab.
+  // Cheap (one API call, gated by the existing deps).
+  useEffect(() => {
+    const onFocus = () => { loadHistory(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadHistory]);
+
   // Auto-clear feedback after a few seconds.
   useEffect(() => {
     if (success) {

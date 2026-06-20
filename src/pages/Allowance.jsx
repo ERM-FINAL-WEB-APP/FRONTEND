@@ -149,6 +149,16 @@ const Allowance = () => {
 
   useEffect(() => { loadHistory(); }, [loadHistory]);
 
+  // #325 — Refetch when the browser tab regains focus. Mirrors the
+  // window-focus pattern from Attendance.jsx so the page auto-syncs
+  // after an HR action / mobile submission performed in another tab.
+  // Cheap (one API call, gated by the existing deps).
+  useEffect(() => {
+    const onFocus = () => { loadHistory(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [loadHistory]);
+
   // #319 — Clear the shared items + summary state immediately when the
   // user flips between Travel and Petrol tabs. Without this, the rows
   // from the previous tab keep rendering through the new tab's UI

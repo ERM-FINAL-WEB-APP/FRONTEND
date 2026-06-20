@@ -558,54 +558,13 @@
 }
 
 /* ════════════════════════════════════════════════════════════════════
- * #320 — Privacy Policy surfaces on the auth screens.
+ * #320 — Privacy Policy surface on the auth screens.
  *
- * Two complementary surfaces:
- *   1. In-card "Privacy Policy" link directly under the Log In button,
- *      so anyone landing on the login screen sees it before they sign
- *      in. Uses a subtle outlined chip style — visible without
- *      competing with the primary CTA.
- *   2. Persistent page-level footer pinned to the bottom of the auth
- *      page, visible on EVERY auth step (login, forgot, OTP, reset,
- *      success). Same brand green so it reads as part of the page.
+ * Persistent page-level footer pinned to the bottom of the auth page,
+ * visible on EVERY auth step (login, forgot, OTP, reset, success).
+ * One link — placed at the page level rather than inside each card —
+ * so it does not compete with the primary Log In CTA and never repeats.
  * ════════════════════════════════════════════════════════════════════ */
-
-.auth-privacy-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin: 14px auto 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1B5E20;
-  background: #F1FAF1;
-  border: 1px solid #C6E0C8;
-  text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease,
-              color 0.15s ease, transform 0.15s ease;
-  width: fit-content;
-  cursor: pointer;
-}
-
-.auth-privacy-link:hover {
-  background: #E2F3E3;
-  border-color: #A6CDA9;
-  color: #14471A;
-  text-decoration: none;
-  transform: translateY(-1px);
-}
-
-.auth-privacy-link:focus-visible {
-  outline: 2px solid #2E8C2C;
-  outline-offset: 2px;
-}
-
-.auth-privacy-link svg {
-  flex-shrink: 0;
-}
 
 /* ── Persistent page footer (visible on every auth step) ───────────── */
 .auth-footer {
