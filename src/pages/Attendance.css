@@ -294,6 +294,12 @@
 .badge-absent { background: #EF4444; }
 .badge-permission { background: #FACC15; }
 .badge-late { background: #F97316; }
+/* #328 — Half-day was painting green because the JS classifier fell
+   through to badge-present. Now the badge inherits its own purple
+   colour matching the calendar legend (#8B5CF6). */
+.badge-halfday { background: #8B5CF6; }
+/* Leave badge — same red as Absent so it reads as "off work". */
+.badge-leave   { background: #EF4444; }
 
 .h-card-metrics {
   display: flex;

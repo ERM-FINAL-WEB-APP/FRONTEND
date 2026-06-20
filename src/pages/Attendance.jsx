@@ -50,12 +50,38 @@ function statusColor(status) {
     default:           return 'transparent';
   }
 }
+
+// #328 — Multi-dot calendar legend, mirroring mobile.
+// Mobile shows TWO dots for late + halfday days because the employee
+// was present AND something else. Web used to show one dot only,
+// which made HR think a halfday was a regular present day.
+//   present       → [green]
+//   absent        → [red]
+//   permission    → [yellow]
+//   late          → [green, orange]    (showed up but late)
+//   halfday       → [green, purple]    (showed up but half day)
+//   leave         → [red]
+function statusDots(status) {
+  const s = String(status || '').toLowerCase();
+  if (s === 'late')                     return ['#4CAA17', '#F97316'];
+  if (s === 'halfday' || s === 'half-day') return ['#4CAA17', '#8B5CF6'];
+  if (s === 'present')                  return ['#4CAA17'];
+  if (s === 'absent' || s === 'leave')  return ['#EF4444'];
+  if (s === 'permission')               return ['#FACC15'];
+  return [];
+}
 function badgeClass(status) {
   const s = String(status || '').toLowerCase();
-  if (s === 'present')  return 'badge-present';
-  if (s === 'absent')   return 'badge-absent';
-  if (s === 'late')     return 'badge-late';
-  if (s === 'permission') return 'badge-permission';
+  if (s === 'present')             return 'badge-present';
+  if (s === 'absent')              return 'badge-absent';
+  if (s === 'late')                return 'badge-late';
+  if (s === 'permission')          return 'badge-permission';
+  // #328 — Half-day status was falling into the default 'present'
+  // branch, so the green pill showed even when HR had marked the day
+  // half-day. Now it gets its own purple pill matching the calendar
+  // legend (#8B5CF6).
+  if (s === 'halfday' || s === 'half-day') return 'badge-halfday';
+  if (s === 'leave')               return 'badge-leave';
   return 'badge-present';
 }
 function titleCase(s) {
@@ -350,9 +376,9 @@ const Attendance = () => {
                       style={isFuture ? { color: '#C7CDD6' } : undefined}
                     >{c.day}</span>
                     <div className="status-dots">
-                      {status && !isFuture && (
-                        <div className="s-dot" style={{ backgroundColor: statusColor(status) }} />
-                      )}
+                      {status && !isFuture && statusDots(status).map((color, di) => (
+                        <div key={di} className="s-dot" style={{ backgroundColor: color }} />
+                      ))}
                     </div>
                   </div>
                 );

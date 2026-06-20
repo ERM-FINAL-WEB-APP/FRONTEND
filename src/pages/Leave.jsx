@@ -120,7 +120,11 @@ const Leave = () => {
   const [startTime,       setStartTime]       = useState('');
   const [endTime,         setEndTime]         = useState('');
   const [permReason,      setPermReason]      = useState('');
-  const [permissionType,  setPermissionType]  = useState('Medical Permission');
+  // #328 — Mirror mobile PERMISSION_TYPES exactly: ['Personal',
+  // 'Medical', 'Official', 'Other'].  Web previously had its own
+  // list ('Medical Permission', 'Family Function', etc.) which
+  // didn't match HRMS's reporting categories.
+  const [permissionType,  setPermissionType]  = useState('Personal');
 
   // ── Shared submit state ──────────────────────────────────────────
   const [busy,    setBusy]    = useState(false);
@@ -448,9 +452,10 @@ const Leave = () => {
                       value={permissionType}
                       onChange={(e) => setPermissionType(e.target.value)}
                     >
-                      <option>Medical Permission</option>
-                      <option>Personal Permission</option>
-                      <option>Family Function</option>
+                      {/* #328 — Mirror mobile PERMISSION_TYPES */}
+                      <option>Personal</option>
+                      <option>Medical</option>
+                      <option>Official</option>
                       <option>Other</option>
                     </select>
                     <ChevronDown className="select-icon" size={16} />
