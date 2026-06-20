@@ -366,9 +366,13 @@ const Leave = () => {
                       value={leaveType}
                       onChange={(e) => setLeaveType(e.target.value)}
                     >
+                      {/* #326 — Mirror mobile LEAVE_TYPES list
+                          exactly. Mobile has no 'Annual Leave'
+                          option — a leave filed as 'Annual'
+                          on web becomes orphaned in HRMS
+                          reporting. */}
                       <option>Casual Leave</option>
                       <option>Sick Leave</option>
-                      <option>Annual Leave</option>
                       <option>Earned Leave</option>
                       <option>Unpaid Leave</option>
                     </select>

@@ -416,7 +416,13 @@ const Attendance = () => {
           <div className="analytics-grid">
             <div className="stat-card bg-present text-white shadow-present">
               <div className="s-card-title">PRESENT</div>
-              <div className="s-card-value">{String(summary.present || 0).padStart(2, '0')}</div>
+              <div className="s-card-value">{String(
+                /* #326 — Mirror ERM Mobile: PRESENT card counts
+                   anyone who showed up — pure present + late +
+                   half-day. Without this, web shows 02 while
+                   mobile shows 07 for the same user. */
+                (summary.present || 0) + (summary.late || 0) + (summary.halfday || 0)
+              ).padStart(2, '0')}</div>
             </div>
             <div className="stat-card bg-absent text-white shadow-absent">
               <div className="s-card-title">ABSENTS</div>
@@ -448,6 +454,19 @@ const Attendance = () => {
               const hh = String(Math.floor(wh)).padStart(2, '0');
               const mm = String(Math.round((wh - Math.floor(wh)) * 60)).padStart(2, '0');
               const reqStatus = requestedDates.get(r.date) || '';
+              // #326 — Per-card 2-day window. Mirror mobile behaviour:
+              // once 2 calendar days have passed since the attendance
+              // date, the Request button locks to "Window Closed" so
+              // HR can't be petitioned for stale dates.
+              const dayAge = (() => {
+                if (!r.date) return 0;
+                const d = new Date(String(r.date).split('T')[0] + 'T00:00:00');
+                if (isNaN(d.getTime())) return 0;
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                return Math.floor((today - d) / 86400000);
+              })();
+              const requestClosed = dayAge > REQUEST_WINDOW_DAYS;
               return (
                 <HistoryCard
                   key={r.date}
@@ -459,6 +478,7 @@ const Attendance = () => {
                   workingHrs={`${hh}:${mm}`}
                   onRequest={() => openRequest(r.date)}
                   reqStatus={reqStatus}
+                  requestClosed={requestClosed}
                 />
               );
             })}
@@ -579,24 +599,27 @@ const LegendItem = ({ color, label }) => (
   </div>
 );
 
-const HistoryCard = ({ date, status, statusClass, checkIn, checkOut, workingHrs, onRequest, reqStatus }) => {
+const HistoryCard = ({ date, status, statusClass, checkIn, checkOut, workingHrs, onRequest, reqStatus, requestClosed }) => {
   // Per-row button lifecycle (mirrors ERM Mobile):
   //   pending  → "Requested" (disabled, grey)
   //   approved → "Approved"  (disabled, green)
   //   rejected → "Rejected — tap to re-file" (enabled, red)
+  //   closed   → "Window Closed" (disabled, grey)  — #326
   //   none     → "Request" (enabled, primary)
   const isPending  = reqStatus === 'pending';
   const isApproved = reqStatus === 'approved';
   const isRejected = reqStatus === 'rejected';
-  const btnDisabled = isPending || isApproved;
+  const btnDisabled = isPending || isApproved || requestClosed;
   let label = 'Request';
-  if (isApproved)      label = 'Approved';
-  else if (isRejected) label = 'Rejected — tap to re-file';
-  else if (isPending)  label = 'Requested';
+  if (isApproved)         label = 'Approved';
+  else if (isRejected)    label = 'Rejected — tap to re-file';
+  else if (isPending)     label = 'Requested';
+  else if (requestClosed) label = 'Window Closed';
   const tintStyle =
-    isPending  ? { background: '#E2E8F0', color: '#475569', cursor: 'not-allowed' } :
-    isApproved ? { background: '#DCFCE7', color: '#15803D', cursor: 'not-allowed' } :
-    isRejected ? { background: '#FCE4E4', color: '#B91C1C' } :
+    isPending     ? { background: '#E2E8F0', color: '#475569', cursor: 'not-allowed' } :
+    isApproved    ? { background: '#DCFCE7', color: '#15803D', cursor: 'not-allowed' } :
+    isRejected    ? { background: '#FCE4E4', color: '#B91C1C' } :
+    requestClosed ? { background: '#E2E8F0', color: '#475569', cursor: 'not-allowed' } :
     undefined;
   return (
     <div className="history-detail-card card">

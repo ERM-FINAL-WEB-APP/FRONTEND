@@ -280,6 +280,36 @@ const Payslip = () => {
   const [joining, setJoining] = useState(seedJoining);
   const [year,     setYear]     = useState(() => new Date().getFullYear());
   const [month,    setMonth]    = useState(() => new Date().getMonth() + 1);
+  // #327 — Hourly clock tick so the picker rolls forward even when the
+  // tab is left open across midnight / month-end / year-end. The
+  // buildYearOptions and buildMonthOptions helpers read `new Date()`
+  // afresh on every render, but React does NOT re-render automatically
+  // when the system clock advances. This effect bumps a state value
+  // once per hour, which forces those helpers to be re-evaluated.
+  // Cost: 24 setStates per day (negligible). Benefit: a tab opened on
+  // June 30 will automatically gain 'Jun' in the month dropdown within
+  // an hour of midnight, and a tab opened on Dec 31 2026 will gain
+  // '2027' in the year dropdown the same way. Works for EVERY future
+  // month and year, not just the next one.
+  const [, setClockTick] = useState(0);
+  useEffect(() => {
+    const tick = () => setClockTick((x) => (x + 1) % 1_000_000);
+    // Align the first tick to the top of the next hour, then fire every
+    // hour after that. This guarantees we cross every midnight boundary
+    // within at most one hour.
+    const now = new Date();
+    const msUntilNextHour =
+      (60 - now.getMinutes()) * 60_000 - now.getSeconds() * 1000 + 200;
+    let repeat = null;
+    const initial = setTimeout(() => {
+      tick();
+      repeat = setInterval(tick, 60 * 60 * 1000);
+    }, Math.max(msUntilNextHour, 1000));
+    return () => {
+      clearTimeout(initial);
+      if (repeat) clearInterval(repeat);
+    };
+  }, []);
   const [payslips, setPayslips] = useState([]);
   const [selected, setSelected] = useState(0);
   const [loading,  setLoading]  = useState(true);

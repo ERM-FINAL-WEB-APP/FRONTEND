@@ -349,6 +349,26 @@
   box-shadow: 0 6px 22px rgba(76,170,23,0.38);
 }
 
+/* #326 — Disabled state. The Download button used to stay green
+   even when HR hadn't generated the payslip yet, so employees
+   would click it expecting a download. Now it greys out, drops
+   the green shadow, and shows the not-allowed cursor so the lock
+   is obvious. Mirrors the disabled treatment used on every other
+   primary CTA in the app. */
+.ps-btn-download:disabled,
+.ps-btn-download[disabled] {
+  background: #CBD5E1;
+  color: #64748B;
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+.ps-btn-download:disabled:hover,
+.ps-btn-download[disabled]:hover {
+  background: #CBD5E1;
+  box-shadow: none;
+}
+
 /* ─── Responsive ─────────────────────────────────── */
 @media (max-width: 1024px) {
   .ps-layout {

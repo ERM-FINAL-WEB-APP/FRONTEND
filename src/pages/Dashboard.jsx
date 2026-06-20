@@ -195,7 +195,7 @@ const Dashboard = () => {
       <div className="mobile-announcements">
         <div className="section-header">
           <div className="header-title">
-            <h2>Announcement</h2>
+            <h2>Announcements</h2>
             <Megaphone size={18} />
           </div>
         </div>
