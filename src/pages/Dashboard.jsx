@@ -159,10 +159,13 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Attendance summary card — READ-ONLY (Jun 2026).
-          The Check In / Check Out / Working HR's tiles show today's
-          punched-in/out times from the mobile app. NO action button
-          here — web users punch attendance via the mobile app only. */}
+      {/* #330 — Attendance card with action button.
+          Web users can now punch attendance from EITHER ERM Mobile
+          OR ERM Web. The state, handlers, and API calls were already
+          in place (#212 only removed the visible UI); restoring the
+          button re-enables the dual-channel flow. Browser geolocation
+          is attempted but the check-in still proceeds without it
+          (handleAttendance has the fallback path). */}
       <div className="attendance-overlap-card card">
         <div className="shift-pill-wrapper">
           <span className="shift-pill">{(today.shiftName || 'GENERAL SHIFT').toUpperCase()}</span>
@@ -170,7 +173,42 @@ const Dashboard = () => {
 
         <div className="time-action-row">
           <div className="live-clock">{fmtClock(time)}</div>
+          {!checkedOut && (
+            <button
+              type="button"
+              className="dashboard-attendance-btn"
+              onClick={handleAttendance}
+              disabled={busy}
+              style={{
+                marginLeft: 'auto',
+                padding: '10px 26px',
+                borderRadius: 999,
+                border: 'none',
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: busy ? 'wait' : 'pointer',
+                color: '#FFFFFF',
+                background: checkedIn ? '#1565C0' : '#16A34A',
+                boxShadow: checkedIn
+                  ? '0 6px 18px rgba(21,101,192,0.28)'
+                  : '0 6px 18px rgba(22,163,74,0.28)',
+                opacity: busy ? 0.7 : 1,
+                transition: 'background .15s, opacity .15s',
+              }}
+            >
+              {busy ? 'Please wait…' : buttonLabel}
+            </button>
+          )}
         </div>
+        {error && (
+          <div style={{
+            marginTop: 8, padding: '8px 12px', borderRadius: 6,
+            background: '#FEF2F2', border: '1px solid #FECACA',
+            color: '#991B1B', fontSize: 13,
+          }}>
+            {error}
+          </div>
+        )}
 
         <div className="attendance-metrics">
           <div className="metric-item">

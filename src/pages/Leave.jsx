@@ -59,6 +59,50 @@ function fmtTime(t) {
 }
 
 /**
+ * #330 — Slot builder mirroring mobile generateTimeOptions().
+ * Returns an array of HH:mm strings on 30-min ticks. Caller renders
+ * each as a <option> with an AM/PM display label.
+ */
+function buildPermSlots(permDate, kind, startTime) {
+  const HARD_END_HOUR = 19;
+  let startHour = 10, startMin = 0;
+  const today = new Date();
+  const todayIso = today.getFullYear() + '-' +
+    String(today.getMonth() + 1).padStart(2, '0') + '-' +
+    String(today.getDate()).padStart(2, '0');
+  const isToday = permDate === todayIso;
+
+  if (isToday && kind === 'start') {
+    let h = today.getHours();
+    let m = today.getMinutes();
+    if (m === 0) m = 0;
+    else if (m <= 30) m = 30;
+    else { m = 0; h += 1; }
+    startHour = h; startMin = m;
+  } else if (kind === 'end' && startTime && /^\d{2}:\d{2}$/.test(startTime)) {
+    const [sh, sm] = startTime.split(':').map(Number);
+    let h = sh, m = sm + 30;
+    if (m >= 60) { m -= 60; h += 1; }
+    startHour = h; startMin = m;
+  }
+
+  const out = [];
+  for (let h = startHour, m = startMin; h < HARD_END_HOUR || (h === HARD_END_HOUR && m === 0); ) {
+    out.push(String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'));
+    m += 30;
+    if (m >= 60) { m = 0; h += 1; }
+  }
+  return out;
+}
+function fmtTimeAmPm(hhmm) {
+  if (!hhmm || !/^\d{2}:\d{2}$/.test(hhmm)) return '';
+  const [h, m] = hhmm.split(':').map(Number);
+  const ap = h >= 12 ? 'PM' : 'AM';
+  const hh = h % 12 === 0 ? 12 : h % 12;
+  return String(hh).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ' ' + ap;
+}
+
+/**
  * Time range for the Permission start/end <input type="time"> fields.
  *
  * Rules (Jun 2026 — HR request):
@@ -476,27 +520,42 @@ const Leave = () => {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Start Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      placeholder="HH:MM"
+                    {/* #330 — AM/PM dropdown matching mobile picker.
+                        Lists 30-min slots from 10:00 AM to 7:00 PM.
+                        On 'today', the floor is the live time rounded
+                        up to the next half-hour. */}
+                    <select
+                      className="form-control form-select"
                       value={startTime}
-                      min={getPermTimeRange(permDate).startMin}
-                      max={getPermTimeRange(permDate).startMax}
-                      onChange={(e) => setStartTime(e.target.value)}
-                    />
+                      onChange={(e) => {
+                        const t = e.target.value;
+                        setStartTime(t);
+                        if (endTime && endTime <= t) setEndTime('');
+                      }}
+                      disabled={!permDate}
+                    >
+                      <option value="">HH:MM</option>
+                      {buildPermSlots(permDate, 'start').map((t) => (
+                        <option key={t} value={t}>{fmtTimeAmPm(t)}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group">
                     <label>End Time</label>
-                    <input
-                      type="time"
-                      className="form-control"
-                      placeholder="HH:MM"
+                    {/* #330 — End dropdown floored at startTime + 30 min
+                        so an employee can't pick End = 10:00 AM with
+                        Start = 12:30 PM (the bug from mobile #317). */}
+                    <select
+                      className="form-control form-select"
                       value={endTime}
-                      min={getPermTimeRange(permDate).endMin}
-                      max={getPermTimeRange(permDate).endMax}
                       onChange={(e) => setEndTime(e.target.value)}
-                    />
+                      disabled={!permDate || !startTime}
+                    >
+                      <option value="">HH:MM</option>
+                      {buildPermSlots(permDate, 'end', startTime).map((t) => (
+                        <option key={t} value={t}>{fmtTimeAmPm(t)}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 

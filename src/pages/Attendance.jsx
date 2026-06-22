@@ -558,7 +558,24 @@ const Attendance = () => {
                 style={isRequestWindowClosed ? { background: '#F8FAFC', color: '#475569' } : undefined}
               />
             </div>
-            <div className="attendance-modal-footer">
+            <div className="attendance-modal-footer" style={{ display: 'flex', gap: 10 }}>
+              {/* #330 — Dedicated Close button. The modal previously had
+                  only the X in the header to dismiss it. Especially when
+                  the request window is closed and the primary action
+                  greys to "Window Closed", users had no clear way to
+                  exit — they tried clicking the grey button. */}
+              <button
+                className="btn-close-secondary"
+                onClick={() => setRequestModalOpen(false)}
+                type="button"
+                style={{
+                  flex: '0 0 auto', padding: '12px 22px', borderRadius: 8,
+                  background: '#F1F5F9', color: '#334155', border: '1px solid #E2E8F0',
+                  fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Close
+              </button>
               <button
                 className="btn-submit-request"
                 onClick={submitRequest}
@@ -566,7 +583,7 @@ const Attendance = () => {
                 disabled={reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3}
                 type="button"
                 title={isRequestWindowClosed ? 'Request window closed — past the 2-day cutoff' : ''}
-                style={{ backgroundColor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? '#94A3B8' : '#16A34A', color: '#fff', cursor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 'not-allowed' : 'pointer', opacity: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}
+                style={{ flex: 1, backgroundColor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? '#94A3B8' : '#16A34A', color: '#fff', cursor: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 'not-allowed' : 'pointer', opacity: (reqBusy || isRequestWindowClosed || (requestReason || '').trim().length < 3) ? 0.7 : 1, transition: 'background-color .15s, opacity .15s' }}
               >
                 {reqBusy ? <Spinner size={14} label="Submitting…" /> : isRequestWindowClosed ? 'Window Closed' : 'Submit Request'}
               </button>
