@@ -134,7 +134,21 @@ const LoginScreen = ({ onForgotPassword, setSharedEmail }) => {
           </button>
         </div>
 
-        <button type="submit" className="auth-btn" disabled={busy}>
+        {/* #334 — Disable Log In until BOTH email and password
+            have at least one character. Inline style overrides the
+            green gradient so the disabled state reads as grey, then
+            flips to green the moment both fields are filled. */}
+        <button
+          type="submit"
+          className="auth-btn"
+          disabled={busy || !email.trim() || !password.trim()}
+          style={(busy || !email.trim() || !password.trim()) ? {
+            background:  '#94A3B8',
+            boxShadow:   'none',
+            cursor:      'not-allowed',
+            opacity:     0.85,
+          } : undefined}
+        >
           {busy ? 'Signing in…' : 'Log In'}
         </button>
       </form>
