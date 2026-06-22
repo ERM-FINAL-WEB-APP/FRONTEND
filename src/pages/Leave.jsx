@@ -280,9 +280,12 @@ const Leave = () => {
       setError(`You have already submitted a request for ${dup}. Wait for HR to act or cancel the existing one first.`);
       return;
     }
-    setBusy(true);
     try {
-      if (!(await confirm({ title: 'Submit leave request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
+      // #331 — Confirm FIRST. setBusy was being called before
+      // confirm() returned, so the premium SubmitLoader animation
+      // ran in the background while the confirm modal was still up.
+      if (!(await confirm({ title: 'Submit leave request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) return;
+      setBusy(true);
       await leaveAPI.applyLeave({
         leaveType,
         startDate,
@@ -324,9 +327,11 @@ const Leave = () => {
       setError(`You have already submitted a request for ${dup}.`);
       return;
     }
-    setBusy(true);
     try {
-      if (!(await confirm({ title: 'Submit permission request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
+      // #331 — Confirm BEFORE setBusy so the loader doesn't animate
+      // behind the confirm modal.
+      if (!(await confirm({ title: 'Submit permission request?', message: 'HR will be notified once you confirm.', confirmLabel: 'Submit' }))) return;
+      setBusy(true);
       await leaveAPI.applyPermission({
         permissionType,
         date:      permDate,

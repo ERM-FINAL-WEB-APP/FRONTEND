@@ -451,12 +451,15 @@ const Payslip = () => {
       setTimeout(() => setError(''), 3500);
       return;
     }
-    setReqBusy(true);
     setReqDone('');
     try {
+      // #331 — Confirm FIRST; only then flip reqBusy so the premium
+      // SubmitLoader doesn't animate behind the confirm modal while
+      // the user is still deciding whether to confirm.
+      if (!(await confirm({ title: 'Request payslip?', message: `HR will be notified for ${MONTH_SHORT[month-1]} ${year}.`, confirmLabel: 'Request' }))) return;
+      setReqBusy(true);
       // Request the SELECTED month/year, not the current month — the
       // employee may be scrolling back through their history.
-      if (!(await confirm({ title: 'Request payslip?', message: `HR will be notified for ${MONTH_SHORT[month-1]} ${year}.`, confirmLabel: 'Request' }))) { setReqBusy(false); return; }
       await payslipAPI.request(month, year);
       setReqDone('Request sent to HR.');
       setTimeout(() => setReqDone(''), 3000);

@@ -190,9 +190,10 @@ const Allowance = () => {
     if (type === 'petrol' && (!distance || Number(distance) <= 0)) {
       setError('Enter the distance travelled (km).'); return;
     }
-    setBusy(true);
     try {
-      if (!(await confirm({ title: 'Submit allowance claim?', message: 'HR will review the claim once you confirm.', confirmLabel: 'Submit' }))) { setBusy(false); return; }
+      // #331 — Confirm BEFORE setBusy.
+      if (!(await confirm({ title: 'Submit allowance claim?', message: 'HR will review the claim once you confirm.', confirmLabel: 'Submit' }))) return;
+      setBusy(true);
       await allowanceAPI.submit({
         type,
         fromLocation: fromLoc.trim(),

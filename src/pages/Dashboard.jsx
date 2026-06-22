@@ -3,6 +3,7 @@ import { LogIn, LogOut, Hourglass, Megaphone } from 'lucide-react';
 import { attendanceAPI, announcementAPI } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
+import SubmitLoader from '../components/SubmitLoader';
 
 /**
  * Dashboard — employee's home screen.
@@ -113,7 +114,7 @@ const Dashboard = () => {
             navigator.geolocation.getCurrentPosition(
               (p) => resolve({ lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy }),
               (_) => resolve(null),
-              { timeout: 5000, maximumAge: 60000 }
+              { timeout: 2000, maximumAge: 5 * 60 * 1000 } /* #331 — was 5000ms; cut to 2s so check-in feels instant. maximumAge bumped to 5 min so a cached fix is reused. */
             );
           });
           coords = fix || undefined;
@@ -264,6 +265,13 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+      {/* #331 — Premium loader during check-in / check-out, same
+          as every other request submission on the site. */}
+      <SubmitLoader
+        visible={busy}
+        label={!checkedIn ? 'Checking you in…' : 'Checking you out…'}
+        sub={!checkedIn ? 'Recording your attendance with HR…' : 'Marking the end of your shift…'}
+      />
     </div>
   );
 };
