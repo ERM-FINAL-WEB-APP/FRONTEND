@@ -214,9 +214,28 @@ const ForgotScreen = ({ onBack, onOtpSent, sharedEmail, setSharedEmail, setDevOt
           An OTP will be sent to this email to verify your identity before setting a new password.
         </p>
 
-        <button type="submit" className="auth-btn" disabled={busy}>
-          {busy ? 'Sending OTP…' : 'Send OTP'}
-        </button>
+        {/* #334 — Disable Send OTP until email looks valid. The
+            grey style mirrors the Log In button so users know to
+            finish typing. */}
+        {(() => {
+          const emailLooksValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+          const isDisabled = busy || !emailLooksValid;
+          return (
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={isDisabled}
+              style={isDisabled ? {
+                background: '#94A3B8',
+                boxShadow:  'none',
+                cursor:     'not-allowed',
+                opacity:    0.85,
+              } : undefined}
+            >
+              {busy ? 'Sending OTP…' : 'Send OTP'}
+            </button>
+          );
+        })()}
       </form>
     </div>
   );
@@ -354,9 +373,26 @@ const OtpScreen = ({ onBack, onVerified, sharedEmail, setSharedResetToken, devOt
             : <span className="timer-expired">OTP expired</span>}
         </p>
 
-        <button type="submit" className="auth-btn" disabled={busy}>
-          {busy ? 'Verifying…' : 'Verify OTP'}
-        </button>
+        {/* #334 — Disable Verify OTP until all 6 digits are entered. */}
+        {(() => {
+          const allFilled = otp.length === 6 && otp.every((d) => /^\d$/.test(d));
+          const isDisabled = busy || !allFilled;
+          return (
+            <button
+              type="submit"
+              className="auth-btn"
+              disabled={isDisabled}
+              style={isDisabled ? {
+                background: '#94A3B8',
+                boxShadow:  'none',
+                cursor:     'not-allowed',
+                opacity:    0.85,
+              } : undefined}
+            >
+              {busy ? 'Verifying…' : 'Verify OTP'}
+            </button>
+          );
+        })()}
 
         <button type="button" className="auth-resend-btn" onClick={handleResend} disabled={timer > 540 || resending}>
           <RefreshCw size={14} className={resending ? 'spin-icon' : ''} />
@@ -472,7 +508,20 @@ const SetPasswordScreen = ({ onBack, onSet, sharedResetToken }) => {
 
         <p className="pw-rules">Min 8 chars &bull; 1 uppercase &bull; 1 number &bull; 1 symbol</p>
 
-        <button type="submit" className="auth-btn" disabled={!match || strength < 2 || busy}>
+        {/* #334 — Was already disabled when password mismatched or
+            too weak; now also turns visually grey so the user knows
+            to fix something. */}
+        <button
+          type="submit"
+          className="auth-btn"
+          disabled={!match || strength < 2 || busy}
+          style={(!match || strength < 2 || busy) ? {
+            background: '#94A3B8',
+            boxShadow:  'none',
+            cursor:     'not-allowed',
+            opacity:    0.85,
+          } : undefined}
+        >
           {busy ? 'Saving…' : 'Set Password'}
         </button>
       </form>
