@@ -567,23 +567,23 @@
  * ════════════════════════════════════════════════════════════════════ */
 
 /* ── Persistent page footer (visible on every auth step) ───────────── */
+/* #335 — Was `position: fixed` pinned to the bottom of the viewport,
+   which left a tall empty band between the login card and the footer
+   on full-HD displays. Switched to a normal flow element directly
+   below the card so the credit + Privacy Policy link sit close to
+   the card instead of floating at the very bottom of the screen. */
 .auth-footer {
-  position: fixed;
-  bottom: 14px;
-  left: 0;
-  right: 0;
+  position: relative;
+  margin: 18px auto 0;
   z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 8px 16px;
+  padding: 6px 16px;
   font-size: 12.5px;
-  color: rgba(255, 255, 255, 0.78);
-  pointer-events: none;          /* let the page receive clicks except on the link */
+  color: rgba(255, 255, 255, 0.85);
 }
-
-.auth-footer > * { pointer-events: auto; }
 
 .auth-footer-sep {
   color: rgba(255, 255, 255, 0.45);
@@ -612,7 +612,7 @@
 @media (max-width: 500px) {
   .auth-footer {
     font-size: 11.5px;
-    bottom: 10px;
+    margin-top: 14px;
     gap: 8px;
   }
 }
