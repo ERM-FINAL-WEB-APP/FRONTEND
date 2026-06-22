@@ -267,10 +267,14 @@ const Dashboard = () => {
       </div>
       {/* #331 — Premium loader during check-in / check-out, same
           as every other request submission on the site. */}
+      {/* #333 — Loader accent flips to blue when the action is
+          check-out, matching the blue Check-Out pill button. Stays
+          green for check-in. */}
       <SubmitLoader
         visible={busy}
         label={!checkedIn ? 'Checking you in…' : 'Checking you out…'}
         sub={!checkedIn ? 'Recording your attendance with HR…' : 'Marking the end of your shift…'}
+        accent={!checkedIn ? '#16A34A' : '#1565C0'}
       />
     </div>
   );
